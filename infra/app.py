@@ -12,7 +12,7 @@ Usage:
   cdk bootstrap aws://<ACCOUNT_ID>/us-east-1 --profile <PROFILE>
 
   # Deploy:
-  cdk deploy MindmapGeoLambdaStack \
+  cdk deploy MindmapGeoV2Stack \
     --context allowed_ips=YOUR.IP.HERE/32 \
     --profile <PROFILE>
 """
@@ -26,7 +26,7 @@ app = cdk.App()
 
 MindmapGeoLambdaStack(
     app,
-    "MindmapGeoLambdaStack",
+    "MindmapGeoV2Stack",
     env=cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],  # resolved by the CDK CLI from the active profile
         region="us-east-1",

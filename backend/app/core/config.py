@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     )
 
     # AWS Secrets Manager
-    aws_secret_name: str = Field("pai-mindmap-geo/app", alias="AWS_SECRET_NAME")
+    aws_secret_name: str = Field("pai-mindmap-geo-v2/app", alias="AWS_SECRET_NAME")
 
     class Config:
         env_file = ".env"

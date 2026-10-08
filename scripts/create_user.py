@@ -24,7 +24,7 @@ MIN_LEN = 12
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("username")
-    ap.add_argument("--table", default="geo_users")
+    ap.add_argument("--table", default="geo_users", help="users table (the v2 AWS stack uses v2_geo_users)")
     ap.add_argument("--region", default="us-east-1")
     ap.add_argument("--endpoint", default=None, help="LocalStack endpoint; omit for real AWS")
     args = ap.parse_args()

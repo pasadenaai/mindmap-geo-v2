@@ -46,7 +46,7 @@ URLs (from the CDK stack outputs — account and API IDs are not stored in this 
 
 | Resource | URL |
 |---|---|
-| Frontend | http://pai-mindmap-geo-frontend-<ACCOUNT_ID>.s3-website-us-east-1.amazonaws.com |
+| Frontend | http://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>.s3-website-us-east-1.amazonaws.com |
 | API | https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta/ |
 
 See `CLAUDE.md` for full deploy and update commands, and `ENV.md` for how secrets are handled.

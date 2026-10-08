@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-08 — isolated v2 stack (branch: main)
+- CDK stack is now `MindmapGeoV2Stack` with `v2`-named buckets, Lambda, role, API, log group, ECR repo and secret (`pai-mindmap-geo-v2/*`) and `v2_`-prefixed DynamoDB tables; verified against the live v1 stack: no name collisions.
+- Lambda role's DynamoDB access scoped to this stack's `v2_*` tables in its own account/region.
+- `scripts/sync_to_aws.py --aws-prefix v2_` seeds the v2 tables; `create_user.py --table v2_geo_users` creates logins.
+
 ## 2026-10-08 — access-control hardening (branch: main)
 - All state-changing requests on the data routers now require a valid access token (`require_auth`); previously only `/auth/me` did. The frontend now sends the token on every request.
 - Registration closed by default (`ALLOW_REGISTRATION`); `scripts/create_user.py` creates users. Password policy 12–128 chars, must not contain the username; login no longer leaks the policy.

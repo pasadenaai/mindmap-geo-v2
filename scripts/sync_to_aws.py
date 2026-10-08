@@ -100,22 +100,23 @@ def batch_write(table, items: list, dry_run: bool = False) -> int:
     return written
 
 
-def sync_table(src, dst, table_name: str, dry_run: bool = False) -> int:
-    if not table_exists(src, table_name):
-        print(f"  SKIP   {table_name:<35} — not found in source")
+def sync_table(src, dst, src_name: str, dst_name: str, dry_run: bool = False) -> int:
+    label = src_name if src_name == dst_name else f"{src_name} → {dst_name}"
+    if not table_exists(src, src_name):
+        print(f"  SKIP   {label:<45} — not found in source")
         return 0
-    if not table_exists(dst, table_name):
-        print(f"  SKIP   {table_name:<35} — not found in destination (run CDK deploy?)")
+    if not table_exists(dst, dst_name):
+        print(f"  SKIP   {label:<45} — not found in destination (run CDK deploy?)")
         return 0
 
-    items = scan_all(src.Table(table_name))
+    items = scan_all(src.Table(src_name))
     if not items:
-        print(f"  EMPTY  {table_name:<35} — 0 items")
+        print(f"  EMPTY  {label:<45} — 0 items")
         return 0
 
-    written = batch_write(dst.Table(table_name), items, dry_run=dry_run)
+    written = batch_write(dst.Table(dst_name), items, dry_run=dry_run)
     tag = "dry-run" if dry_run else "wrote"
-    print(f"  OK     {table_name:<35} — {tag} {written} items")
+    print(f"  OK     {label:<45} — {tag} {written} items")
     return written
 
 
@@ -141,6 +142,12 @@ def main():
         default="http://localhost:4570",
         metavar="URL",
         help="LocalStack DynamoDB endpoint (default: http://localhost:4570)",
+    )
+    parser.add_argument(
+        "--aws-prefix",
+        default="",
+        metavar="PREFIX",
+        help="Prefix on AWS table names (the v2 stack uses 'v2_'); local names are never prefixed",
     )
     parser.add_argument(
         "--dry-run",
@@ -175,7 +182,11 @@ def main():
 
     total = 0
     for table_name in args.tables:
-        total += sync_table(src, dst, table_name, dry_run=args.dry_run)
+        aws_name = args.aws_prefix + table_name
+        if args.direction == "local-to-aws":
+            total += sync_table(src, dst, table_name, aws_name, dry_run=args.dry_run)
+        else:
+            total += sync_table(src, dst, aws_name, table_name, dry_run=args.dry_run)
 
     print()
     print(f"Total items synced: {total}")

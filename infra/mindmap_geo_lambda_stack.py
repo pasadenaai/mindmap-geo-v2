@@ -21,20 +21,20 @@ Upgrade to Fargate track (pai-aws01-infra) when ready for multi-user access.
 Access restriction:
   API Gateway REST API resource policy — IP whitelist.
   Set allowed IPs via CDK context:
-    cdk deploy MindmapGeoLambdaStack --context allowed_ips=YOUR_IP/32
+    cdk deploy MindmapGeoV2Stack --context allowed_ips=YOUR_IP/32
   Multiple IPs (comma-separated):
-    cdk deploy MindmapGeoLambdaStack --context allowed_ips=1.2.3.4/32,5.6.7.8/32
+    cdk deploy MindmapGeoV2Stack --context allowed_ips=1.2.3.4/32,5.6.7.8/32
 
 Prerequisites before deploying:
   1. Build + push backend image to ECR:
-       aws ecr create-repository --repository-name pai-mindmap-geo-backend
+       aws ecr create-repository --repository-name pai-mindmap-geo-v2-backend
        cd backend
        docker buildx build --platform linux/arm64 --provenance=false \\
          -f Dockerfile.lambda \\
-         -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest \\
+         -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-v2-backend:latest \\
          --push .
   2. cdk bootstrap aws://<ACCOUNT_ID>/us-east-1  (one-time per account/region)
-  3. cdk deploy MindmapGeoLambdaStack --context allowed_ips=YOUR.IP.HERE/32
+  3. cdk deploy MindmapGeoV2Stack --context allowed_ips=YOUR.IP.HERE/32
 
 Post-deploy:
   4. Seed ingest sources via the API (runs _seed_ingest_sources on first ingest call)
@@ -49,13 +49,13 @@ Updating after code changes:
   Backend:
     docker buildx build --platform linux/arm64 --provenance=false \\
       -f backend/Dockerfile.lambda \\
-      -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest \\
+      -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-v2-backend:latest \\
       --push backend/
     aws lambda update-function-code \\
-      --function-name pai-mindmap-geo-backend \\
+      --function-name pai-mindmap-geo-v2-backend \\
       --region us-east-1 \\
-      --image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest
-    aws lambda wait function-updated --function-name pai-mindmap-geo-backend --region us-east-1
+      --image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-v2-backend:latest
+    aws lambda wait function-updated --function-name pai-mindmap-geo-v2-backend --region us-east-1
 
   Frontend:
     cd frontend
@@ -65,7 +65,7 @@ Updating after code changes:
   Infrastructure:
     cd infra
     source .venv/bin/activate
-    cdk deploy MindmapGeoLambdaStack \\
+    cdk deploy MindmapGeoV2Stack \\
       --app "python app.py" \\
       --context allowed_ips=YOUR.IP.HERE/32 \\
       --require-approval never
@@ -87,7 +87,8 @@ from aws_cdk import (
 from constructs import Construct
 
 SEVEN_YEARS = logs.RetentionDays.TEN_YEARS
-APP_SECRET_NAME = "pai-mindmap-geo/app"
+TP = "v2_"  # table-name prefix: keeps these tables apart from the v1 stack
+APP_SECRET_NAME = "pai-mindmap-geo-v2/app"
 
 
 class MindmapGeoLambdaStack(cdk.Stack):
@@ -133,7 +134,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
         # Auth — users table with GSI on username
         geo_users_table = dynamodb.Table(
             self, "GeoUsersTable",
-            table_name="geo_users",
+            table_name=f"{TP}geo_users",
             partition_key=dynamodb.Attribute(name="user_id", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             point_in_time_recovery=True,
@@ -146,36 +147,36 @@ class MindmapGeoLambdaStack(cdk.Stack):
         )
 
         # Core geo tables
-        _table("GeoPointsTable",        "geo_points",        "point_id")
-        _table("GeoArcsTable",          "geo_arcs",          "arc_id")
-        _table("GeoConfigsTable",       "geo_configs",       "config_id")
-        _table("GeoCountriesTable",     "geo_countries",     "cca2")
+        _table("GeoPointsTable",        f"{TP}geo_points",        "point_id")
+        _table("GeoArcsTable",          f"{TP}geo_arcs",          "arc_id")
+        _table("GeoConfigsTable",       f"{TP}geo_configs",       "config_id")
+        _table("GeoCountriesTable",     f"{TP}geo_countries",     "cca2")
 
         # Cloud region tables
-        _table("AwsRegionsTable",       "aws_regions",       "region_id")
-        _table("AzureRegionsTable",     "azure_regions",     "region_id")
-        _table("GcpRegionsTable",       "gcp_regions",       "region_id")
-        _table("AlibabaRegionsTable",   "alibaba_regions",   "region_id")
-        _table("OciRegionsTable",       "oci_regions",       "region_id")
-        _table("IbmRegionsTable",       "ibm_regions",       "region_id")
-        _table("GeoAvailabilityZonesTable", "geo_availability_zones", "az_id")
+        _table("AwsRegionsTable",       f"{TP}aws_regions",       "region_id")
+        _table("AzureRegionsTable",     f"{TP}azure_regions",     "region_id")
+        _table("GcpRegionsTable",       f"{TP}gcp_regions",       "region_id")
+        _table("AlibabaRegionsTable",   f"{TP}alibaba_regions",   "region_id")
+        _table("OciRegionsTable",       f"{TP}oci_regions",       "region_id")
+        _table("IbmRegionsTable",       f"{TP}ibm_regions",       "region_id")
+        _table("GeoAvailabilityZonesTable", f"{TP}geo_availability_zones", "az_id")
 
         # Transport
-        _table("GeoAirlinesTable",      "geo_airlines",      "iata")
+        _table("GeoAirlinesTable",      f"{TP}geo_airlines",      "iata")
 
         # Elements & mineral reserves
-        _table("GeoElementsTable",          "geo_elements",          "atomic_number")
-        _table("GeoCountryElementsTable",   "geo_country_elements",  "cca2")
-        _table("GeoCountryResourcesTable",  "geo_country_resources", "cca2")
+        _table("GeoElementsTable",          f"{TP}geo_elements",          "atomic_number")
+        _table("GeoCountryElementsTable",   f"{TP}geo_country_elements",  "cca2")
+        _table("GeoCountryResourcesTable",  f"{TP}geo_country_resources", "cca2")
 
         # Ingest pipeline
-        _table("GeoIngestSourcesTable", "geo_ingest_sources", "source_id")
-        _table("GeoIngestLogTable",     "geo_ingest_log",     "run_id")
+        _table("GeoIngestSourcesTable", f"{TP}geo_ingest_sources", "source_id")
+        _table("GeoIngestLogTable",     f"{TP}geo_ingest_log",     "run_id")
 
         # ── App secret (Secrets Manager, KMS-encrypted at rest) ───────────────
         # SECRET_KEY (JWT signing) is generated by Secrets Manager and never seen by a human.
         # EIA_API_KEY starts empty — set it out-of-band:
-        #   aws secretsmanager put-secret-value --secret-id pai-mindmap-geo/app \\
+        #   aws secretsmanager put-secret-value --secret-id pai-mindmap-geo-v2/app \\
         #     --secret-string '{"SECRET_KEY":"<existing>","EIA_API_KEY":"<value>"}'
         # (read the existing SECRET_KEY first so it is preserved.)
         app_secret = secretsmanager.Secret(
@@ -193,15 +194,15 @@ class MindmapGeoLambdaStack(cdk.Stack):
         # ── IAM Role for Lambda ───────────────────────────────────────────────
         lambda_role = iam.Role(
             self, "MindmapGeoLambdaRole",
-            role_name="pai-mindmap-geo-lambda-role",
+            role_name="pai-mindmap-geo-v2-lambda-role",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
         )
 
-        # ── Inline policy 1: pai-mindmap-geo-execution ────────────────────────
+        # ── Inline policy 1: pai-mindmap-geo-v2-execution ────────────────────────
         # CloudWatch Logs + read of the single app secret (least privilege).
         lambda_role.attach_inline_policy(iam.Policy(
             self, "PaiMindmapGeoExecutionPolicy",
-            policy_name="pai-mindmap-geo-execution",
+            policy_name="pai-mindmap-geo-v2-execution",
             statements=[
                 iam.PolicyStatement(
                     sid="ReadAppSecret",
@@ -216,18 +217,18 @@ class MindmapGeoLambdaStack(cdk.Stack):
                         "logs:PutLogEvents",
                     ],
                     resources=[
-                        "arn:aws:logs:*:*:log-group:/aws/lambda/pai-mindmap-geo-*",
-                        "arn:aws:logs:*:*:log-group:/aws/lambda/pai-mindmap-geo-*:*",
+                        "arn:aws:logs:*:*:log-group:/aws/lambda/pai-mindmap-geo-v2-*",
+                        "arn:aws:logs:*:*:log-group:/aws/lambda/pai-mindmap-geo-v2-*:*",
                     ],
                 ),
             ],
         ))
 
-        # ── Inline policy 2: pai-mindmap-geo-data ────────────────────────────
+        # ── Inline policy 2: pai-mindmap-geo-v2-data ────────────────────────────
         # DynamoDB access to all geo_* tables + cloud region tables + S3 geo assets.
         lambda_role.attach_inline_policy(iam.Policy(
             self, "PaiMindmapGeoDataPolicy",
-            policy_name="pai-mindmap-geo-data",
+            policy_name="pai-mindmap-geo-v2-data",
             statements=[
                 iam.PolicyStatement(
                     sid="DynamoDBGeoTables",
@@ -243,16 +244,10 @@ class MindmapGeoLambdaStack(cdk.Stack):
                         "dynamodb:Scan",
                         "dynamodb:UpdateItem",
                     ],
-                    # Covers all geo_* tables and cloud provider region tables
+                    # All tables of this stack (v2_ prefix)
                     resources=[
-                        "arn:aws:dynamodb:*:*:table/geo_*",
-                        "arn:aws:dynamodb:*:*:table/geo_*/index/*",
-                        "arn:aws:dynamodb:*:*:table/aws_regions",
-                        "arn:aws:dynamodb:*:*:table/azure_regions",
-                        "arn:aws:dynamodb:*:*:table/gcp_regions",
-                        "arn:aws:dynamodb:*:*:table/alibaba_regions",
-                        "arn:aws:dynamodb:*:*:table/oci_regions",
-                        "arn:aws:dynamodb:*:*:table/ibm_regions",
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/{TP}*",
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/{TP}*/index/*",
                     ],
                 ),
                 iam.PolicyStatement(
@@ -265,8 +260,8 @@ class MindmapGeoLambdaStack(cdk.Stack):
                         "s3:HeadObject",
                     ],
                     resources=[
-                        f"arn:aws:s3:::pai-mindmap-geo-assets-{self.account}",
-                        f"arn:aws:s3:::pai-mindmap-geo-assets-{self.account}/*",
+                        f"arn:aws:s3:::pai-mindmap-geo-v2-assets-{self.account}",
+                        f"arn:aws:s3:::pai-mindmap-geo-v2-assets-{self.account}/*",
                     ],
                 ),
             ],
@@ -275,7 +270,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
         # ── CloudWatch Log Group ──────────────────────────────────────────────
         log_group = logs.LogGroup(
             self, "MindmapGeoLambdaLogs",
-            log_group_name="/aws/lambda/pai-mindmap-geo-backend",
+            log_group_name="/aws/lambda/pai-mindmap-geo-v2-backend",
             retention=SEVEN_YEARS,
             removal_policy=cdk.RemovalPolicy.RETAIN,
         )
@@ -284,12 +279,12 @@ class MindmapGeoLambdaStack(cdk.Stack):
         # Container image from ECR. Build + push before deploying (see prerequisites).
         backend_repo = ecr.Repository.from_repository_name(
             self, "MindmapGeoBackendRepo",
-            repository_name="pai-mindmap-geo-backend",
+            repository_name="pai-mindmap-geo-v2-backend",
         )
 
         backend_fn = lambda_.DockerImageFunction(
             self, "MindmapGeoBackendFn",
-            function_name="pai-mindmap-geo-backend",
+            function_name="pai-mindmap-geo-v2-backend",
             code=lambda_.DockerImageCode.from_ecr(
                 repository=backend_repo,
                 tag_or_digest="latest",
@@ -306,31 +301,31 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 "STORAGE_BACKEND": "dynamo",
                 "AWS_REGION_NAME": "us-east-1",
                 # Table names match config.py defaults — explicit for clarity
-                "DYNAMO_GEO_POINTS_TABLE":           "geo_points",
-                "DYNAMO_GEO_ARCS_TABLE":             "geo_arcs",
-                "DYNAMO_GEO_CONFIGS_TABLE":          "geo_configs",
-                "DYNAMO_GEO_COUNTRIES_TABLE":        "geo_countries",
-                "DYNAMO_AWS_REGIONS_TABLE":          "aws_regions",
-                "DYNAMO_AZURE_REGIONS_TABLE":        "azure_regions",
-                "DYNAMO_GCP_REGIONS_TABLE":          "gcp_regions",
-                "DYNAMO_ALIBABA_REGIONS_TABLE":      "alibaba_regions",
-                "DYNAMO_OCI_REGIONS_TABLE":          "oci_regions",
-                "DYNAMO_IBM_REGIONS_TABLE":          "ibm_regions",
-                "DYNAMO_AIRLINES_TABLE":             "geo_airlines",
-                "DYNAMO_AVAILABILITY_ZONES_TABLE":   "geo_availability_zones",
-                "DYNAMO_ELEMENTS_TABLE":             "geo_elements",
-                "DYNAMO_COUNTRY_ELEMENTS_TABLE":     "geo_country_elements",
-                "DYNAMO_COUNTRY_RESOURCES_TABLE":    "geo_country_resources",
-                "DYNAMO_INGEST_SOURCES_TABLE":       "geo_ingest_sources",
-                "DYNAMO_INGEST_LOG_TABLE":           "geo_ingest_log",
-                "DYNAMO_USERS_TABLE":                "geo_users",
-                "S3_GEO_BUCKET":                     f"pai-mindmap-geo-assets-{self.account}",
+                "DYNAMO_GEO_POINTS_TABLE":           f"{TP}geo_points",
+                "DYNAMO_GEO_ARCS_TABLE":             f"{TP}geo_arcs",
+                "DYNAMO_GEO_CONFIGS_TABLE":          f"{TP}geo_configs",
+                "DYNAMO_GEO_COUNTRIES_TABLE":        f"{TP}geo_countries",
+                "DYNAMO_AWS_REGIONS_TABLE":          f"{TP}aws_regions",
+                "DYNAMO_AZURE_REGIONS_TABLE":        f"{TP}azure_regions",
+                "DYNAMO_GCP_REGIONS_TABLE":          f"{TP}gcp_regions",
+                "DYNAMO_ALIBABA_REGIONS_TABLE":      f"{TP}alibaba_regions",
+                "DYNAMO_OCI_REGIONS_TABLE":          f"{TP}oci_regions",
+                "DYNAMO_IBM_REGIONS_TABLE":          f"{TP}ibm_regions",
+                "DYNAMO_AIRLINES_TABLE":             f"{TP}geo_airlines",
+                "DYNAMO_AVAILABILITY_ZONES_TABLE":   f"{TP}geo_availability_zones",
+                "DYNAMO_ELEMENTS_TABLE":             f"{TP}geo_elements",
+                "DYNAMO_COUNTRY_ELEMENTS_TABLE":     f"{TP}geo_country_elements",
+                "DYNAMO_COUNTRY_RESOURCES_TABLE":    f"{TP}geo_country_resources",
+                "DYNAMO_INGEST_SOURCES_TABLE":       f"{TP}geo_ingest_sources",
+                "DYNAMO_INGEST_LOG_TABLE":           f"{TP}geo_ingest_log",
+                "DYNAMO_USERS_TABLE":                f"{TP}geo_users",
+                "S3_GEO_BUCKET":                     f"pai-mindmap-geo-v2-assets-{self.account}",
                 # Auth token expiry (short-lived in AWS)
                 "ACCESS_TOKEN_EXPIRE_MINUTES":       "15",
                 "REFRESH_TOKEN_EXPIRE_DAYS":         "1",
                 # SECRET_KEY / EIA_API_KEY live in Secrets Manager (see app_secret above).
                 # CORS_ORIGINS — S3 frontend bucket URL
-                "CORS_ORIGINS": f'["http://pai-mindmap-geo-frontend-{self.account}.s3-website-us-east-1.amazonaws.com"]',
+                "CORS_ORIGINS": f'["http://pai-mindmap-geo-v2-frontend-{self.account}.s3-website-us-east-1.amazonaws.com"]',
             },
             log_group=log_group,
         )
@@ -339,7 +334,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
         # REST API (not HTTP API) — required for resource policy IP restriction.
         api = apigw.RestApi(
             self, "MindmapGeoApi",
-            rest_api_name="pai-mindmap-geo-api",
+            rest_api_name="pai-mindmap-geo-v2-api",
             description="mindmap-geo API — beta, IP-restricted",
             deploy_options=apigw.StageOptions(
                 stage_name="beta",
@@ -392,7 +387,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
         # IP-restricted, publicly readable from allowed IPs only.
         assets_bucket = s3.Bucket(
             self, "MindmapGeoAssetsBucket",
-            bucket_name=f"pai-mindmap-geo-assets-{self.account}",
+            bucket_name=f"pai-mindmap-geo-v2-assets-{self.account}",
             public_read_access=True,
             block_public_access=s3.BlockPublicAccess(
                 block_public_acls=False,
@@ -425,7 +420,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
         #   aws s3 sync dist s3://<FrontendBucketName> --delete
         frontend_bucket = s3.Bucket(
             self, "MindmapGeoFrontendBucket",
-            bucket_name=f"pai-mindmap-geo-frontend-{self.account}",
+            bucket_name=f"pai-mindmap-geo-v2-frontend-{self.account}",
             website_index_document="index.html",
             website_error_document="index.html",
             public_read_access=True,

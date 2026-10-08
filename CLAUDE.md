@@ -85,42 +85,52 @@ Browser (IP-restricted)
 ### URLs (placeholders — read the real values from the CDK stack outputs)
 | Resource | URL |
 |---|---|
-| Frontend (S3 static site) | http://pai-mindmap-geo-frontend-<ACCOUNT_ID>.s3-website-us-east-1.amazonaws.com |
+| Frontend (S3 static site) | http://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>.s3-website-us-east-1.amazonaws.com |
 | API (API Gateway → Lambda) | https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta/ |
 
 ### Deploying (first time)
 ```bash
 # 1. Create ECR repo and push image (arm64 single-arch — Lambda rejects multi-arch manifests)
-aws ecr create-repository --repository-name pai-mindmap-geo-backend
+aws ecr create-repository --repository-name pai-mindmap-geo-v2-backend
 cd backend
 docker buildx build --platform linux/arm64 --provenance=false \
   -f Dockerfile.lambda \
-  -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest \
+  -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-v2-backend:latest \
   --push .
 
 # 2. Deploy CDK stack (find your IP first: curl https://checkip.amazonaws.com)
 cd infra
 python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
-cdk deploy MindmapGeoLambdaStack \
+cdk deploy MindmapGeoV2Stack \
   --app "python app.py" \
   --context allowed_ips=YOUR.IP.HERE/32
 
 # 3. Build and upload frontend
 cd ../frontend
 VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
-aws s3 sync dist s3://pai-mindmap-geo-frontend-<ACCOUNT_ID> --delete
+aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete
 # Note: flags/airlines assets are in frontend/public/assets/ and bundled by Vite —
 # no separate assets sync needed.
 
 # 4. CORS_ORIGINS is derived from the account in the CDK stack (no manual Lambda env edit needed)
 
 # 5. Set EIA_API_KEY (optional — needed for EIA energy data ingest). Keys live only in
-#    Secrets Manager (secret `pai-mindmap-geo/app`), never in Lambda env vars or git.
+#    Secrets Manager (secret `pai-mindmap-geo-v2/app`), never in Lambda env vars or git.
 #    Get a free key at https://www.eia.gov/opendata/ then merge it into the secret:
-CUR=$(aws secretsmanager get-secret-value --secret-id pai-mindmap-geo/app --query SecretString --output text)
-aws secretsmanager put-secret-value --secret-id pai-mindmap-geo/app \
+CUR=$(aws secretsmanager get-secret-value --secret-id pai-mindmap-geo-v2/app --query SecretString --output text)
+aws secretsmanager put-secret-value --secret-id pai-mindmap-geo-v2/app \
   --secret-string "$(echo "$CUR" | jq --arg k "$EIA_API_KEY" '.EIA_API_KEY=$k')"
 # Lambda reads the secret at cold start; update the function config or wait for a new execution environment.
+```
+
+### v2 stack isolation
+This repo deploys as `MindmapGeoV2Stack` and shares nothing with the original `MindmapGeoLambdaStack`:
+all names carry `v2` (`pai-mindmap-geo-v2-*` buckets/function/role/secret/ECR repo) and DynamoDB tables are prefixed `v2_`.
+```bash
+# Seed v2 tables from LocalStack data (users are never synced)
+python scripts/sync_to_aws.py --aws-prefix v2_
+# Create a login (registration is closed in AWS)
+python scripts/create_user.py <username> --table v2_geo_users
 ```
 
 ### Updating after code changes
@@ -129,18 +139,18 @@ aws secretsmanager put-secret-value --secret-id pai-mindmap-geo/app \
 cd backend
 docker buildx build --platform linux/arm64 --provenance=false \
   -f Dockerfile.lambda \
-  -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest \
+  -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-v2-backend:latest \
   --push .
 aws lambda update-function-code \
-  --function-name pai-mindmap-geo-backend \
+  --function-name pai-mindmap-geo-v2-backend \
   --region us-east-1 \
-  --image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest
-aws lambda wait function-updated --function-name pai-mindmap-geo-backend --region us-east-1
+  --image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-v2-backend:latest
+aws lambda wait function-updated --function-name pai-mindmap-geo-v2-backend --region us-east-1
 
 # Frontend
 cd frontend
 VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
-aws s3 sync dist s3://pai-mindmap-geo-frontend-<ACCOUNT_ID> --delete
+aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete
 # Note: flags/airlines assets are in frontend/public/assets/ — bundled by Vite, no separate sync.
 ```
 
