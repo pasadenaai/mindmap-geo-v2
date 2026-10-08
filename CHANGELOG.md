@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-08 — access-control hardening (branch: main)
+- All state-changing requests on the data routers now require a valid access token (`require_auth`); previously only `/auth/me` did. The frontend now sends the token on every request.
+- Registration closed by default (`ALLOW_REGISTRATION`); `scripts/create_user.py` creates users. Password policy 12–128 chars, must not contain the username; login no longer leaks the policy.
+- Account lockout after 5 failed logins (15 min); `audit` log events for register/login/logout/refresh.
+- Logout revokes refresh tokens server-side (`token_version`); refresh checks it.
+- `python-jose` 3.3.0 → 3.5.0.
+- Added `backend/tests` (10 tests) and `FEDRAMP_GAP_ANALYSIS.md`.
+
 ## 2026-10-08 — v2 initial import (branch: main)
 Clean, history-free copy of `pasadenaai/mindmap-geo` with credential and infrastructure-identifier cleanup.
 - Removed tracked `.env.local`; added `.env.local.example` and `scripts/dev_env_init.sh` (per-developer random secrets, mode 600).

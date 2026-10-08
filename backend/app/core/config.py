@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     # get_settings); AWS must supply one via Secrets Manager or the environment.
     secret_key: Optional[str] = Field(None, alias="SECRET_KEY")
     algorithm: str = "HS256"
+    # Access control (AC-2/AC-3/AC-7): registration is closed by default; create users with
+    # scripts/create_user.py. Writes always require a token; set REQUIRE_AUTH_FOR_READS=true
+    # to require one for every read as well.
+    allow_registration: bool = Field(False, alias="ALLOW_REGISTRATION")
+    require_auth_for_reads: bool = Field(False, alias="REQUIRE_AUTH_FOR_READS")
+    max_failed_logins: int = Field(5, alias="MAX_FAILED_LOGINS")
+    lockout_minutes: int = Field(15, alias="LOCKOUT_MINUTES")
     access_token_expire_minutes: int = Field(480, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
     refresh_token_expire_days: int = Field(7, alias="REFRESH_TOKEN_EXPIRE_DAYS")
 

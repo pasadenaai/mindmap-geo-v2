@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 import bcrypt
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status, Response, Cookie
+from fastapi import Depends, HTTPException, status, Response, Cookie, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.config import settings
 
@@ -32,12 +32,13 @@ def create_access_token(user_id: str, username: str) -> str:
     )
 
 
-def create_refresh_token(user_id: str) -> str:
+def create_refresh_token(user_id: str, token_version: int = 0) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         days=settings.refresh_token_expire_days
     )
     return jwt.encode(
-        {"sub": user_id, "exp": expire, "type": "refresh"},
+        # "ver" must match the user's token_version; bumping it (logout) revokes all refresh tokens
+        {"sub": user_id, "exp": expire, "type": "refresh", "ver": token_version},
         settings.secret_key,
         algorithm=settings.algorithm,
     )
@@ -80,3 +81,21 @@ async def get_current_user(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     payload = decode_token(credentials.credentials, expected_type="access")
     return {"user_id": payload["sub"], "username": payload["username"]}
+
+
+_SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+
+
+async def require_auth(
+    request: Request,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+) -> None:
+    """Router-level guard: every state-changing request needs a valid access token.
+
+    Reads stay public unless REQUIRE_AUTH_FOR_READS=true.
+    """
+    if request.method in _SAFE_METHODS and not settings.require_auth_for_reads:
+        return
+    if not credentials:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    decode_token(credentials.credentials, expected_type="access")

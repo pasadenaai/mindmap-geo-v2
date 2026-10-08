@@ -8,7 +8,14 @@ import uuid
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=32)
-    password: str = Field(..., min_length=6)
+    # NIST 800-63B: length over composition rules
+    password: str = Field(..., min_length=12, max_length=128)
+
+
+class LoginIn(BaseModel):
+    # No min length here so validation errors don't reveal the password policy to attackers
+    username: str = Field(..., max_length=32)
+    password: str = Field(..., max_length=128)
 
 
 class UserOut(BaseModel):

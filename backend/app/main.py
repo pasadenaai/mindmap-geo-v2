@@ -1,10 +1,11 @@
 import logging
 import traceback
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.security import require_auth
 from app.repositories.dynamo import ensure_tables
 from app.routers import geo, elements, ingest, auth
 from app.ingest.registry import SOURCES
@@ -55,9 +56,11 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/api")
-app.include_router(geo.router, prefix="/api")
-app.include_router(elements.router, prefix="/api")
-app.include_router(ingest.router, prefix="/api")
+# Data routers: all writes require an access token (see core.security.require_auth)
+_protected = [Depends(require_auth)]
+app.include_router(geo.router, prefix="/api", dependencies=_protected)
+app.include_router(elements.router, prefix="/api", dependencies=_protected)
+app.include_router(ingest.router, prefix="/api", dependencies=_protected)
 
 
 @app.exception_handler(Exception)

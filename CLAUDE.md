@@ -1,6 +1,6 @@
 @../../pasadena-ai-playbook/CLAUDE.md
 
-# mindmap-geo
+# mindmap-geo-v2
 
 Geographic visualisation service — interactive Three.js dot-globe with a FastAPI
 backend persisting geo data in DynamoDB. Intended to integrate into mindmap-app-v3.
@@ -8,7 +8,8 @@ backend persisting geo data in DynamoDB. Intended to integrate into mindmap-app-
 ## Quick start (local)
 
 ```bash
-docker compose -f docker-compose.local.yaml up -d --build
+scripts/dev_env_init.sh   # one-time: generates a git-ignored .env.local with random secrets
+docker compose --env-file .env.local -f docker-compose.local.yaml up -d --build
 ```
 
 | Service | URL |
@@ -60,6 +61,12 @@ DELETE /api/geo/configs/:id
 
 GET    /health
 ```
+
+**Auth:** every POST/PATCH/PUT/DELETE under `/api/geo/*` requires `Authorization: Bearer <access token>`
+(`require_auth` in `backend/app/core/security.py`). Reads are public unless `REQUIRE_AUTH_FOR_READS=true`.
+Registration is closed unless `ALLOW_REGISTRATION=true` (set in the local example env); create AWS users with
+`python scripts/create_user.py <username>`. Run tests: `cd backend && pip install -r requirements-dev.txt && pytest tests`.
+FedRAMP posture: see `FEDRAMP_GAP_ANALYSIS.md`.
 
 ## AWS Lambda Deployment (beta — us-east-1)
 

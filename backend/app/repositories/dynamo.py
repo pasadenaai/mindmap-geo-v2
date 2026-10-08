@@ -615,3 +615,37 @@ async def get_user_by_username(username: str) -> dict | None:
 
 async def get_user_by_id(user_id: str) -> dict | None:
     return await _get(settings.dynamo_users_table, "user_id", user_id)
+
+
+async def _update_user(user_id: str, expression: str, values: dict, names: dict | None = None) -> dict:
+    async with _get_session().resource("dynamodb", **_client_kwargs()) as res:
+        tbl = await res.Table(settings.dynamo_users_table)
+        kwargs = {
+            "Key": {"user_id": user_id},
+            "UpdateExpression": expression,
+            "ExpressionAttributeValues": values,
+            "ReturnValues": "ALL_NEW",
+        }
+        if names:
+            kwargs["ExpressionAttributeNames"] = names
+        resp = await tbl.update_item(**kwargs)
+    return resp["Attributes"]
+
+
+async def record_login_failure(user_id: str, max_failures: int, lockout_until_iso: str) -> dict:
+    """Atomically count a failed login; lock the account once max_failures is reached (AC-7)."""
+    user = await _update_user(user_id, "ADD failed_logins :one", {":one": 1})
+    if int(user.get("failed_logins", 0)) >= max_failures:
+        user = await _update_user(
+            user_id, "SET locked_until = :t, failed_logins = :zero", {":t": lockout_until_iso, ":zero": 0}
+        )
+    return user
+
+
+async def reset_login_failures(user_id: str) -> None:
+    await _update_user(user_id, "SET failed_logins = :zero REMOVE locked_until", {":zero": 0})
+
+
+async def bump_token_version(user_id: str) -> None:
+    """Revoke every outstanding refresh token for the user (logout / credential change)."""
+    await _update_user(user_id, "ADD token_version :one", {":one": 1})

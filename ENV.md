@@ -12,6 +12,9 @@ Production vars go in `.env.aws` (never committed — use `.env.aws.template` as
 | `STORAGE_BACKEND` | backend | `dynamo` | Always `dynamo` for now |
 | `DYNAMODB_ENDPOINT_URL` | backend | `http://localstack:4566` | LocalStack override; leave unset in AWS |
 | `AWS_REGION` | backend | `us-east-1` | AWS region |
+| `ALLOW_REGISTRATION` | backend | `false` (`true` in `.env.local.example`) | Open self-registration at `/api/auth/register` |
+| `REQUIRE_AUTH_FOR_READS` | backend | `false` | Require a token for GET requests too |
+| `MAX_FAILED_LOGINS` / `LOCKOUT_MINUTES` | backend | `5` / `15` | Account lockout (AC-7) |
 | `SECRET_KEY` | backend | _(generated)_ | JWT signing key. No default: local dev generates one into `.env.local`; if unset locally an ephemeral random key is used; in AWS it comes from Secrets Manager and startup fails if missing |
 | `LOCALSTACK_ACCESS_KEY_ID` / `LOCALSTACK_SECRET_ACCESS_KEY` | compose | _(generated)_ | Random per-developer values, used only by the dynamodb-admin container. App code and scripts send unsigned requests to LocalStack and carry no credential literals |
 | `DYNAMO_GEO_POINTS_TABLE` | backend | `geo_points` | DynamoDB table name |

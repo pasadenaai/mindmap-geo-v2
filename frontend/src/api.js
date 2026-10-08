@@ -6,15 +6,13 @@ function getToken() {
   try { return localStorage.getItem('geo_token') } catch { return null }
 }
 
-function authHeaders() {
-  const token = getToken()
-  return token
-    ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
-    : { 'Content-Type': 'application/json' }
-}
-
 async function request(method, path, body, auth = false) {
-  const headers = auth ? authHeaders() : (body ? { 'Content-Type': 'application/json' } : {})
+  // Always attach the access token when we have one: the API requires it for every write.
+  const token = getToken()
+  const headers = {
+    ...(body || auth ? { 'Content-Type': 'application/json' } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers,
