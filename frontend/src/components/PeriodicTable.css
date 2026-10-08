@@ -1,0 +1,986 @@
+/* ── Backdrop ─────────────────────────────────────────────────────────────── */
+.pt-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 16777274;
+  background: rgba(2, 10, 20, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: pt-fade-in 0.18s ease-out;
+}
+
+@keyframes pt-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Panel ────────────────────────────────────────────────────────────────── */
+.pt-panel {
+  width: min(95vw, 1380px);
+  flex-shrink: 0;                /* don't let flex parent shrink it */
+  background: rgba(4, 14, 28, 0.96);
+  border: 1px solid rgba(79, 195, 247, 0.18);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 60px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(79, 195, 247, 0.06) inset;
+  padding: 16px 18px 14px;
+  animation: pt-slide-in 0.18s ease-out;
+}
+
+@keyframes pt-slide-in {
+  from { opacity: 0; transform: scale(0.97) translateY(-8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.pt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.pt-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pt-atom-icon {
+  font-size: 1.1rem;
+  color: #4fc3f7;
+}
+
+.pt-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(160, 200, 235, 0.55);
+}
+
+.pt-close {
+  background: none;
+  border: none;
+  color: rgba(160, 200, 235, 0.35);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 5px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+.pt-close:hover {
+  color: #e0f0ff;
+  background: rgba(79, 195, 247, 0.1);
+}
+
+/* ── Tab bar ──────────────────────────────────────────────────────────────── */
+.pt-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(79, 195, 247, 0.12);
+  margin-top: 4px;
+}
+
+.pt-tab {
+  padding: 8px 18px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: rgba(160, 200, 235, 0.4);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.pt-tab:hover {
+  color: rgba(160, 200, 235, 0.75);
+}
+
+.pt-tab--active {
+  color: #4fc3f7;
+  border-bottom-color: #4fc3f7;
+}
+
+/* ── Element tabs ─────────────────────────────────────────────────────────── */
+.pt-tabs-sep {
+  width: 1px;
+  background: rgba(79, 195, 247, 0.15);
+  margin: 6px 6px 7px;
+  flex-shrink: 0;
+}
+
+.pt-tab-el-wrap {
+  display: flex;
+  align-items: center;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+}
+
+.pt-tab-el-wrap--active {
+  border-bottom-color: var(--el-color, #4fc3f7);
+}
+
+.pt-tab--el {
+  color: var(--el-color, rgba(160, 200, 235, 0.5));
+  padding-right: 4px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-bottom: none !important;  /* border handled by wrapper */
+}
+
+.pt-tab--el.pt-tab--active {
+  color: var(--el-color, #4fc3f7);
+  border-bottom-color: transparent !important;
+}
+
+.pt-tab-el-close {
+  background: none;
+  border: none;
+  color: rgba(160, 200, 235, 0.25);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0 6px 2px;
+  line-height: 1;
+  transition: color 0.12s;
+}
+
+.pt-tab-el-close:hover {
+  color: rgba(160, 200, 235, 0.75);
+}
+
+/* ── Filter / toolbar zone ────────────────────────────────────────────────── */
+.pt-toolbar {
+  min-height: 48px;
+  padding: 10px 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(79, 195, 247, 0.08);
+  margin-bottom: 14px;
+}
+
+/* ── Tab content wrapper ──────────────────────────────────────────────────── */
+.pt-tab-content {
+  /* Lock the panel to the periodic table's natural height so element profile
+     tabs don't cause the panel to shrink. Value = 7 main rows (58px+2px gap) +
+     f-block rows + labels + legend ≈ 640px. */
+  min-height: 640px;
+}
+
+/* ── Placeholder for unbuilt tabs ────────────────────────────────────────── */
+.pt-tab-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 260px;
+  color: rgba(160, 200, 235, 0.25);
+}
+
+.pt-tab-placeholder-icon {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+.pt-tab-placeholder-text {
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── Main grid ────────────────────────────────────────────────────────────── */
+.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 2px;
+}
+
+/* ── Element cell ─────────────────────────────────────────────────────────── */
+.pt-cell {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 4px 2px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: default;
+  min-height: 58px;
+  min-width: 0;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.pt-cell:not(.pt-cell--empty):not(.pt-cell--placeholder):hover {
+  background: var(--hover-bg, rgba(79, 195, 247, 0.18)) !important;
+}
+
+.pt-cell--empty {
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+.pt-cell--placeholder {
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+}
+
+.pt-cell--sm {
+  /* slightly smaller text for f-block rows */
+}
+
+/* ── Cell content ─────────────────────────────────────────────────────────── */
+.pt-num {
+  font-size: 0.62rem;
+  color: #ffffff;
+  line-height: 1;
+  align-self: flex-start;
+  margin-left: 2px;
+  font-family: monospace;
+}
+
+.pt-sym {
+  font-size: clamp(0.75rem, 1.4cqw, 1.05rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #ffffff !important;
+}
+
+.pt-name {
+  font-size: 0.46rem;
+  color: rgba(160, 200, 235, 0.45);
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  padding: 0 1px;
+}
+
+.pt-ph-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  font-family: monospace;
+  letter-spacing: 0.04em;
+}
+
+/* ── F-block section ──────────────────────────────────────────────────────── */
+.pt-fblock-sep {
+  height: 6px;
+  margin: 6px 0 2px;
+  border-top: 1px solid rgba(79, 195, 247, 0.07);
+}
+
+.pt-fblock-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  margin-top: 4px;
+  padding-left: 2px;
+  opacity: 0.8;
+}
+
+.pt-grid--fblock {
+  margin-bottom: 2px;
+}
+
+/* ── Legend ───────────────────────────────────────────────────────────────── */
+.pt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(79, 195, 247, 0.08);
+}
+
+.pt-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pt-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pt-legend-label {
+  font-size: 0.68rem;
+  color: rgba(160, 200, 235, 0.5);
+  white-space: nowrap;
+}
+
+/* ── Clickable cell ───────────────────────────────────────────────────────── */
+.pt-cell--clickable {
+  cursor: pointer;
+}
+
+/* ── Element profile wrapper ──────────────────────────────────────────────── */
+.pt-el-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 640px; /* match pt-tab-content so the panel never shrinks */
+}
+
+/* ── Scrollable subtab body ───────────────────────────────────────────────── */
+.pt-el-body {
+  flex: 1;
+  min-height: 0;      /* required: lets flex child scroll instead of overflow */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(79, 195, 247, 0.18) transparent;
+}
+
+/* ── Element subtab bar ───────────────────────────────────────────────────── */
+.pt-subtabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(79, 195, 247, 0.1);
+  padding: 12px 8px 0;
+}
+
+.pt-subtab {
+  padding: 7px 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(160, 200, 235, 0.4);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.pt-subtab:hover {
+  color: rgba(160, 200, 235, 0.75);
+}
+
+.pt-subtab--active {
+  color: var(--sub-color, #4fc3f7);
+  border-bottom-color: var(--sub-color, #4fc3f7);
+}
+
+/* ── Subtab placeholder ───────────────────────────────────────────────────── */
+.pt-subtab-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 240px;
+  padding: 32px 48px;
+  text-align: center;
+}
+
+.pt-subtab-ph-icon {
+  font-size: 2.2rem;
+  opacity: 0.35;
+}
+
+.pt-subtab-ph-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(160, 200, 235, 0.4);
+}
+
+.pt-subtab-ph-body {
+  font-size: 0.76rem;
+  color: rgba(160, 200, 235, 0.22);
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+/* ── Element profile ──────────────────────────────────────────────────────── */
+.pt-el-profile {
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+  padding: 24px 8px 20px;
+}
+
+/* Large element card */
+.pt-el-card-lg {
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pt-el-card-lg__num {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  font-family: monospace;
+  line-height: 1;
+}
+
+.pt-el-card-lg__sym {
+  font-size: 80px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.pt-el-card-lg__name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 8px;
+  letter-spacing: 0.02em;
+}
+
+/* Meta column */
+.pt-el-profile-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.pt-el-cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  align-self: flex-start;
+}
+
+.pt-el-cat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Property grid */
+.pt-el-props {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 24px;
+}
+
+.pt-el-prop {
+  display: contents;
+}
+
+.pt-el-prop-label {
+  font-size: 0.72rem;
+  color: rgba(160, 200, 235, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.pt-el-prop-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e0f0ff;
+  letter-spacing: 0.02em;
+}
+
+.pt-el-coming-soon {
+  font-size: 0.7rem;
+  color: rgba(160, 200, 235, 0.25);
+  font-style: italic;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Element content sections (Description, News, etc.) ──────────────────── */
+.pt-el-section {
+  padding: 0 8px 20px;
+  border-top: 1px solid rgba(79, 195, 247, 0.07);
+  margin-top: 4px;
+}
+
+.pt-el-section--first {
+  border-top: none;
+  padding-top: 20px;
+}
+
+.pt-el-section-hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0 10px;
+}
+
+.pt-el-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pt-el-section-badge {
+  font-size: 0.62rem;
+  color: rgba(160, 200, 235, 0.3);
+  font-style: italic;
+}
+
+.pt-el-section-count {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: rgba(160, 200, 235, 0.45);
+  background: rgba(79, 195, 247, 0.08);
+  border: 1px solid rgba(79, 195, 247, 0.12);
+  border-radius: 10px;
+  padding: 1px 7px;
+  line-height: 1.6;
+}
+
+/* ── Description ──────────────────────────────────────────────────────────── */
+.pt-el-desc-body {
+  font-size: 0.82rem;
+  color: rgba(160, 200, 235, 0.4);
+  line-height: 1.7;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── News list ────────────────────────────────────────────────────────────── */
+.pt-news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pt-news-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(79, 195, 247, 0.04);
+  border: 1px solid rgba(79, 195, 247, 0.07);
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+
+.pt-news-item:hover {
+  background: rgba(79, 195, 247, 0.08);
+}
+
+.pt-news-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.pt-news-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pt-news-title {
+  font-size: 0.81rem;
+  color: rgba(224, 240, 255, 0.8);
+  line-height: 1.4;
+}
+
+.pt-news-meta {
+  font-size: 0.68rem;
+  color: rgba(160, 200, 235, 0.35);
+  letter-spacing: 0.02em;
+}
+
+/* ── Materials list ───────────────────────────────────────────────────────── */
+.pt-materials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pt-material-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px 14px;
+  background: rgba(79, 195, 247, 0.04);
+  border: 1px solid rgba(79, 195, 247, 0.08);
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+
+.pt-material-card:hover {
+  background: rgba(79, 195, 247, 0.08);
+}
+
+.pt-material-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pt-material-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e0f0ff;
+  flex: 1;
+  min-width: 0;
+}
+
+.pt-material-cat-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pt-material-desc {
+  font-size: 0.76rem;
+  color: rgba(160, 200, 235, 0.5);
+  line-height: 1.5;
+}
+
+/* ── By Category: category list ──────────────────────────────────────────── */
+.pt-catlist {
+  padding: 20px 8px 24px;
+}
+
+.pt-catlist-hd {
+  font-size: 0.78rem;
+  color: rgba(160, 200, 235, 0.38);
+  margin-bottom: 16px;
+  letter-spacing: 0.03em;
+}
+
+.pt-catlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.pt-catlist-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px 16px;
+  background: rgba(79, 195, 247, 0.04);
+  border: 1px solid rgba(79, 195, 247, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.pt-catlist-tile:hover {
+  background: rgba(79, 195, 247, 0.09);
+  border-color: rgba(79, 195, 247, 0.22);
+}
+
+.pt-catlist-tile-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pt-catlist-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pt-catlist-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex: 1;
+  min-width: 0;
+}
+
+.pt-catlist-phase {
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(251, 146, 60, 0.15);
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  color: #fb923c;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.pt-catlist-desc {
+  font-size: 0.73rem;
+  color: rgba(160, 200, 235, 0.45);
+  line-height: 1.4;
+}
+
+.pt-catlist-syms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pt-catlist-sym {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  color: rgba(160, 200, 235, 0.5);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-family: monospace;
+}
+
+.pt-catlist-sym--more {
+  color: rgba(160, 200, 235, 0.3);
+  border-color: transparent;
+}
+
+/* ── By Category: category detail ────────────────────────────────────────── */
+.pt-catdetail {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 24px;
+}
+
+.pt-catdetail-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 8px 14px;
+  border-bottom: 1px solid rgba(79, 195, 247, 0.08);
+  flex-wrap: wrap;
+}
+
+.pt-catdetail-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(160, 200, 235, 0.4);
+  font-size: 0.76rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.12s, background 0.12s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pt-catdetail-back:hover {
+  color: #4fc3f7;
+  background: rgba(79, 195, 247, 0.08);
+}
+
+.pt-catdetail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.pt-catdetail-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pt-catdetail-subdesc {
+  font-size: 0.75rem;
+  color: rgba(160, 200, 235, 0.4);
+  flex: 1;
+  min-width: 180px;
+}
+
+.pt-catdetail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 10px;
+  padding: 16px 8px 0;
+}
+
+/* ── Element description cards ────────────────────────────────────────────── */
+.pt-el-desc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: rgba(79, 195, 247, 0.03);
+  border: 1px solid rgba(79, 195, 247, 0.09);
+  border-radius: 10px;
+  transition: background 0.12s;
+}
+
+.pt-el-desc-card:hover {
+  background: rgba(79, 195, 247, 0.07);
+}
+
+.pt-el-desc-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pt-el-desc-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pt-el-desc-mini-num {
+  font-size: 0.65rem;
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.pt-el-desc-mini-sym {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.pt-el-desc-mini-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #e0f0ff;
+}
+
+.pt-el-desc-open {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.12s, opacity 0.12s;
+  opacity: 0.7;
+}
+
+.pt-el-desc-open:hover {
+  opacity: 1;
+  background: rgba(79, 195, 247, 0.1);
+}
+
+.pt-el-desc-what {
+  font-size: 0.78rem;
+  color: rgba(224, 240, 255, 0.7);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.pt-el-desc-what--empty {
+  color: rgba(160, 200, 235, 0.3);
+  font-style: italic;
+}
+
+.pt-el-desc-uses {
+  font-size: 0.75rem;
+  color: rgba(160, 200, 235, 0.5);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.pt-el-desc-uses-label {
+  font-weight: 700;
+  color: rgba(160, 200, 235, 0.65);
+  letter-spacing: 0.02em;
+}
+
+/* ── Atom animation box ───────────────────────────────────────────────────── */
+.pt-el-anim-box {
+  width: 260px;
+  height: 260px;
+  flex-shrink: 0;
+  border: 1px solid rgba(79, 195, 247, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(2, 8, 18, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+}
+
+.pt-el-anim-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(160, 200, 235, 0.3);
+  text-align: center;
+  padding: 7px 0 0;
+  flex-shrink: 0;
+}
+
+.pt-el-anim-box > div {
+  flex: 1;
+  min-height: 0;
+}
+
+.pt-el-anim-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

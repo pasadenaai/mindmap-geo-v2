@@ -1,0 +1,187 @@
+/* ── Shell — anchored to bottom-left ────────────────────────────────────── */
+.legend {
+  position: absolute;
+  bottom: 0;
+  left: 28px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 200px;
+}
+
+/* ── Tab button (always visible) ────────────────────────────────────────── */
+.legend__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(4, 14, 32, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: rgba(160, 200, 235, 0.85);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+
+.legend__tab:hover {
+  background: rgba(79, 195, 247, 0.08);
+}
+
+.legend__tab-label {
+  flex: 1;
+}
+
+.legend__tab-chevron {
+  font-size: 14px;
+  line-height: 1;
+  color: #4fc3f7;
+  display: inline-block;
+  transform: rotate(90deg);
+  transition: transform 0.25s ease;
+}
+
+.legend__tab-chevron--open {
+  transform: rotate(-90deg);
+}
+
+/* ── Sliding panel ──────────────────────────────────────────────────────── */
+.legend__panel {
+  background: rgba(4, 14, 32, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(79, 195, 247, 0.14);
+  border-radius: 0 8px 0 0;
+  padding: 10px 14px 12px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.legend--open .legend__panel {
+  max-height: calc(100vh - 80px);
+  opacity: 1;
+  pointer-events: auto;
+  padding-top: 10px;
+  padding-bottom: 12px;
+  overflow-y: auto;
+}
+
+/* ── Groups ─────────────────────────────────────────────────────────────── */
+.legend__group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.legend__group + .legend__group {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(79, 195, 247, 0.1);
+}
+
+.legend__group-label {
+  display: block;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(160, 200, 235, 0.45);
+  margin-bottom: 4px;
+}
+
+/* ── List ───────────────────────────────────────────────────────────────── */
+.legend__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.legend__item--off .legend__label {
+  opacity: 0.38;
+}
+
+.legend__item--off .legend__swatch {
+  opacity: 0.25;
+}
+
+/* ── Row button ─────────────────────────────────────────────────────────── */
+.legend__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: 5px;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.legend__row:hover {
+  background: rgba(79, 195, 247, 0.07);
+}
+
+.legend__swatch {
+  font-size: 9px;
+  line-height: 1;
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.legend__label {
+  flex: 1;
+  text-align: left;
+  font-size: 0.8rem;
+  color: #c8dff5;
+  transition: opacity 0.2s;
+}
+
+/* ── Toggle pill ────────────────────────────────────────────────────────── */
+.legend__pill {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  border-radius: 8px;
+  background: rgba(79, 195, 247, 0.15);
+  border: 1px solid rgba(79, 195, 247, 0.25);
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.legend__pill--on {
+  background: rgba(42, 127, 255, 0.55);
+  border-color: rgba(42, 127, 255, 0.7);
+}
+
+.legend__pill-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(160, 200, 235, 0.5);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.legend__pill--on .legend__pill-thumb {
+  transform: translateX(12px);
+  background: #ffffff;
+}

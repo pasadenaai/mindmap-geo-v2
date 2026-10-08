@@ -1,0 +1,13 @@
+# Extends gitleaks' built-in ruleset. No allowlisted secrets: credential-like
+# literals must not exist in source (see ENV.md "Secrets handling").
+title = "mindmap-geo gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Vendored/generated paths only"
+paths = [
+  '''frontend/package-lock\.json''',
+  '''frontend/public/assets/.*\.svg''',
+]

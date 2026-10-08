@@ -1,0 +1,3507 @@
+[
+  {
+    "cca2": "AF",
+    "elements": [
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 2.1,
+        "estimated_reserves": 18900000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": 8,
+        "data_type": "resources",
+        "notes": "Herat province ilmenite deposits; figures are assessed resources \u2014 formal USGS reserve classification pending full survey"
+      },
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 3.6,
+        "estimated_reserves": 1000000,
+        "reserve_unit": "mt",
+        "world_rank": 10,
+        "data_type": "resources",
+        "notes": "Largely in Nuristan and Ghazni provinces; USGS 2010 aerial survey; formal reserves not yet classified due to conflict \u2014 higher estimates (up to 21 Mt) circulate but are speculative"
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 0.6,
+        "estimated_reserves": 5500000,
+        "reserve_unit": "mt",
+        "world_rank": 15,
+        "data_type": "resources",
+        "notes": "Mes Aynak deposit (Logar Province) \u2014 one of the world's largest undeveloped copper deposits; development stalled due to instability"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 1.0,
+        "estimated_reserves": 1800000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 9,
+        "data_type": "resources",
+        "notes": "Hajigak deposit (Bamyan Province) \u2014 estimated 1.8 billion MT; one of Asia's largest undeveloped iron ore deposits"
+      }
+    ]
+  },
+  {
+    "cca2": "AR",
+    "elements": [
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 12.9,
+        "estimated_reserves": 3600000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Lithium triangle (Puna region salares); reserves in brine"
+      },
+      {
+        "atomic_number": "5",
+        "symbol": "B",
+        "name": "Boron",
+        "world_share_pct": 1.3,
+        "estimated_reserves": 16000000,
+        "reserve_unit": "mt_b2o3",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Puna plateau borate deposits"
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 22000,
+        "reserve_unit": "mt",
+        "world_rank": 8,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "AU",
+    "elements": [
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 19.3,
+        "estimated_reserves": 11000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest gold reserves; major deposits in Western Australia"
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 16.2,
+        "estimated_reserves": 89000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 10.4,
+        "estimated_reserves": 93000000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Olympic Dam (SA) is one of the world's largest copper deposits"
+      },
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 21.0,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest nickel reserves; laterite and sulphide deposits (WA)"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 28.9,
+        "estimated_reserves": 52000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest iron ore reserves; Pilbara region (WA)"
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 26.5,
+        "estimated_reserves": 69000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest zinc reserves; McArthur River and Mount Isa"
+      },
+      {
+        "atomic_number": "82",
+        "symbol": "Pb",
+        "name": "Lead",
+        "world_share_pct": 41.1,
+        "estimated_reserves": 37000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest lead reserves; McArthur River and Mount Isa"
+      },
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 20.0,
+        "estimated_reserves": 6400000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Second largest bauxite reserves; Darling Range (WA) and Gove (NT)"
+      },
+      {
+        "atomic_number": "50",
+        "symbol": "Sn",
+        "name": "Tin",
+        "world_share_pct": 5.4,
+        "estimated_reserves": 260000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "40",
+        "symbol": "Zr",
+        "name": "Zirconium",
+        "world_share_pct": 45.0,
+        "estimated_reserves": 37000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest zircon reserves; mineral sands (WA, QLD)"
+      },
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 13.9,
+        "estimated_reserves": 250000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Major ilmenite and rutile deposits in mineral sands"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 18.1,
+        "estimated_reserves": 1500000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Largely associated with nickel sulphide deposits"
+      },
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 28.4,
+        "estimated_reserves": 1684100,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest uranium reserves; Olympic Dam alone is enormous"
+      },
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 28.2,
+        "estimated_reserves": 7900000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Greenbushes (WA) is world's largest hard-rock lithium mine"
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 15.6,
+        "estimated_reserves": 250000000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Groote Eylandt (NT); also significant deposits in WA"
+      },
+      {
+        "atomic_number": "57",
+        "symbol": "La",
+        "name": "Lanthanum",
+        "world_share_pct": 3.3,
+        "estimated_reserves": 4200000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Mount Weld (WA) is the world's richest REE deposit by grade. REO figure covers all rare earths combined"
+      },
+      {
+        "atomic_number": "60",
+        "symbol": "Nd",
+        "name": "Neodymium",
+        "world_share_pct": 3.3,
+        "estimated_reserves": 4200000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total; Mount Weld Nd is high grade"
+      },
+      {
+        "atomic_number": "39",
+        "symbol": "Y",
+        "name": "Yttrium",
+        "world_share_pct": 3.3,
+        "estimated_reserves": 4200000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Y grouped in REO total; significant in Olympic Dam and Mount Weld"
+      },
+      {
+        "atomic_number": "73",
+        "symbol": "Ta",
+        "name": "Tantalum",
+        "world_share_pct": 18.0,
+        "estimated_reserves": 65000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Wodgina (WA) is the world's largest hard-rock tantalum deposit; intermittently mined"
+      },
+      {
+        "atomic_number": "4",
+        "symbol": "Be",
+        "name": "Beryllium",
+        "world_share_pct": 3.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Significant beryllium in spodumene pegmatites associated with lithium deposits (WA)"
+      }
+    ]
+  },
+  {
+    "cca2": "BE",
+    "elements": [
+      {
+        "atomic_number": "34",
+        "symbol": "Se",
+        "name": "Selenium",
+        "world_share_pct": 20.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Belgium refines ~20% of world selenium at Umicore (Hoboken); byproduct of copper anode slimes from imported ores \u2014 refining hub, not mining nation"
+      },
+      {
+        "atomic_number": "52",
+        "symbol": "Te",
+        "name": "Tellurium",
+        "world_share_pct": 15.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Umicore refinery recovers Te from copper anode slimes; critical for CdTe solar panels"
+      }
+    ]
+  },
+  {
+    "cca2": "BO",
+    "elements": [
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 8.9,
+        "estimated_reserves": 2500000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Salar de Uyuni holds world's largest identified lithium resources (~23 Mt); proved reserves are smaller"
+      },
+      {
+        "atomic_number": "50",
+        "symbol": "Sn",
+        "name": "Tin",
+        "world_share_pct": 8.3,
+        "estimated_reserves": 400000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 22000,
+        "reserve_unit": "mt",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Historic Potos\u00ed silver mining region \u2014 once the world's largest silver producer"
+      },
+      {
+        "atomic_number": "51",
+        "symbol": "Sb",
+        "name": "Antimony",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 310000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "BR",
+    "elements": [
+      {
+        "atomic_number": "41",
+        "symbol": "Nb",
+        "name": "Niobium",
+        "world_share_pct": 98.0,
+        "estimated_reserves": 11000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Near-monopoly; Araxa (Minas Gerais) is the world's richest niobium deposit by far"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 18.9,
+        "estimated_reserves": 34000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Carajas (Par\u00e1) is the world's largest iron ore deposit"
+      },
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 16.0,
+        "estimated_reserves": 16000000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 16.9,
+        "estimated_reserves": 270000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Carajas region; second largest manganese reserves"
+      },
+      {
+        "atomic_number": "57",
+        "symbol": "La",
+        "name": "Lanthanum",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "REO figure covers all rare earth elements combined (La, Ce, Nd, Pr, Y etc.)"
+      },
+      {
+        "atomic_number": "59",
+        "symbol": "Pr",
+        "name": "Praseodymium",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "60",
+        "symbol": "Nd",
+        "name": "Neodymium",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "39",
+        "symbol": "Y",
+        "name": "Yttrium",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Y included in REO total; Brazilian monazite sands are rich in yttrium"
+      },
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 8.1,
+        "estimated_reserves": 2600000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Trombetas (Par\u00e1) bauxite belt"
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 21.8,
+        "estimated_reserves": 72000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "World's second-largest graphite reserves (amorphous and crystalline flake); Minas Gerais and Bahia"
+      },
+      {
+        "atomic_number": "73",
+        "symbol": "Ta",
+        "name": "Tantalum",
+        "world_share_pct": 12.0,
+        "estimated_reserves": 14000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Mibra mine (Minas Gerais), Araxa area; associated with Nb-bearing carbonatite"
+      },
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 4.6,
+        "estimated_reserves": 276100,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 4.2,
+        "estimated_reserves": 2400,
+        "reserve_unit": "mt",
+        "world_rank": 8,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "BY",
+    "elements": [
+      {
+        "atomic_number": "19",
+        "symbol": "K",
+        "name": "Potassium",
+        "world_share_pct": 20.3,
+        "estimated_reserves": 750000000,
+        "reserve_unit": "mt_k2o",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Starobin potash deposit; Belaruskali is one of world's largest potash producers"
+      }
+    ]
+  },
+  {
+    "cca2": "CA",
+    "elements": [
+      {
+        "atomic_number": "19",
+        "symbol": "K",
+        "name": "Potassium",
+        "world_share_pct": 29.7,
+        "estimated_reserves": 1100000000,
+        "reserve_unit": "mt_k2o",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest potash reserves; Saskatchewan Williston Basin"
+      },
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 9.4,
+        "estimated_reserves": 564900,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Athabasca Basin (Saskatchewan) hosts world's highest-grade uranium ores"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 5.1,
+        "estimated_reserves": 2900,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 3.6,
+        "estimated_reserves": 3600000,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Sudbury basin is the world's second-largest nickel-copper sulphide deposit"
+      },
+      {
+        "atomic_number": "55",
+        "symbol": "Cs",
+        "name": "Caesium",
+        "world_share_pct": 67.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Tanco mine (Manitoba) holds the world's richest caesium deposit (pollucite ore); estimated 66%+ of world total"
+      },
+      {
+        "atomic_number": "49",
+        "symbol": "In",
+        "name": "Indium",
+        "world_share_pct": 6.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 4,
+        "data_type": "production",
+        "notes": "Byproduct of zinc smelting"
+      },
+      {
+        "atomic_number": "41",
+        "symbol": "Nb",
+        "name": "Niobium",
+        "world_share_pct": 2.0,
+        "estimated_reserves": 190000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Niobec mine (Quebec); only significant source outside Brazil"
+      },
+      {
+        "atomic_number": "46",
+        "symbol": "Pd",
+        "name": "Palladium",
+        "world_share_pct": 6.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "Sudbury/Thompson PGM sulphide deposits; Canada is world's third-largest Pd producer"
+      },
+      {
+        "atomic_number": "78",
+        "symbol": "Pt",
+        "name": "Platinum",
+        "world_share_pct": 5.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "Sudbury nickel-copper deposits contain significant PGMs"
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 22000,
+        "reserve_unit": "mt",
+        "world_rank": 9,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 2.5,
+        "estimated_reserves": 6400000,
+        "reserve_unit": "mt",
+        "world_rank": 9,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "82",
+        "symbol": "Pb",
+        "name": "Lead",
+        "world_share_pct": 1.8,
+        "estimated_reserves": 1600000,
+        "reserve_unit": "mt",
+        "world_rank": 8,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "CD",
+    "elements": [
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 42.2,
+        "estimated_reserves": 3500000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's dominant cobalt position; Katanga copper belt. Critical for EV batteries"
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 3.5,
+        "estimated_reserves": 31000000,
+        "reserve_unit": "mt",
+        "world_rank": 8,
+        "data_type": "reserves",
+        "notes": "Katanga copper belt (shared with Zambia)"
+      },
+      {
+        "atomic_number": "73",
+        "symbol": "Ta",
+        "name": "Tantalum",
+        "world_share_pct": 30.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Artisanal coltan (columbite-tantalite) mining; DRC and Rwanda together dominate global production"
+      }
+    ]
+  },
+  {
+    "cca2": "CL",
+    "elements": [
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 22.5,
+        "estimated_reserves": 200000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest copper reserves by far; Atacama Desert porphyry belt"
+      },
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 39.3,
+        "estimated_reserves": 11000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest lithium reserves; Atacama salt flat brine"
+      },
+      {
+        "atomic_number": "42",
+        "symbol": "Mo",
+        "name": "Molybdenum",
+        "world_share_pct": 17.5,
+        "estimated_reserves": 2800000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Byproduct of porphyry copper mining"
+      },
+      {
+        "atomic_number": "75",
+        "symbol": "Re",
+        "name": "Rhenium",
+        "world_share_pct": 52.0,
+        "estimated_reserves": 1300,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest rhenium reserves; byproduct of copper/molybdenum smelting"
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 14.0,
+        "estimated_reserves": 77000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 2300,
+        "reserve_unit": "mt",
+        "world_rank": 9,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "53",
+        "symbol": "I",
+        "name": "Iodine",
+        "world_share_pct": 62.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Chile produces ~62% of world's iodine from caliche nitrate deposits in the Atacama"
+      },
+      {
+        "atomic_number": "34",
+        "symbol": "Se",
+        "name": "Selenium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "Byproduct of copper refining; Chile's massive copper industry makes it a major Se source"
+      }
+    ]
+  },
+  {
+    "cca2": "CN",
+    "elements": [
+      {
+        "atomic_number": "57",
+        "symbol": "La",
+        "name": "Lanthanum",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest rare earth reserves. Bayan Obo (Inner Mongolia) is world's largest single REE deposit. REO figure covers all REEs combined"
+      },
+      {
+        "atomic_number": "58",
+        "symbol": "Ce",
+        "name": "Cerium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "59",
+        "symbol": "Pr",
+        "name": "Praseodymium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Critical for NdPr oxide in permanent magnets; part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "60",
+        "symbol": "Nd",
+        "name": "Neodymium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Critical for NdFeB permanent magnets in EVs and wind turbines"
+      },
+      {
+        "atomic_number": "62",
+        "symbol": "Sm",
+        "name": "Samarium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "SmCo magnets used in high-temperature applications; part of REO total"
+      },
+      {
+        "atomic_number": "64",
+        "symbol": "Gd",
+        "name": "Gadolinium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Used in MRI contrast agents and nuclear reactor control rods; part of REO total"
+      },
+      {
+        "atomic_number": "65",
+        "symbol": "Tb",
+        "name": "Terbium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Critical heavy REE for high-temperature NdFeB magnets and green phosphors; ionic clay deposits in south China"
+      },
+      {
+        "atomic_number": "66",
+        "symbol": "Dy",
+        "name": "Dysprosium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Critical heavy REE for high-temp magnets; ionic clay deposits in southern China"
+      },
+      {
+        "atomic_number": "39",
+        "symbol": "Y",
+        "name": "Yttrium",
+        "world_share_pct": 34.1,
+        "estimated_reserves": 44000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Y grouped with REEs; included in REO total"
+      },
+      {
+        "atomic_number": "74",
+        "symbol": "W",
+        "name": "Tungsten",
+        "world_share_pct": 79.0,
+        "estimated_reserves": 3000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Near-monopoly; export controls imposed 2023 as strategic leverage"
+      },
+      {
+        "atomic_number": "31",
+        "symbol": "Ga",
+        "name": "Gallium",
+        "world_share_pct": 83.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Byproduct of bauxite/zinc smelting. Export restrictions imposed Aug 2023"
+      },
+      {
+        "atomic_number": "32",
+        "symbol": "Ge",
+        "name": "Germanium",
+        "world_share_pct": 80.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Byproduct of zinc smelting (Yunnan). Export restrictions imposed Aug 2023"
+      },
+      {
+        "atomic_number": "51",
+        "symbol": "Sb",
+        "name": "Antimony",
+        "world_share_pct": 50.0,
+        "estimated_reserves": 640000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Export controls imposed Sept 2024 on antimony and related products"
+      },
+      {
+        "atomic_number": "83",
+        "symbol": "Bi",
+        "name": "Bismuth",
+        "world_share_pct": 75.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Byproduct of lead and copper smelting"
+      },
+      {
+        "atomic_number": "80",
+        "symbol": "Hg",
+        "name": "Mercury",
+        "world_share_pct": 70.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "World's dominant mercury producer; Guizhou and Shaanxi cinnabar deposits. Global mercury use under international pressure via Minamata Convention"
+      },
+      {
+        "atomic_number": "42",
+        "symbol": "Mo",
+        "name": "Molybdenum",
+        "world_share_pct": 51.9,
+        "estimated_reserves": 8300000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 17.5,
+        "estimated_reserves": 280000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "23",
+        "symbol": "V",
+        "name": "Vanadium",
+        "world_share_pct": 58.7,
+        "estimated_reserves": 37000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Panzhihua (Sichuan) is world's largest vanadium-titanium-magnetite deposit"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 11.1,
+        "estimated_reserves": 20000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 3.1,
+        "estimated_reserves": 1000000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 4.5,
+        "estimated_reserves": 3200000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Phosphate rock reserves"
+      },
+      {
+        "atomic_number": "9",
+        "symbol": "F",
+        "name": "Fluorine",
+        "world_share_pct": 44.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "As fluorspar/fluorite; world's leading producer"
+      },
+      {
+        "atomic_number": "56",
+        "symbol": "Ba",
+        "name": "Barium",
+        "world_share_pct": 40.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "As barite; world's leading producer"
+      },
+      {
+        "atomic_number": "38",
+        "symbol": "Sr",
+        "name": "Strontium",
+        "world_share_pct": 50.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "As celestite (SrSO\u2084)"
+      },
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 12.1,
+        "estimated_reserves": 3400000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "50",
+        "symbol": "Sn",
+        "name": "Tin",
+        "world_share_pct": 22.9,
+        "estimated_reserves": 1100000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Yunnan province"
+      },
+      {
+        "atomic_number": "21",
+        "symbol": "Sc",
+        "name": "Scandium",
+        "world_share_pct": 40.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Byproduct of REE, titanium, and uranium processing"
+      },
+      {
+        "atomic_number": "49",
+        "symbol": "In",
+        "name": "Indium",
+        "world_share_pct": 58.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Byproduct of zinc smelting; critical for ITO coatings on touchscreens"
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 16.5,
+        "estimated_reserves": 43000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "82",
+        "symbol": "Pb",
+        "name": "Lead",
+        "world_share_pct": 26.7,
+        "estimated_reserves": 24000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 7.5,
+        "estimated_reserves": 41000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 3.5,
+        "estimated_reserves": 2000,
+        "reserve_unit": "mt",
+        "world_rank": 10,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 15.8,
+        "estimated_reserves": 52000000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "#3 by reserves but #1 by production (~65% of global output); production from flake and amorphous graphite deposits in Heilongjiang, Inner Mongolia, Shandong"
+      },
+      {
+        "atomic_number": "34",
+        "symbol": "Se",
+        "name": "Selenium",
+        "world_share_pct": 25.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Byproduct of copper and lead-zinc smelting; world's largest Se producer"
+      }
+    ]
+  },
+  {
+    "cca2": "CU",
+    "elements": [
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 5.5,
+        "estimated_reserves": 5500000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Moa Bay laterite deposit (Sherritt International, Canada); Cuba has world's fourth-largest nickel reserves"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 6.0,
+        "estimated_reserves": 500000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Associated with laterite nickel deposits at Moa Bay; third-largest cobalt reserves"
+      }
+    ]
+  },
+  {
+    "cca2": "DE",
+    "elements": [
+      {
+        "atomic_number": "19",
+        "symbol": "K",
+        "name": "Potassium",
+        "world_share_pct": 4.3,
+        "estimated_reserves": 160000000,
+        "reserve_unit": "mt_k2o",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Werra-Fulda and Hanover potash districts; K+S is one of world's largest potash producers"
+      },
+      {
+        "atomic_number": "32",
+        "symbol": "Ge",
+        "name": "Germanium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "Byproduct of zinc smelting and coal combustion ash processing; Germany is world's third-largest Ge producer"
+      }
+    ]
+  },
+  {
+    "cca2": "DZ",
+    "elements": [
+      {
+        "atomic_number": "2",
+        "symbol": "He",
+        "name": "Helium",
+        "world_share_pct": 7.5,
+        "estimated_reserves": 8,
+        "reserve_unit": "bcm",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Helium extracted from natural gas fields; In Salah gas project"
+      },
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 3.1,
+        "estimated_reserves": 2200000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Djebel Onk phosphate deposit"
+      }
+    ]
+  },
+  {
+    "cca2": "EG",
+    "elements": [
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 3.9,
+        "estimated_reserves": 2800000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Abu Tartur phosphate deposit in Western Desert"
+      }
+    ]
+  },
+  {
+    "cca2": "ES",
+    "elements": [
+      {
+        "atomic_number": "38",
+        "symbol": "Sr",
+        "name": "Strontium",
+        "world_share_pct": 20.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Celestite (SrSO\u2084) deposits; Spain and China dominate world production"
+      },
+      {
+        "atomic_number": "80",
+        "symbol": "Hg",
+        "name": "Mercury",
+        "world_share_pct": 2.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Almad\u00e9n (Ciudad Real) was the world's largest mercury mine for centuries \u2014 now depleted and closed; UNESCO World Heritage Site"
+      }
+    ]
+  },
+  {
+    "cca2": "ET",
+    "elements": [
+      {
+        "atomic_number": "19",
+        "symbol": "K",
+        "name": "Potassium",
+        "world_share_pct": 3.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "resources",
+        "notes": "Danakhil Depression (Dallol area, Tigray) has one of the world's largest potash deposits; largely undeveloped due to extreme conditions (hottest place on Earth)"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 0.5,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Lega Dembi mine; artisanal small-scale mining widespread"
+      }
+    ]
+  },
+  {
+    "cca2": "FI",
+    "elements": [
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 1.9,
+        "estimated_reserves": 11000000,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Kemi chromite mine (Outokumpu/Tornio); Europe's only significant chromite mine in operation"
+      },
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 0.5,
+        "estimated_reserves": 500000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Terrafame mine (Sotkamo); significant Finnish nickel output"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 0.4,
+        "estimated_reserves": 35000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Byproduct of nickel mining at Terrafame"
+      },
+      {
+        "atomic_number": "23",
+        "symbol": "V",
+        "name": "Vanadium",
+        "world_share_pct": 0.5,
+        "estimated_reserves": 300000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Otanm\u00e4ki vanadiferous titaniferous magnetite deposit"
+      }
+    ]
+  },
+  {
+    "cca2": "GA",
+    "elements": [
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 13.75,
+        "estimated_reserves": 220000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Moanda mine; Gabon is Africa's largest manganese exporter"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 1.0,
+        "estimated_reserves": 1900000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Belinga deposit; one of Africa's largest undeveloped iron ore bodies"
+      }
+    ]
+  },
+  {
+    "cca2": "GH",
+    "elements": [
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 2.5,
+        "estimated_reserves": 1400,
+        "reserve_unit": "mt",
+        "world_rank": 12,
+        "data_type": "reserves",
+        "notes": "Africa's largest gold producer; Obuasi (AngloGold) and Ahafo (Newmont) mines"
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 0.8,
+        "estimated_reserves": 13000000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Nsuta manganese mine; one of Africa's largest manganese deposits"
+      }
+    ]
+  },
+  {
+    "cca2": "GN",
+    "elements": [
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 23.1,
+        "estimated_reserves": 7400000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest bauxite reserves; Bok\u00e9 region (Sangar\u00e9di). Largely unexploited due to infrastructure constraints"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 3.0,
+        "estimated_reserves": 5000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Simandou (South) is possibly the world's largest untapped high-grade iron ore deposit; long delayed due to infrastructure and political challenges"
+      }
+    ]
+  },
+  {
+    "cca2": "ID",
+    "elements": [
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 21.0,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest (or joint-largest) nickel reserves; laterite deposits on Sulawesi, Maluku"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 7.2,
+        "estimated_reserves": 600000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Associated with laterite nickel deposits"
+      },
+      {
+        "atomic_number": "50",
+        "symbol": "Sn",
+        "name": "Tin",
+        "world_share_pct": 16.7,
+        "estimated_reserves": 800000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Bangka-Belitung Islands; Indonesia is world's largest tin exporter"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 4.6,
+        "estimated_reserves": 2600,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Grasberg (Papua) is the world's largest gold mine by reserves"
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 2.7,
+        "estimated_reserves": 24000000,
+        "reserve_unit": "mt",
+        "world_rank": 9,
+        "data_type": "reserves",
+        "notes": "Grasberg porphyry copper-gold deposit"
+      },
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 3.75,
+        "estimated_reserves": 1200000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "IL",
+    "elements": [
+      {
+        "atomic_number": "35",
+        "symbol": "Br",
+        "name": "Bromine",
+        "world_share_pct": 36.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Dead Sea Works (ICL Group) is the world's largest bromine producer; the Dead Sea is the world's most bromine-rich natural body of water"
+      },
+      {
+        "atomic_number": "19",
+        "symbol": "K",
+        "name": "Potassium",
+        "world_share_pct": 1.1,
+        "estimated_reserves": 40000000,
+        "reserve_unit": "mt_k2o",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Dead Sea potash from ICL Potash (Sdom works)"
+      },
+      {
+        "atomic_number": "12",
+        "symbol": "Mg",
+        "name": "Magnesium",
+        "world_share_pct": 5.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "production",
+        "notes": "Dead Sea Magnesium Ltd extracts Mg metal from Dead Sea brine; one of few commercial magnesium-from-brine operations"
+      }
+    ]
+  },
+  {
+    "cca2": "IN",
+    "elements": [
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 41.7,
+        "estimated_reserves": 750000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest TiO\u2082 reserves; ilmenite and rutile mineral sands on SW coast (Kerala, Tamil Nadu)"
+      },
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 17.5,
+        "estimated_reserves": 100000000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Sukinda valley (Odisha) is the largest chromite deposit outside southern Africa"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 3.8,
+        "estimated_reserves": 6900000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 4.2,
+        "estimated_reserves": 67000000,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Odisha and Madhya Pradesh"
+      },
+      {
+        "atomic_number": "40",
+        "symbol": "Zr",
+        "name": "Zirconium",
+        "world_share_pct": 10.0,
+        "estimated_reserves": 8300000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Zircon in mineral sands"
+      },
+      {
+        "atomic_number": "90",
+        "symbol": "Th",
+        "name": "Thorium",
+        "world_share_pct": 25.0,
+        "estimated_reserves": 846000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Monazite sands (Kerala coast); India has the world's second-largest thorium reserves \u2014 fuel for the planned three-stage nuclear programme"
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 2.4,
+        "estimated_reserves": 8000000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Jharkhand, Odisha, and Rajasthan vein graphite; India is a significant flake graphite producer"
+      }
+    ]
+  },
+  {
+    "cca2": "IR",
+    "elements": [
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 2.9,
+        "estimated_reserves": 26000000,
+        "reserve_unit": "mt",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Sarcheshmeh (Kerman) is one of the world's five largest porphyry copper deposits"
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 8.5,
+        "estimated_reserves": 22000000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Angouran mine (Zanjan) was at one point the world's largest zinc mine by reserve grade"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 0.8,
+        "estimated_reserves": 1500000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Gol-e-Gohar and Chadormalu iron ore complexes; significant domestic steel industry"
+      },
+      {
+        "atomic_number": "82",
+        "symbol": "Pb",
+        "name": "Lead",
+        "world_share_pct": 2.0,
+        "estimated_reserves": 1800000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Often co-located with zinc deposits"
+      },
+      {
+        "atomic_number": "38",
+        "symbol": "Sr",
+        "name": "Strontium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 4,
+        "data_type": "production",
+        "notes": "Celestite deposits in Isfahan and Fars provinces"
+      }
+    ]
+  },
+  {
+    "cca2": "JM",
+    "elements": [
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 3.1,
+        "estimated_reserves": 1000000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Jamaica was a top-5 bauxite producer through the 20th century; Alcoa and Noranda (now Hydro) operated large mines"
+      }
+    ]
+  },
+  {
+    "cca2": "JO",
+    "elements": [
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 1.4,
+        "estimated_reserves": 1000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Jordan Phosphate Mines; significant exporter to Europe and Asia"
+      },
+      {
+        "atomic_number": "19",
+        "symbol": "K",
+        "name": "Potassium",
+        "world_share_pct": 0.95,
+        "estimated_reserves": 35000000,
+        "reserve_unit": "mt_k2o",
+        "world_rank": 8,
+        "data_type": "reserves",
+        "notes": "Dead Sea potash from Arab Potash Company"
+      },
+      {
+        "atomic_number": "35",
+        "symbol": "Br",
+        "name": "Bromine",
+        "world_share_pct": 14.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Jordanian side of the Dead Sea; Arab Potash Company extracts bromine alongside potash"
+      }
+    ]
+  },
+  {
+    "cca2": "JP",
+    "elements": [
+      {
+        "atomic_number": "53",
+        "symbol": "I",
+        "name": "Iodine",
+        "world_share_pct": 31.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Minami Kanto natural gas field brine (Chiba); Japan is world's second iodine producer after Chile"
+      },
+      {
+        "atomic_number": "49",
+        "symbol": "In",
+        "name": "Indium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Byproduct of zinc smelting; Japan recycles significant quantities from ITO scrap"
+      }
+    ]
+  },
+  {
+    "cca2": "KG",
+    "elements": [
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 0.7,
+        "estimated_reserves": 400,
+        "reserve_unit": "mt",
+        "world_rank": 14,
+        "data_type": "reserves",
+        "notes": "Kumtor mine (Centerra Gold) \u2014 one of the world's ten largest gold mines by output; high-altitude glacial deposit"
+      },
+      {
+        "atomic_number": "80",
+        "symbol": "Hg",
+        "name": "Mercury",
+        "world_share_pct": 20.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Haidarkan antimony-mercury deposit; Kyrgyzstan is world's second-largest mercury producer after China"
+      },
+      {
+        "atomic_number": "51",
+        "symbol": "Sb",
+        "name": "Antimony",
+        "world_share_pct": 5.0,
+        "estimated_reserves": 120000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Kadamjay mine; significant co-production with mercury at Haidarkan"
+      }
+    ]
+  },
+  {
+    "cca2": "KR",
+    "elements": [
+      {
+        "atomic_number": "49",
+        "symbol": "In",
+        "name": "Indium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "Byproduct of zinc smelting; South Korea's refining sector recovers significant indium for ITO production"
+      }
+    ]
+  },
+  {
+    "cca2": "KZ",
+    "elements": [
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 40.4,
+        "estimated_reserves": 230000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest chromite reserves; Donskoy ore deposit (Khrom Tobe area)"
+      },
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 15.1,
+        "estimated_reserves": 906800,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Kazakhstan is the world's largest uranium producer (~43% of annual output)"
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 13.5,
+        "estimated_reserves": 35000000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 2.0,
+        "estimated_reserves": 18000000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "MA",
+    "elements": [
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 70.4,
+        "estimated_reserves": 50000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest phosphate rock reserves by an overwhelming margin \u2014 Morocco and Western Sahara combined hold ~70% of known global supply. OCP Group is world's largest phosphate exporter. Critical for global food security"
+      }
+    ]
+  },
+  {
+    "cca2": "MG",
+    "elements": [
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 1.5,
+        "estimated_reserves": 1500000,
+        "reserve_unit": "mt",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Ambatovy laterite nickel-cobalt deposit (Sherritt/Sumitomo)"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 1.6,
+        "estimated_reserves": 130000,
+        "reserve_unit": "mt",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Associated with Ambatovy nickel laterites"
+      },
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 0.9,
+        "estimated_reserves": 5000000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Bema and Ranomena chromite deposits"
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 0.6,
+        "estimated_reserves": 2000000,
+        "reserve_unit": "mt",
+        "world_rank": 9,
+        "data_type": "reserves",
+        "notes": "Despite small reserves, Madagascar produces ~70,000 MT/yr of high-quality graphite (Loharano, Fotadrevo areas)"
+      },
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 2.0,
+        "estimated_reserves": 35000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Toliara mineral sands project; significant ilmenite and rutile"
+      }
+    ]
+  },
+  {
+    "cca2": "ML",
+    "elements": [
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 1.2,
+        "estimated_reserves": 700,
+        "reserve_unit": "mt",
+        "world_rank": 15,
+        "data_type": "reserves",
+        "notes": "Loulo-Gounkoto (Barrick) and Syama (Resolute) gold mines; Mali is West Africa's second-largest gold producer"
+      }
+    ]
+  },
+  {
+    "cca2": "MM",
+    "elements": [
+      {
+        "atomic_number": "50",
+        "symbol": "Sn",
+        "name": "Tin",
+        "world_share_pct": 14.6,
+        "estimated_reserves": 700000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Wa State; Myanmar has rapidly become world's 3rd-largest tin producer"
+      },
+      {
+        "atomic_number": "74",
+        "symbol": "W",
+        "name": "Tungsten",
+        "world_share_pct": 3.0,
+        "estimated_reserves": 120000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "MN",
+    "elements": [
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 1.9,
+        "estimated_reserves": 16700000,
+        "reserve_unit": "mt",
+        "world_rank": 10,
+        "data_type": "reserves",
+        "notes": "Oyu Tolgoi (Rio Tinto/Turquoise Hill) is one of the world's largest undeveloped copper-gold deposits; underground expansion ongoing"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 1.6,
+        "estimated_reserves": 900,
+        "reserve_unit": "mt",
+        "world_rank": 11,
+        "data_type": "reserves",
+        "notes": "Associated with Oyu Tolgoi copper-gold porphyry"
+      },
+      {
+        "atomic_number": "9",
+        "symbol": "F",
+        "name": "Fluorine",
+        "world_share_pct": 12.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "As fluorspar (CaF\u2082); Mongolia is world's second-largest fluorspar producer after China; Bor Undur deposit"
+      },
+      {
+        "atomic_number": "42",
+        "symbol": "Mo",
+        "name": "Molybdenum",
+        "world_share_pct": 1.0,
+        "estimated_reserves": 65000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Associated with porphyry copper at Oyu Tolgoi"
+      }
+    ]
+  },
+  {
+    "cca2": "MR",
+    "elements": [
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 0.8,
+        "estimated_reserves": 1500000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "SNIM operates Kediet ej Jill (world's largest pure iron ore mountain) and Guelb el Aouj; iron ore is Mauritania's largest export"
+      }
+    ]
+  },
+  {
+    "cca2": "MX",
+    "elements": [
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 6.7,
+        "estimated_reserves": 37000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Historically the world's largest silver producer for centuries (colonial era)"
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 5.9,
+        "estimated_reserves": 53000000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "82",
+        "symbol": "Pb",
+        "name": "Lead",
+        "world_share_pct": 6.1,
+        "estimated_reserves": 5500000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 6.9,
+        "estimated_reserves": 18000000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "9",
+        "symbol": "F",
+        "name": "Fluorine",
+        "world_share_pct": 9.5,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "As fluorspar; Mexico is world's second-largest fluorspar producer"
+      },
+      {
+        "atomic_number": "38",
+        "symbol": "Sr",
+        "name": "Strontium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "As celestite"
+      },
+      {
+        "atomic_number": "80",
+        "symbol": "Hg",
+        "name": "Mercury",
+        "world_share_pct": 3.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "Huitzuco mine (Guerrero); artisanal small-scale gold mining also generates mercury use/emission"
+      }
+    ]
+  },
+  {
+    "cca2": "MZ",
+    "elements": [
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 7.6,
+        "estimated_reserves": 25000000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Balama (Syrah Resources) is the world's largest single graphite deposit; Montepuez area. Critical for lithium-ion battery anodes"
+      },
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 2.8,
+        "estimated_reserves": 50000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Kenmare Resources Moma mine; significant ilmenite production"
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 1.0,
+        "estimated_reserves": 16000000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Balama West manganese deposit"
+      }
+    ]
+  },
+  {
+    "cca2": "NA",
+    "elements": [
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 7.8,
+        "estimated_reserves": 470100,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "R\u00f6ssing and Husab mines; major uranium exporter"
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 2.0,
+        "estimated_reserves": 5000000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Skorpion mine"
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 1.5,
+        "estimated_reserves": 8000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "NE",
+    "elements": [
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 5.2,
+        "estimated_reserves": 311100,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Arlit and Akokan mines; operated by Orano (France). Niger supplies ~5% of EU uranium"
+      }
+    ]
+  },
+  {
+    "cca2": "NO",
+    "elements": [
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 10.0,
+        "estimated_reserves": 180000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Titania A/S (Tellnes); Norway exports rutile and ilmenite concentrate"
+      },
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 0.5,
+        "estimated_reserves": 500000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "12",
+        "symbol": "Mg",
+        "name": "Magnesium",
+        "world_share_pct": 10.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Magnesium metal from seawater; one of world's largest Mg producers"
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 1.5,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "production",
+        "notes": "Skaland Graphite mine (Senja island); oldest continuously operating graphite mine in the world"
+      }
+    ]
+  },
+  {
+    "cca2": "PE",
+    "elements": [
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 17.8,
+        "estimated_reserves": 98000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest silver reserves (just behind Poland); Antamina and many poly-metallic deposits"
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 13.5,
+        "estimated_reserves": 120000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "World's second-largest copper reserves; Quellaveco, Antamina, Las Bambas"
+      },
+      {
+        "atomic_number": "30",
+        "symbol": "Zn",
+        "name": "Zinc",
+        "world_share_pct": 10.0,
+        "estimated_reserves": 26000000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "82",
+        "symbol": "Pb",
+        "name": "Lead",
+        "world_share_pct": 8.4,
+        "estimated_reserves": 7600000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 4.7,
+        "estimated_reserves": 2700,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "52",
+        "symbol": "Te",
+        "name": "Tellurium",
+        "world_share_pct": 15.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Byproduct of copper refining; tellurium critical for CdTe solar panels"
+      },
+      {
+        "atomic_number": "83",
+        "symbol": "Bi",
+        "name": "Bismuth",
+        "world_share_pct": 20.0,
+        "estimated_reserves": 12500,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Cerro de Pasco polymetallic deposit; second-largest bismuth reserves after China"
+      },
+      {
+        "atomic_number": "49",
+        "symbol": "In",
+        "name": "Indium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 3,
+        "data_type": "production",
+        "notes": "Byproduct of zinc smelting at Cajamarquilla refinery"
+      },
+      {
+        "atomic_number": "34",
+        "symbol": "Se",
+        "name": "Selenium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 4,
+        "data_type": "production",
+        "notes": "Byproduct of copper refining at Ilo smelter"
+      }
+    ]
+  },
+  {
+    "cca2": "PH",
+    "elements": [
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 4.8,
+        "estimated_reserves": 4800000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Laterite deposits on Palawan, Surigao; significant export earner"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 3.1,
+        "estimated_reserves": 260000,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Associated with nickel laterites"
+      },
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 1.5,
+        "estimated_reserves": 8000000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "PL",
+    "elements": [
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 18.2,
+        "estimated_reserves": 100000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest silver reserves; KGHM Lubin-Polkowice copper-silver belt in Lower Silesia"
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 2.9,
+        "estimated_reserves": 26000000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "KGHM Polska Mied\u017a; Lower Silesian copper belt"
+      },
+      {
+        "atomic_number": "75",
+        "symbol": "Re",
+        "name": "Rhenium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": 200,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Byproduct of copper smelting at KGHM"
+      }
+    ]
+  },
+  {
+    "cca2": "QA",
+    "elements": [
+      {
+        "atomic_number": "2",
+        "symbol": "He",
+        "name": "Helium",
+        "world_share_pct": 7.5,
+        "estimated_reserves": 10,
+        "reserve_unit": "bcm",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "North Field (shared with Iran's South Pars) \u2014 one of world's largest natural gas fields; helium extracted as byproduct"
+      }
+    ]
+  },
+  {
+    "cca2": "RU",
+    "elements": [
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 19.3,
+        "estimated_reserves": 11000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Joint world's largest (with Australia); Siberia and Far East deposits"
+      },
+      {
+        "atomic_number": "47",
+        "symbol": "Ag",
+        "name": "Silver",
+        "world_share_pct": 10.4,
+        "estimated_reserves": 57000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 7.6,
+        "estimated_reserves": 7600000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Norilsk (world's largest nickel smelting complex) and Kola Peninsula"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 3.0,
+        "estimated_reserves": 250000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Byproduct of nickel and copper at Norilsk"
+      },
+      {
+        "atomic_number": "46",
+        "symbol": "Pd",
+        "name": "Palladium",
+        "world_share_pct": 40.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "World's largest palladium producer (~40% of global supply); Norilsk Nickel. Pd critical for catalytic converters"
+      },
+      {
+        "atomic_number": "78",
+        "symbol": "Pt",
+        "name": "Platinum",
+        "world_share_pct": 12.0,
+        "estimated_reserves": 3900,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Second-largest platinum reserves; Norilsk PGM deposits"
+      },
+      {
+        "atomic_number": "45",
+        "symbol": "Rh",
+        "name": "Rhodium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Byproduct of PGM processing at Norilsk"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 13.9,
+        "estimated_reserves": 25000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Kursk Magnetic Anomaly is one of world's largest iron ore bodies"
+      },
+      {
+        "atomic_number": "23",
+        "symbol": "V",
+        "name": "Vanadium",
+        "world_share_pct": 25.4,
+        "estimated_reserves": 16000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "74",
+        "symbol": "W",
+        "name": "Tungsten",
+        "world_share_pct": 10.5,
+        "estimated_reserves": 400000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "19",
+        "symbol": "K",
+        "name": "Potassium",
+        "world_share_pct": 24.3,
+        "estimated_reserves": 900000000,
+        "reserve_unit": "mt_k2o",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Verkhnekamsk (Perm) potash basin"
+      },
+      {
+        "atomic_number": "57",
+        "symbol": "La",
+        "name": "Lanthanum",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "REO figure covers all rare earth elements combined"
+      },
+      {
+        "atomic_number": "59",
+        "symbol": "Pr",
+        "name": "Praseodymium",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "60",
+        "symbol": "Nd",
+        "name": "Neodymium",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "62",
+        "symbol": "Sm",
+        "name": "Samarium",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "39",
+        "symbol": "Y",
+        "name": "Yttrium",
+        "world_share_pct": 16.3,
+        "estimated_reserves": 21000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Y grouped with REEs in REO total"
+      },
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 8.1,
+        "estimated_reserves": 486200,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "2",
+        "symbol": "He",
+        "name": "Helium",
+        "world_share_pct": 8.0,
+        "estimated_reserves": 8,
+        "reserve_unit": "bcm",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Siberian natural gas fields (Kovykta, Chayanda) contain significant helium; Russia developing He export capacity"
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 3.0,
+        "estimated_reserves": 10000000,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Zavalievsky mine (historically important); Siberian crystalline flake graphite deposits"
+      },
+      {
+        "atomic_number": "73",
+        "symbol": "Ta",
+        "name": "Tantalum",
+        "world_share_pct": 3.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "production",
+        "notes": "Small amounts from Vishnevskie Gory and other pegmatite deposits"
+      }
+    ]
+  },
+  {
+    "cca2": "RW",
+    "elements": [
+      {
+        "atomic_number": "73",
+        "symbol": "Ta",
+        "name": "Tantalum",
+        "world_share_pct": 20.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Artisanal coltan mining; Rwanda and DRC together supply ~50% of world tantalum. Closely monitored as a 'conflict mineral' (3TG)"
+      },
+      {
+        "atomic_number": "74",
+        "symbol": "W",
+        "name": "Tungsten",
+        "world_share_pct": 5.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "production",
+        "notes": "Artisanal wolframite mining; part of the 3TG conflict minerals framework"
+      },
+      {
+        "atomic_number": "50",
+        "symbol": "Sn",
+        "name": "Tin",
+        "world_share_pct": 4.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "production",
+        "notes": "Artisanal cassiterite mining; another 3TG mineral"
+      }
+    ]
+  },
+  {
+    "cca2": "SE",
+    "elements": [
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 1.7,
+        "estimated_reserves": 3000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 8,
+        "data_type": "reserves",
+        "notes": "Kiruna (LKAB) is the world's largest underground iron ore mine; exceptionally high-grade magnetite ore (~68% Fe)"
+      },
+      {
+        "atomic_number": "57",
+        "symbol": "La",
+        "name": "Lanthanum",
+        "world_share_pct": 0.5,
+        "estimated_reserves": 700000,
+        "reserve_unit": "mt_reo",
+        "world_rank": null,
+        "data_type": "resources",
+        "notes": "Norra K\u00e4rr deposit has significant REE but uneconomic to exploit so far; Per Geijer iron oxide apatite deposits at Kiruna also contain light REEs \u2014 significant unexploited potential"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 0.3,
+        "estimated_reserves": 170,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Bj\u00f6rkdal and other Scandinavian Shield deposits"
+      }
+    ]
+  },
+  {
+    "cca2": "SL",
+    "elements": [
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 0.6,
+        "estimated_reserves": 10000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Sierra Rutile (Iluka Resources) \u2014 world's highest-grade natural rutile deposit; Sierra Leone was historically the world's largest rutile producer"
+      },
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 0.7,
+        "estimated_reserves": 1200000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": null,
+        "data_type": "resources",
+        "notes": "Tonkolili iron ore deposit (now stalled); one of Africa's largest iron ore discoveries"
+      }
+    ]
+  },
+  {
+    "cca2": "SN",
+    "elements": [
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 0.7,
+        "estimated_reserves": 500000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Ta\u00efba and Lam-Lam phosphate mines; significant regional exporter"
+      }
+    ]
+  },
+  {
+    "cca2": "TJ",
+    "elements": [
+      {
+        "atomic_number": "51",
+        "symbol": "Sb",
+        "name": "Antimony",
+        "world_share_pct": 5.0,
+        "estimated_reserves": 50000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Anzob antimony-mercury deposit"
+      }
+    ]
+  },
+  {
+    "cca2": "TN",
+    "elements": [
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 0.4,
+        "estimated_reserves": 280000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Gafsa phosphate basin; Tunisia has exported phosphate since colonial era"
+      }
+    ]
+  },
+  {
+    "cca2": "TR",
+    "elements": [
+      {
+        "atomic_number": "5",
+        "symbol": "B",
+        "name": "Boron",
+        "world_share_pct": 72.9,
+        "estimated_reserves": 890000000,
+        "reserve_unit": "mt_b2o3",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Near-monopoly on world boron reserves; Kirka and Bigadic deposits. Critical for fibreglass, neodymium magnets, and nuclear neutron shielding"
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 27.3,
+        "estimated_reserves": 90000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest natural graphite reserves (USGS 2024); amorphous/microcrystalline graphite in K\u00fctahya, Sivas, and Eski\u015fehir. Despite huge reserves, production is modest relative to China"
+      },
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 1.5,
+        "estimated_reserves": 8500000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Guleman ophiolite belt (eastern Anatolia)"
+      },
+      {
+        "atomic_number": "38",
+        "symbol": "Sr",
+        "name": "Strontium",
+        "world_share_pct": 3.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": null,
+        "data_type": "production",
+        "notes": "Celestite deposits in central Anatolia"
+      }
+    ]
+  },
+  {
+    "cca2": "TZ",
+    "elements": [
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 1.3,
+        "estimated_reserves": 750,
+        "reserve_unit": "mt",
+        "world_rank": 14,
+        "data_type": "reserves",
+        "notes": "Geita (AngloGold), North Mara (Barrick), Buzwagi mines; Tanzania is East Africa's largest gold producer"
+      },
+      {
+        "atomic_number": "28",
+        "symbol": "Ni",
+        "name": "Nickel",
+        "world_share_pct": 1.1,
+        "estimated_reserves": 1090000,
+        "reserve_unit": "mt",
+        "world_rank": 8,
+        "data_type": "resources",
+        "notes": "Kabanga (Lifezone Metals) is one of the world's best-undeveloped nickel sulphide deposits; not yet in production"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 0.5,
+        "estimated_reserves": 40000,
+        "reserve_unit": "mt",
+        "world_rank": null,
+        "data_type": "resources",
+        "notes": "Associated with Kabanga nickel deposit"
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 5.5,
+        "estimated_reserves": 18000000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Mahenge (IMX Resources) and Epanko deposits; rapidly emerging graphite province"
+      }
+    ]
+  },
+  {
+    "cca2": "UA",
+    "elements": [
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 3.6,
+        "estimated_reserves": 6500000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Kryvyi Rih basin; historically one of Europe's largest iron ore producers"
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 8.75,
+        "estimated_reserves": 140000000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Nikopol is the world's largest manganese ore basin"
+      },
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 5.0,
+        "estimated_reserves": 90000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Volynske and other ilmenite deposits"
+      },
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 3.7,
+        "estimated_reserves": 220700,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": ""
+      },
+      {
+        "atomic_number": "6",
+        "symbol": "C",
+        "name": "Carbon (graphite)",
+        "world_share_pct": 3.0,
+        "estimated_reserves": 10000000,
+        "reserve_unit": "mt",
+        "world_rank": 5,
+        "data_type": "reserves",
+        "notes": "Zavalievsky graphite mine (Kirovograd); Ukraine is a significant graphite producer \u2014 supply disrupted by 2022 war"
+      }
+    ]
+  },
+  {
+    "cca2": "US",
+    "elements": [
+      {
+        "atomic_number": "2",
+        "symbol": "He",
+        "name": "Helium",
+        "world_share_pct": 48.0,
+        "estimated_reserves": 153,
+        "reserve_unit": "bcm",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest helium reserves; Federal Helium Reserve (Amarillo, Texas). Extracted from the Hugoton natural gas field"
+      },
+      {
+        "atomic_number": "4",
+        "symbol": "Be",
+        "name": "Beryllium",
+        "world_share_pct": 75.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "Spor Mountain (Utah) holds ~90% of US beryllium resources; US produces ~75% of world's beryllium. Critical for aerospace and nuclear reactors"
+      },
+      {
+        "atomic_number": "42",
+        "symbol": "Mo",
+        "name": "Molybdenum",
+        "world_share_pct": 17.5,
+        "estimated_reserves": 2800000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Henderson and Climax (Colorado) molybdenite mines"
+      },
+      {
+        "atomic_number": "75",
+        "symbol": "Re",
+        "name": "Rhenium",
+        "world_share_pct": 13.6,
+        "estimated_reserves": 340,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Byproduct of copper-molybdenum smelting; rhenium used in jet-engine superalloys"
+      },
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 43.0,
+        "estimated_reserves": 12000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "USGS 2024 revised estimate; primarily Thacker Pass and McDermitt Caldera (NV). Largest reserve if estimates confirmed"
+      },
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 5.4,
+        "estimated_reserves": 48000000,
+        "reserve_unit": "mt",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Bingham Canyon (Utah) is one of world's largest open-pit copper mines"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 5.3,
+        "estimated_reserves": 3000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Nevada Carlin Trend; USA is third-largest gold producer"
+      },
+      {
+        "atomic_number": "15",
+        "symbol": "P",
+        "name": "Phosphorus",
+        "world_share_pct": 1.4,
+        "estimated_reserves": 1000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 6,
+        "data_type": "reserves",
+        "notes": "Florida phosphate district and North Carolina"
+      },
+      {
+        "atomic_number": "35",
+        "symbol": "Br",
+        "name": "Bromine",
+        "world_share_pct": 25.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Arkansas brine wells (Albemarle, Lanxess); USA is world's second-largest bromine producer after Israel"
+      }
+    ]
+  },
+  {
+    "cca2": "UZ",
+    "elements": [
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 3.2,
+        "estimated_reserves": 1800,
+        "reserve_unit": "mt",
+        "world_rank": 11,
+        "data_type": "reserves",
+        "notes": "Muruntau (Kyzylkum Desert) is the world's largest open-pit gold mine"
+      },
+      {
+        "atomic_number": "92",
+        "symbol": "U",
+        "name": "Uranium",
+        "world_share_pct": 2.2,
+        "estimated_reserves": 131700,
+        "reserve_unit": "mt",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "cca2": "VE",
+    "elements": [
+      {
+        "atomic_number": "26",
+        "symbol": "Fe",
+        "name": "Iron",
+        "world_share_pct": 2.2,
+        "estimated_reserves": 4000000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Cerro Bolivar, San Isidro, El Pao (Guayana region); significant steel industry (Sidor)"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 1.6,
+        "estimated_reserves": 900,
+        "reserve_unit": "mt",
+        "world_rank": 12,
+        "data_type": "reserves",
+        "notes": "El Callao district and the disputed Arco Minero del Orinoco zone; South America's second-largest gold reserves"
+      },
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 1.0,
+        "estimated_reserves": 320000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Los Pijiguaos bauxite deposit; Alcasa and Venalum aluminum smelters (now largely idle)"
+      }
+    ]
+  },
+  {
+    "cca2": "VN",
+    "elements": [
+      {
+        "atomic_number": "57",
+        "symbol": "La",
+        "name": "Lanthanum",
+        "world_share_pct": 17.1,
+        "estimated_reserves": 22000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "World's second-largest REE reserves; Dong Pao and Nam Xe deposits \u2014 largely unexploited. Vietnam holds enormous untapped potential"
+      },
+      {
+        "atomic_number": "59",
+        "symbol": "Pr",
+        "name": "Praseodymium",
+        "world_share_pct": 17.1,
+        "estimated_reserves": 22000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "60",
+        "symbol": "Nd",
+        "name": "Neodymium",
+        "world_share_pct": 17.1,
+        "estimated_reserves": 22000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "62",
+        "symbol": "Sm",
+        "name": "Samarium",
+        "world_share_pct": 17.1,
+        "estimated_reserves": 22000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Part of combined REO reserve total"
+      },
+      {
+        "atomic_number": "39",
+        "symbol": "Y",
+        "name": "Yttrium",
+        "world_share_pct": 17.1,
+        "estimated_reserves": 22000000,
+        "reserve_unit": "mt_reo",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Y included in REO total"
+      },
+      {
+        "atomic_number": "13",
+        "symbol": "Al",
+        "name": "Aluminium",
+        "world_share_pct": 12.2,
+        "estimated_reserves": 3900000000,
+        "reserve_unit": "mt_bauxite",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Central Highlands bauxite; world's third-largest reserves"
+      },
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 70000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": null,
+        "data_type": "reserves",
+        "notes": "Mineral sands along central coast"
+      }
+    ]
+  },
+  {
+    "cca2": "ZA",
+    "elements": [
+      {
+        "atomic_number": "78",
+        "symbol": "Pt",
+        "name": "Platinum",
+        "world_share_pct": 91.3,
+        "estimated_reserves": 63000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "Near-total monopoly; Bushveld Igneous Complex (BIC) is the world's largest PGM deposit by an enormous margin"
+      },
+      {
+        "atomic_number": "46",
+        "symbol": "Pd",
+        "name": "Palladium",
+        "world_share_pct": 37.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 2,
+        "data_type": "production",
+        "notes": "Bushveld Complex; world's largest palladium reserves alongside Russia"
+      },
+      {
+        "atomic_number": "45",
+        "symbol": "Rh",
+        "name": "Rhodium",
+        "world_share_pct": 80.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "~80% of world rhodium; critical for three-way catalytic converters. Price exceeded $20,000/oz in 2021"
+      },
+      {
+        "atomic_number": "44",
+        "symbol": "Ru",
+        "name": "Ruthenium",
+        "world_share_pct": 90.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "~90% of world ruthenium from Bushveld PGM mining"
+      },
+      {
+        "atomic_number": "77",
+        "symbol": "Ir",
+        "name": "Iridium",
+        "world_share_pct": 90.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "~90% of world iridium; one of Earth's densest and rarest elements"
+      },
+      {
+        "atomic_number": "76",
+        "symbol": "Os",
+        "name": "Osmium",
+        "world_share_pct": 90.0,
+        "estimated_reserves": null,
+        "reserve_unit": null,
+        "world_rank": 1,
+        "data_type": "production",
+        "notes": "~90% of world osmium from Bushveld PGM refining; the densest naturally occurring element"
+      },
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 35.1,
+        "estimated_reserves": 200000000,
+        "reserve_unit": "mt",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Second-largest chromite reserves; Critical Chrome Layer of the Bushveld Complex"
+      },
+      {
+        "atomic_number": "25",
+        "symbol": "Mn",
+        "name": "Manganese",
+        "world_share_pct": 31.3,
+        "estimated_reserves": 500000000,
+        "reserve_unit": "mt",
+        "world_rank": 1,
+        "data_type": "reserves",
+        "notes": "World's largest manganese reserves; Kalahari manganese field is world's largest known manganese deposit"
+      },
+      {
+        "atomic_number": "23",
+        "symbol": "V",
+        "name": "Vanadium",
+        "world_share_pct": 5.6,
+        "estimated_reserves": 3500000,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Bushveld vanadiferous magnetite"
+      },
+      {
+        "atomic_number": "79",
+        "symbol": "Au",
+        "name": "Gold",
+        "world_share_pct": 4.4,
+        "estimated_reserves": 2500,
+        "reserve_unit": "mt",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Witwatersrand Basin produced ~50% of all gold ever mined in history"
+      },
+      {
+        "atomic_number": "22",
+        "symbol": "Ti",
+        "name": "Titanium",
+        "world_share_pct": 13.1,
+        "estimated_reserves": 235000000,
+        "reserve_unit": "mt_tio2",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Richards Bay Minerals; world-class ilmenite, rutile and zircon deposits"
+      },
+      {
+        "atomic_number": "40",
+        "symbol": "Zr",
+        "name": "Zirconium",
+        "world_share_pct": 15.0,
+        "estimated_reserves": 12000000,
+        "reserve_unit": "mt_ore",
+        "world_rank": 2,
+        "data_type": "reserves",
+        "notes": "Richards Bay mineral sands"
+      }
+    ]
+  },
+  {
+    "cca2": "ZM",
+    "elements": [
+      {
+        "atomic_number": "29",
+        "symbol": "Cu",
+        "name": "Copper",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 35000000,
+        "reserve_unit": "mt",
+        "world_rank": 7,
+        "data_type": "reserves",
+        "notes": "Copperbelt; Zambia is Africa's second-largest copper producer after DRC"
+      },
+      {
+        "atomic_number": "27",
+        "symbol": "Co",
+        "name": "Cobalt",
+        "world_share_pct": 4.0,
+        "estimated_reserves": 330000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Byproduct of copper mining in the Copperbelt"
+      }
+    ]
+  },
+  {
+    "cca2": "ZW",
+    "elements": [
+      {
+        "atomic_number": "78",
+        "symbol": "Pt",
+        "name": "Platinum",
+        "world_share_pct": 1.7,
+        "estimated_reserves": 1200,
+        "reserve_unit": "mt",
+        "world_rank": 3,
+        "data_type": "reserves",
+        "notes": "Great Dyke of Zimbabwe; world's second-longest layered intrusion after Bushveld"
+      },
+      {
+        "atomic_number": "24",
+        "symbol": "Cr",
+        "name": "Chromium",
+        "world_share_pct": 2.3,
+        "estimated_reserves": 13000000,
+        "reserve_unit": "mt",
+        "world_rank": 4,
+        "data_type": "reserves",
+        "notes": "Great Dyke chromite; significant but dwarfed by Kazakhstan and South Africa"
+      },
+      {
+        "atomic_number": "3",
+        "symbol": "Li",
+        "name": "Lithium",
+        "world_share_pct": 1.8,
+        "estimated_reserves": 500000,
+        "reserve_unit": "mt",
+        "world_rank": 8,
+        "data_type": "reserves",
+        "notes": "Bikita and Arcadia mines; Zimbabwe lithium production surged 2022\u20132024"
+      }
+    ]
+  }
+]

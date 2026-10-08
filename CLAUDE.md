@@ -1,0 +1,171 @@
+@../../pasadena-ai-playbook/CLAUDE.md
+
+# mindmap-geo
+
+Geographic visualisation service — interactive Three.js dot-globe with a FastAPI
+backend persisting geo data in DynamoDB. Intended to integrate into mindmap-app-v3.
+
+## Quick start (local)
+
+```bash
+docker compose -f docker-compose.local.yaml up -d --build
+```
+
+| Service | URL |
+|---|---|
+| Frontend (React/Vite) | http://localhost:4203 |
+| Backend (FastAPI) | http://localhost:8004 |
+| API docs (Swagger) | http://localhost:8004/docs |
+| DynamoDB Admin | http://localhost:8005 |
+| LocalStack | http://localhost:4570 |
+
+## Stack
+
+- **Backend:** FastAPI · Python 3.12 · aioboto3 · DynamoDB only (no Postgres)
+- **Frontend:** React 18 · Vite · Zustand · Three.js · @react-three/fiber · @react-three/drei · d3-geo · topojson-client
+- **Local infra:** LocalStack 3.4 (DynamoDB + S3) · aaronshaf/dynamodb-admin
+
+## Key files
+
+| Path | Purpose |
+|---|---|
+| `backend/app/main.py` | FastAPI app, lifespan, CORS |
+| `backend/app/core/config.py` | Pydantic settings (all env vars) |
+| `backend/app/repositories/dynamo.py` | All DynamoDB operations + `ensure_tables()` |
+| `backend/app/routers/geo.py` | CRUD endpoints for points / arcs / configs |
+| `frontend/src/store/index.js` | Zustand store — single source of truth for geo data |
+| `frontend/src/api.js` | Thin fetch client wrapping `/api/geo/*` |
+| `frontend/src/hooks/useGlobePoints.js` | TopoJSON → land-dot positions + `latLonToVec3` |
+| `frontend/src/components/GlobeScene.jsx` | Three.js scene: globe, markers, arcs |
+| `frontend/src/components/DataPanel.jsx` | Right-side panel: point list, add form |
+
+## API surface
+
+```
+GET    /api/geo/points
+POST   /api/geo/points
+GET    /api/geo/points/:id
+PATCH  /api/geo/points/:id
+DELETE /api/geo/points/:id
+
+GET    /api/geo/arcs
+POST   /api/geo/arcs
+PATCH  /api/geo/arcs/:id
+DELETE /api/geo/arcs/:id
+
+GET    /api/geo/configs
+POST   /api/geo/configs
+PATCH  /api/geo/configs/:id
+DELETE /api/geo/configs/:id
+
+GET    /health
+```
+
+## AWS Lambda Deployment (beta — us-east-1)
+
+Same low-cost pattern as mindmap-app-v3: Lambda + API Gateway + S3, ~$2/month, IP-restricted.
+CDK stack is in `infra/`. No NAT, no ALB, no Fargate.
+
+### Architecture
+```
+Browser (IP-restricted)
+  ├─ GET /         →  S3 static site  (React/Vite build, IP-locked via bucket policy)
+  └─ /api/*        →  API Gateway → Lambda (FastAPI + Mangum, IP-locked via resource policy)
+                              ↓
+                         DynamoDB (real AWS, us-east-1) — 17 tables, all geo_* + cloud regions
+```
+
+### URLs (placeholders — read the real values from the CDK stack outputs)
+| Resource | URL |
+|---|---|
+| Frontend (S3 static site) | http://pai-mindmap-geo-frontend-<ACCOUNT_ID>.s3-website-us-east-1.amazonaws.com |
+| API (API Gateway → Lambda) | https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta/ |
+
+### Deploying (first time)
+```bash
+# 1. Create ECR repo and push image (arm64 single-arch — Lambda rejects multi-arch manifests)
+aws ecr create-repository --repository-name pai-mindmap-geo-backend
+cd backend
+docker buildx build --platform linux/arm64 --provenance=false \
+  -f Dockerfile.lambda \
+  -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest \
+  --push .
+
+# 2. Deploy CDK stack (find your IP first: curl https://checkip.amazonaws.com)
+cd infra
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+cdk deploy MindmapGeoLambdaStack \
+  --app "python app.py" \
+  --context allowed_ips=YOUR.IP.HERE/32
+
+# 3. Build and upload frontend
+cd ../frontend
+VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
+aws s3 sync dist s3://pai-mindmap-geo-frontend-<ACCOUNT_ID> --delete
+# Note: flags/airlines assets are in frontend/public/assets/ and bundled by Vite —
+# no separate assets sync needed.
+
+# 4. CORS_ORIGINS is derived from the account in the CDK stack (no manual Lambda env edit needed)
+
+# 5. Set EIA_API_KEY (optional — needed for EIA energy data ingest). Keys live only in
+#    Secrets Manager (secret `pai-mindmap-geo/app`), never in Lambda env vars or git.
+#    Get a free key at https://www.eia.gov/opendata/ then merge it into the secret:
+CUR=$(aws secretsmanager get-secret-value --secret-id pai-mindmap-geo/app --query SecretString --output text)
+aws secretsmanager put-secret-value --secret-id pai-mindmap-geo/app \
+  --secret-string "$(echo "$CUR" | jq --arg k "$EIA_API_KEY" '.EIA_API_KEY=$k')"
+# Lambda reads the secret at cold start; update the function config or wait for a new execution environment.
+```
+
+### Updating after code changes
+```bash
+# Backend
+cd backend
+docker buildx build --platform linux/arm64 --provenance=false \
+  -f Dockerfile.lambda \
+  -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest \
+  --push .
+aws lambda update-function-code \
+  --function-name pai-mindmap-geo-backend \
+  --region us-east-1 \
+  --image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/pai-mindmap-geo-backend:latest
+aws lambda wait function-updated --function-name pai-mindmap-geo-backend --region us-east-1
+
+# Frontend
+cd frontend
+VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
+aws s3 sync dist s3://pai-mindmap-geo-frontend-<ACCOUNT_ID> --delete
+# Note: flags/airlines assets are in frontend/public/assets/ — bundled by Vite, no separate sync.
+```
+
+### AWS account notes
+- Target account: whichever the active AWS profile resolves to (`CDK_DEFAULT_ACCOUNT`, us-east-1); no account IDs are stored in this repo
+- CDK bootstrap is required once per account/region
+- `ensure_tables()` is skipped in Lambda (APP_ENV=aws) — CDK creates all 17 tables on first deploy
+
+### DynamoDB tables (us-east-1)
+All tables use on-demand billing with PITR enabled and `RemovalPolicy.RETAIN`.
+
+| Table | Partition Key | Notes |
+|---|---|---|
+| `geo_points` | `point_id` | User-placed globe markers |
+| `geo_arcs` | `arc_id` | User-placed globe arcs |
+| `geo_configs` | `config_id` | Globe view configs |
+| `geo_countries` | `cca2` | Country metadata |
+| `aws_regions` | `region_id` | AWS cloud region overlays |
+| `azure_regions` | `region_id` | Azure cloud region overlays |
+| `gcp_regions` | `region_id` | GCP cloud region overlays |
+| `alibaba_regions` | `region_id` | Alibaba Cloud region overlays |
+| `oci_regions` | `region_id` | OCI region overlays |
+| `ibm_regions` | `region_id` | IBM Cloud region overlays |
+| `geo_availability_zones` | `az_id` | AZ-level detail |
+| `geo_airlines` | `iata` | Airline reference data |
+| `geo_elements` | `atomic_number` | Periodic table (all 118) |
+| `geo_country_elements` | `cca2` | Mineral reserves per country |
+| `geo_country_resources` | `cca2` | Energy resources per country (EIA) |
+| `geo_ingest_sources` | `source_id` | External data source registry |
+| `geo_ingest_log` | `run_id` | Ingestion run history |
+
+## Session conventions
+
+Read `KNOWN_ISSUES.md`, `ARCHITECTURE.md`, and `ENV.md` at session start.
+Update all three before session end. See playbook for full protocol.

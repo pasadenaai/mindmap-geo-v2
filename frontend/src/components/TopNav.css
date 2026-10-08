@@ -1,0 +1,475 @@
+/* ── Root bar (full-width top nav, matches mindmap company bar) ──────────── */
+.tnav-root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.tnav-brand {
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  margin-right: 24px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.tnav-geo-menus {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ── User menu positioning ────────────────────────────────────────────────── */
+.tnav-item--user {
+  margin-left: auto;
+}
+
+.tnav-btn--user {
+  gap: 7px;
+}
+
+.tnav-panel--user {
+  right: 0;
+  left: auto;
+  min-width: 180px;
+  top: calc(100% + 6px);
+}
+
+.tnav-user-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px 8px;
+  color: rgba(160, 200, 235, 0.6);
+}
+
+.tnav-user-name {
+  font-size: 0.82rem;
+  color: #e0f0ff;
+  font-weight: 500;
+}
+
+.tnav-signout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(160, 200, 235, 0.7);
+  font-size: 0.82rem;
+  text-align: left;
+  transition: background 0.1s, color 0.1s;
+}
+
+.tnav-signout-btn:hover {
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+}
+
+/* ── TopNav geo menus container (legacy — kept for compat) ───────────────── */
+.tnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Trigger buttons ──────────────────────────────────────────────────────── */
+.tnav-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(180, 215, 245, 0.75);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.tnav-btn:hover,
+.tnav-btn--open {
+  background: rgba(79, 195, 247, 0.1);
+  border-color: rgba(79, 195, 247, 0.2);
+  color: #e0f0ff;
+}
+
+.tnav-chevron {
+  width: 9px;
+  height: 6px;
+  color: currentColor;
+  opacity: 0.6;
+  transition: transform 0.18s;
+  flex-shrink: 0;
+}
+.tnav-btn--open .tnav-chevron {
+  transform: rotate(180deg);
+}
+
+/* ── Wrapper (positions the panel) ──────────────────────────────────────────── */
+.tnav-item {
+  position: relative;
+}
+
+/* ── Shared panel base ────────────────────────────────────────────────────── */
+.tnav-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 16777275;
+  border: 1px solid rgba(79, 195, 247, 0.15);
+  border-radius: 10px;
+  background: rgba(4, 14, 28, 0.96);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(79, 195, 247, 0.06) inset;
+  overflow: hidden;
+  animation: tnav-open 0.14s ease-out;
+}
+
+@keyframes tnav-open {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Countries panel ──────────────────────────────────────────────────────── */
+.tnav-panel--countries {
+  width: 280px;
+  max-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tnav-panel__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(79, 195, 247, 0.1);
+  flex-shrink: 0;
+}
+
+.tnav-search-icon {
+  width: 14px;
+  height: 14px;
+  color: rgba(160, 200, 235, 0.4);
+  flex-shrink: 0;
+}
+
+.tnav-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e0f0ff;
+  font-size: 0.82rem;
+  caret-color: #4fc3f7;
+}
+
+.tnav-search-input::placeholder {
+  color: rgba(160, 200, 235, 0.35);
+}
+
+.tnav-search-clear {
+  background: none;
+  border: none;
+  color: rgba(160, 200, 235, 0.35);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.1s;
+}
+.tnav-search-clear:hover { color: #e0f0ff; }
+
+.tnav-panel__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(79, 195, 247, 0.2) transparent;
+}
+
+.tnav-empty {
+  padding: 20px 16px;
+  text-align: center;
+  color: rgba(160, 200, 235, 0.35);
+  font-size: 0.78rem;
+}
+
+.tnav-country-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 0;
+  transition: background 0.1s;
+}
+
+.tnav-country-item:hover {
+  background: rgba(79, 195, 247, 0.08);
+}
+
+.tnav-country-item--active {
+  background: rgba(79, 195, 247, 0.12);
+}
+
+.tnav-country-flag {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.tnav-country-name {
+  flex: 1;
+  font-size: 0.81rem;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tnav-country-item--active .tnav-country-name {
+  color: #4fc3f7;
+}
+
+.tnav-country-code {
+  font-size: 0.68rem;
+  color: rgba(160, 200, 235, 0.35);
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+/* ── Resources panel ──────────────────────────────────────────────────────── */
+.tnav-panel--resources {
+  width: 280px;
+}
+
+.tnav-panel__heading {
+  padding: 10px 14px 6px;
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(160, 200, 235, 0.4);
+  font-weight: 600;
+  border-bottom: 1px solid rgba(79, 195, 247, 0.08);
+}
+
+.tnav-resource-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.tnav-resource-item:hover {
+  background: rgba(79, 195, 247, 0.06);
+}
+
+.tnav-resource-item--active {
+  background: rgba(79, 195, 247, 0.09);
+}
+
+.tnav-resource-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cat-color, #4fc3f7);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.tnav-resource-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tnav-resource-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.tnav-resource-item--active .tnav-resource-label {
+  color: #e0f0ff;
+}
+
+.tnav-phase-badge {
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(251, 146, 60, 0.15);
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  color: #fb923c;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tnav-resource-desc {
+  font-size: 0.73rem;
+  color: rgba(160, 200, 235, 0.5);
+  line-height: 1.4;
+}
+
+.tnav-resource-symbols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.tnav-sym {
+  font-size: 0.67rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--cat-color, #4fc3f7);
+  color: var(--cat-color, #4fc3f7);
+  opacity: 0.8;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ── Section divider ──────────────────────────────────────────────────────── */
+.tnav-section-divider {
+  height: 1px;
+  background: rgba(79, 195, 247, 0.08);
+  margin: 4px 0;
+}
+
+/* ── Periodic Table trigger item ──────────────────────────────────────────── */
+.tnav-resource-item--pt {
+  align-items: center;
+}
+
+.tnav-atom-icon {
+  font-size: 1.1rem;
+  color: #4fc3f7;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  line-height: 1;
+}
+
+.tnav-resource-label--pt {
+  color: #4fc3f7;
+}
+
+.tnav-launch-icon {
+  width: 12px;
+  height: 12px;
+  color: rgba(160, 200, 235, 0.3);
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: color 0.15s;
+}
+
+.tnav-resource-item--pt:hover .tnav-launch-icon {
+  color: #4fc3f7;
+}
+
+/* ── Resource category row: inner clickable parts ────────────────────────── */
+
+/* Outer row is now a <div> — remove button-specific cursor from it */
+.tnav-resource-item {
+  cursor: default;
+}
+
+/* Dot button (expand toggle) */
+.tnav-resource-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+/* Category label button (opens PT → By Category) */
+.tnav-resource-label-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  transition: color 0.12s;
+}
+.tnav-resource-label-btn:hover .tnav-resource-label {
+  color: #e0f0ff;
+}
+
+/* Element symbol chips that are clickable (real elements) */
+.tnav-sym--btn {
+  cursor: pointer;
+  font: inherit;
+  background: none;
+  border: 1px solid var(--cat-color, #4fc3f7);
+  color: var(--cat-color, #4fc3f7);
+  opacity: 0.8;
+  font-size: 0.67rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background 0.12s, color 0.12s, opacity 0.12s;
+}
+.tnav-sym--btn:hover {
+  background: var(--cat-color, #4fc3f7);
+  color: #020a14;
+  opacity: 1;
+}
+
+/* ── Shared footer ────────────────────────────────────────────────────────── */
+.tnav-panel__footer {
+  padding: 7px 14px;
+  font-size: 0.67rem;
+  color: rgba(160, 200, 235, 0.3);
+  border-top: 1px solid rgba(79, 195, 247, 0.08);
+  text-align: center;
+}

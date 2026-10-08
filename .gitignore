@@ -1,0 +1,21 @@
+# Secrets and local config — only *.example / *.template files are tracked
+.env
+.env.*
+!.env.*.example
+!.env.*.template
+*.pem
+*.key
+*accessKeys*
+*credentials*.csv
+
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+node_modules/
+dist/
+geo_localstack_data/
+*.egg-info/
+.DS_Store
+cdk.out/
+infra/.venv/

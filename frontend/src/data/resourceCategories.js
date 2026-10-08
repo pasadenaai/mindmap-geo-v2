@@ -1,0 +1,52 @@
+export const RESOURCE_CATEGORIES = [
+  {
+    id: 'precious_metals',
+    label: 'Precious Metals',
+    color: '#facc15',
+    symbols: ['Au', 'Ag', 'Pt', 'Pd', 'Rh', 'Ru', 'Ir', 'Os'],
+    description: 'Gold, silver, platinum-group metals',
+  },
+  {
+    id: 'base_metals',
+    label: 'Base Metals',
+    color: '#60a5fa',
+    symbols: ['Cu', 'Fe', 'Ni', 'Zn', 'Pb', 'Al', 'Sn', 'Co'],
+    description: 'Copper, iron, nickel, zinc, lead, aluminium',
+  },
+  {
+    id: 'rare_earths',
+    label: 'Rare Earth Elements',
+    color: '#a78bfa',
+    symbols: ['La', 'Ce', 'Nd', 'Pr', 'Dy', 'Sm', 'Gd', 'Tb', 'Y'],
+    description: 'Lanthanides + yttrium — critical for magnets & electronics',
+  },
+  {
+    id: 'battery_minerals',
+    label: 'Battery Minerals',
+    color: '#34d399',
+    symbols: ['Li', 'Co', 'Ni', 'Mn', 'C'],
+    description: 'Lithium, cobalt, nickel, manganese, graphite',
+  },
+  {
+    id: 'industrial',
+    label: 'Industrial Minerals',
+    color: '#94a3b8',
+    symbols: ['Cr', 'Ti', 'V', 'Mo', 'W', 'Mn', 'P', 'K', 'B'],
+    description: 'Chromium, titanium, vanadium, tungsten, phosphate, potash',
+  },
+  {
+    id: 'strategic',
+    label: 'Strategic & Critical',
+    color: '#f87171',
+    symbols: ['Nb', 'Ta', 'In', 'Ga', 'Ge', 'Re', 'Te', 'Se'],
+    description: 'Niobium, tantalum, indium, gallium — supply-chain critical',
+  },
+  {
+    id: 'energy',
+    label: 'Oil & Gas',
+    color: '#fb923c',
+    symbols: ['Oil', 'Gas'],
+    description: 'Crude oil + NGPL and dry natural gas production',
+    phase: 2,
+  },
+]
