@@ -18,7 +18,7 @@ COPY data/ ${LAMBDA_TASK_ROOT}/data/
 
 # AWS runtime settings — actual values come from Lambda env
 ENV APP_ENV=aws
-ENV SECRETS_BACKEND=env
+ENV SECRETS_BACKEND=aws
 ENV AWS_REGION=us-east-1
 
 # Lambda handler: module.attribute
