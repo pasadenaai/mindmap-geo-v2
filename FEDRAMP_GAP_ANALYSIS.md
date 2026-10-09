@@ -18,7 +18,7 @@ Legend: ✅ addressed in code · 🟡 partial · ❌ gap · 📄 organizational/
 | AC-12 Session termination | 🟡 | Logout revokes all refresh tokens server-side (`token_version`). Access tokens (15 min in AWS) are not revocable before expiry. No refresh-token rotation with reuse detection. |
 | IA-2 / IA-2(1) / IA-2(12) MFA, PIV/CAC | ❌ | Password only. No MFA, no PIV/CAC (planned Keycloak FIPS design lives in the fedramp-compliance repo). |
 | IA-5 Authenticator management | 🟡 | bcrypt hashing; 12–128 char minimum (NIST 800-63B length-first); password may not contain username. No breached-password check, no password history. Signing key and API keys in Secrets Manager; `SECRET_KEY` auto-generated. |
-| AU-2 / AU-3 / AU-12 Audit events | 🟡 | `audit` logger records register/login/logout/refresh outcomes with user IDs. Data-change events are not audited; no request IDs; no source IP. |
+| AU-2 / AU-3 / AU-12 Audit events | 🟡 | `audit` logger records register/login/logout/refresh outcomes with user IDs. Data-change events are not audited; no request IDs; no source IP. API Gateway execution/access logging is off so v2 stays independent of the account-wide API Gateway logging role owned by v1. |
 | AU-9 / AU-11 Protection and retention | 🟡 | 10-year CloudWatch retention, `RETAIN` policy. No log integrity controls, no CloudTrail or log-archive account. |
 | CA-7 Continuous monitoring | ❌ | No Security Hub, Config or GuardDuty. |
 | CM-2 / CM-6 Baseline, settings | 🟡 | All infrastructure in CDK; settings in code. No drift detection; synth not gated in CI. |

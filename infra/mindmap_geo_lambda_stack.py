@@ -336,9 +336,14 @@ class MindmapGeoLambdaStack(cdk.Stack):
             self, "MindmapGeoApi",
             rest_api_name="pai-mindmap-geo-v2-api",
             description="mindmap-geo API — beta, IP-restricted",
+            # The API Gateway CloudWatch role is a single account+region-wide setting that v1
+            # currently owns. v2 must not create or repoint it, so API Gateway execution/access
+            # logging is off here. Application and audit logs go to the v2 Lambda log group.
+            # When v1 is retired, set cloud_watch_role=True and logging_level=INFO to take it over.
+            cloud_watch_role=False,
             deploy_options=apigw.StageOptions(
                 stage_name="beta",
-                logging_level=apigw.MethodLoggingLevel.INFO,
+                logging_level=apigw.MethodLoggingLevel.OFF,
                 data_trace_enabled=False,
                 metrics_enabled=True,
                 throttling_rate_limit=50,
