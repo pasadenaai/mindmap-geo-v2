@@ -2,6 +2,7 @@
 
 ## 2026-10-11 — design (branch: main)
 - Added `docs/HAZARD_ALERTS_DESIGN.md`: global hazard feeds → events → deterministic scoring → Strands agent (Bedrock default, Anthropic switchable) → in-app alerts for travel/supply impact. Design only; nothing implemented.
+- Design decisions recorded: country-level supply, 7-day alert visibility then archive table, public audience, Bedrock us-west-1 with partition-aware config and cheapest capable model.
 
 ## 2026-10-08 — isolated v2 stack (branch: main)
 - CDK stack is now `MindmapGeoV2Stack` with `v2`-named buckets, Lambda, role, API, log group, ECR repo and secret (`pai-mindmap-geo-v2/*`) and `v2_`-prefixed DynamoDB tables; verified against the live v1 stack: no name collisions.
