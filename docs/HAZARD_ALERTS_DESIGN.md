@@ -160,6 +160,12 @@ The scoring tables and radii live in versioned config, not in a prompt.
 - **Default model:** cheapest capable Claude (Haiku class). The agent task (triage + short grounded summary over structured data) is small; verify with the eval set that Haiku passes before settling on it.
 - **Cost is not the reason to switch providers.** Per-token list prices for the same Claude model are generally the same on Bedrock and the Anthropic API (**verify** both pricing pages). Real savings come from fewer calls (the deterministic filter), shorter prompts, prompt caching and batch processing where supported. At the volume in §10 the difference is a few dollars a month; choose the provider on compliance, model availability and operations.
 
+### 7.3 IAM needed for Bedrock
+
+- **Runtime (agent Lambda role, created by CDK):** `bedrock:InvokeModel` and `bedrock:InvokeModelWithResponseStream` on the specific model / inference-profile ARNs only (partition-aware).
+- **Human/deploy check of model availability:** `bedrock:ListFoundationModels` and `bedrock:ListInferenceProfiles` in the chosen region (read-only). The current deploy user has neither.
+- Model access must be enabled for the account in the Bedrock console for the chosen region before first invoke.
+
 ### 7.1 Model provider switch
 
 ```
@@ -219,7 +225,7 @@ LLM_MODEL_ID = <model id>               (provider-specific; verify)
 
 | Phase | Scope | Done when |
 |---|---|---|
-| 0 | Schema + tables in CDK, adapter interface, fixtures | Tables deploy; adapters run against fixtures in CI |
+| 0 ✅ | Schema + tables in CDK, adapter interface, fixtures | Tables synthesize (not yet deployed); USGS and GDACS parsers pass fixture tests. **Done 2026-10-11** — see `backend/app/hazards/`, `backend/tests/test_hazards.py`, and the four `v2_geo_events/alerts/alerts_archive/event_rollups` tables in the CDK stack. Fixtures are hand-written approximations: record real payloads before Phase 1. |
 | 1 | USGS quakes + GDACS + EONET; deterministic scoring; globe layer; deterministic banner (no LLM) | Events visible globally within 15 min of publication; scoring tests green |
 | 2 | Strands agent on Bedrock; alerts panel; server-side validation; provider switch | Agent output always passes validation; Anthropic path passes same tests with a fake and manual eval |
 | 3 | FIRMS, cyclone tracks, tsunami, volcano aviation codes; more travel/supply precision (mine/port coordinates) | Added source-by-source behind flags |

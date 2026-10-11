@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {"title": "USGS Magnitude 4.5+ Earthquakes, Past Day", "note": "HAND-WRITTEN APPROXIMATION of the USGS summary feed — replace with a recorded response"},
+  "features": [
+    {"type": "Feature", "id": "us7000test1",
+     "properties": {"mag": 6.4, "place": "112 km E of Hualien City, Taiwan", "time": 1760000000000, "updated": 1760003600000,
+                    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000test1", "alert": "yellow", "tsunami": 1,
+                    "sig": 630, "felt": 412, "type": "earthquake", "title": "M 6.4 - 112 km E of Hualien City, Taiwan"},
+     "geometry": {"type": "Point", "coordinates": [122.65, 23.98, 18.4]}},
+    {"type": "Feature", "id": "us7000test2",
+     "properties": {"mag": 4.7, "place": "50 km SW of Nowhere, Chile", "time": 1760001000000, "updated": 1760001000000,
+                    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000test2", "alert": null, "tsunami": 0,
+                    "sig": 340, "type": "earthquake", "title": "M 4.7 - 50 km SW of Nowhere, Chile"},
+     "geometry": {"type": "Point", "coordinates": [-71.2, -33.1, 35.0]}},
+    {"type": "Feature", "id": "us7000quarry",
+     "properties": {"mag": 4.6, "place": "Quarry area", "time": 1760002000000, "updated": 1760002000000, "type": "quarry blast"},
+     "geometry": {"type": "Point", "coordinates": [-100.0, 40.0, 0.0]}},
+    {"type": "Feature", "id": "us7000broken",
+     "properties": {"mag": 5.1, "place": "Missing geometry", "time": 1760003000000, "type": "earthquake"},
+     "geometry": null}
+  ]
+}

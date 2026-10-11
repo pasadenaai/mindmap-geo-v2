@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     dynamo_country_resources_table: str = Field("geo_country_resources", alias="DYNAMO_COUNTRY_RESOURCES_TABLE")
     dynamo_ingest_sources_table: str = Field("geo_ingest_sources", alias="DYNAMO_INGEST_SOURCES_TABLE")
     dynamo_ingest_log_table: str = Field("geo_ingest_log", alias="DYNAMO_INGEST_LOG_TABLE")
+    dynamo_events_table: str = Field("geo_events", alias="DYNAMO_EVENTS_TABLE")
+    dynamo_alerts_table: str = Field("geo_alerts", alias="DYNAMO_ALERTS_TABLE")
+    dynamo_alerts_archive_table: str = Field("geo_alerts_archive", alias="DYNAMO_ALERTS_ARCHIVE_TABLE")
+    dynamo_event_rollups_table: str = Field("geo_event_rollups", alias="DYNAMO_EVENT_ROLLUPS_TABLE")
 
     # External data source API keys
     eia_api_key: Optional[str] = Field(None, alias="EIA_API_KEY")

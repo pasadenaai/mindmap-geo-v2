@@ -100,4 +100,26 @@ SOURCES: list[dict] = [
             "Excel download from main page."
         ),
     },
+    {
+        "source_id": "usgs_quakes",
+        "name": "USGS Earthquake Hazards Program — GeoJSON feeds",
+        "organization": "U.S. Geological Survey",
+        "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php",
+        "data_type": "hazard_events",
+        "format": "geojson",
+        "schedule_cron": "*/10 * * * *",
+        "active": False,
+        "notes": "Global, no key. Parser: app/hazards/usgs_quakes.py. Activated in Phase 1 (docs/HAZARD_ALERTS_DESIGN.md).",
+    },
+    {
+        "source_id": "gdacs",
+        "name": "GDACS — Global Disaster Alert and Coordination System",
+        "organization": "UN OCHA / European Commission JRC",
+        "url": "https://www.gdacs.org/",
+        "data_type": "hazard_events",
+        "format": "geojson",
+        "schedule_cron": "0 * * * *",
+        "active": False,
+        "notes": "Global alert levels (Green/Orange/Red). Parser: app/hazards/gdacs.py; verify feed format against a recorded response before activating (Phase 1).",
+    },
 ]

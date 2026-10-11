@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-11 — hazard alerts Phase 0 (branch: main)
+- New `backend/app/hazards/`: normalized `HazardEvent`, `HazardAdapter` interface, USGS earthquake and GDACS parsers (pure functions; malformed records skipped, text length-bounded).
+- Fixture tests (`backend/tests/test_hazards.py`, 10 new tests); fixtures are hand-written approximations to be replaced with recorded payloads.
+- CDK: `v2_geo_events` (TTL), `v2_geo_alerts`, `v2_geo_alerts_archive`, `v2_geo_event_rollups` with indexes; settings and Lambda env wired. Not deployed.
+- Registered `usgs_quakes` and `gdacs` as inactive ingest sources.
+
 ## 2026-10-11 — design (branch: main)
 - Added `docs/HAZARD_ALERTS_DESIGN.md`: global hazard feeds → events → deterministic scoring → Strands agent (Bedrock default, Anthropic switchable) → in-app alerts for travel/supply impact. Design only; nothing implemented.
 - Design decisions recorded: country-level supply, 7-day alert visibility then archive table, public audience, Bedrock us-west-1 with partition-aware config and cheapest capable model.
