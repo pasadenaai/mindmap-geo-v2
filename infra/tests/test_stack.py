@@ -96,3 +96,20 @@ def test_ip_allowlist_is_fail_closed():
     app = cdk.App()   # no allowed_ips context
     with pytest.raises(ValueError, match="allowed_ips"):
         MindmapGeoLambdaStack(app, "T", env=cdk.Environment(account="000000000000", region="us-east-1"))
+
+
+def _deletion_policies(t: Template, typ: str) -> set:
+    return {r.get("DeletionPolicy") for r in t.find_resources(typ).values()}
+
+
+def test_data_is_retained_by_default():
+    t = _template(cert_arn=CERT)
+    assert _deletion_policies(t, "AWS::DynamoDB::Table") >= {"Retain"}
+    assert _deletion_policies(t, "AWS::SecretsManager::Secret") == {"Retain"}
+
+
+def test_data_removal_destroy_deletes_data_but_never_the_secret():
+    t = _template(cert_arn=CERT, data_removal="destroy")
+    assert _deletion_policies(t, "AWS::DynamoDB::Table") == {"Delete"}
+    assert "Retain" not in _deletion_policies(t, "AWS::Logs::LogGroup")
+    assert _deletion_policies(t, "AWS::SecretsManager::Secret") == {"Retain"}

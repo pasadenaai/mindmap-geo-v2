@@ -175,6 +175,18 @@ class MindmapGeoLambdaStack(cdk.Stack):
         domain_name = self.node.try_get_context("domain_name") or DEFAULT_DOMAIN
         cert_arn = self.node.try_get_context("cert_arn")
         access_logs_on = str(self.node.try_get_context("api_access_logs")).lower() == "true"
+        # --context data_removal=destroy: for first-deploy / throwaway attempts only. Tables, log
+        #   groups and the assets bucket are then deleted with the stack (a failed first create
+        #   cleans itself up instead of leaving RETAINed orphans that block the next deploy).
+        #   Default is RETAIN. The app secret is always RETAINed: Secrets Manager holds a deleted
+        #   secret's name for 7-30 days, so DESTROY would block re-creating it.
+        destroy_data = str(self.node.try_get_context("data_removal")).lower() == "destroy"
+        data_removal = cdk.RemovalPolicy.DESTROY if destroy_data else cdk.RemovalPolicy.RETAIN
+        if destroy_data:
+            cdk.Annotations.of(self).add_warning(
+                "data_removal=destroy: DynamoDB tables, log groups and the assets bucket will be "
+                "DELETED with the stack. Do not use for a stack holding real data."
+            )
         site_origins = [f"https://{domain_name}"] if cert_arn else []
         if not cert_arn:
             cdk.Annotations.of(self).add_warning(
@@ -197,7 +209,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 ),
                 billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
                 point_in_time_recovery=True,
-                removal_policy=cdk.RemovalPolicy.RETAIN,
+                removal_policy=data_removal,
             )
 
         # Auth — users table with GSI on username
@@ -207,7 +219,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
             partition_key=dynamodb.Attribute(name="user_id", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             point_in_time_recovery=True,
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=data_removal,
         )
         geo_users_table.add_global_secondary_index(
             index_name="username-index",
@@ -269,7 +281,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
             partition_key=dynamodb.Attribute(name="alert_id", type=S),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             point_in_time_recovery=True,
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=data_removal,
         )
         geo_alerts.add_global_secondary_index(
             index_name="status-created-index",
@@ -286,7 +298,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
             sort_key=dynamodb.Attribute(name="created_at_alert_id", type=S),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             point_in_time_recovery=True,
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=data_removal,
         )
         geo_alerts_archive.add_global_secondary_index(
             index_name="cca2-created-index",
@@ -303,7 +315,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
             sort_key=dynamodb.Attribute(name="day_hazard", type=S),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             point_in_time_recovery=True,
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=data_removal,
         )
 
         # ── App secret (Secrets Manager, KMS-encrypted at rest) ───────────────
@@ -321,7 +333,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 password_length=64,
                 exclude_punctuation=True,
             ),
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=cdk.RemovalPolicy.RETAIN,   # always: see data_removal note above
         )
 
         # ── IAM Role for Lambda ───────────────────────────────────────────────
@@ -412,7 +424,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
             self, "MindmapGeoLambdaLogs",
             log_group_name="/aws/lambda/pai-mindmap-geo-v2-backend",
             retention=SEVEN_YEARS,
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=data_removal,
         )
 
         # ── Network: dedicated VPC, isolated subnets, endpoints only ──────────
@@ -487,7 +499,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
             self, "VpcFlowLogs",
             log_group_name="/aws/vpc/pai-mindmap-geo-v2-flow",
             retention=SEVEN_YEARS,
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=data_removal,
         )
         vpc.add_flow_log(
             "FlowLogsAll",
@@ -568,7 +580,8 @@ class MindmapGeoLambdaStack(cdk.Stack):
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             enforce_ssl=True,
             encryption=s3.BucketEncryption.S3_MANAGED,
-            removal_policy=cdk.RemovalPolicy.RETAIN,
+            removal_policy=data_removal,
+            auto_delete_objects=destroy_data,
         )
 
         frontend_bucket = s3.Bucket(
@@ -591,7 +604,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 self, "ApiAccessLogs",
                 log_group_name="/aws/apigateway/pai-mindmap-geo-v2-access",
                 retention=SEVEN_YEARS,
-                removal_policy=cdk.RemovalPolicy.RETAIN,
+                removal_policy=data_removal,
             )
 
         api = apigw.RestApi(

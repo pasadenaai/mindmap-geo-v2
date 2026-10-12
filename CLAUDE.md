@@ -114,6 +114,9 @@ cdk deploy MindmapGeoV2Stack \
   --context allowed_ips=YOUR.IP.HERE/32 \
   --context cert_arn=arn:aws:acm:us-east-1:<ACCOUNT_ID>:certificate/<ID>
 # Then: CNAME exploror.labs.pasadena.ai -> the RegionalDomainName stack output (DNS account).
+#    First deploy only: add `--context data_removal=destroy` so a failed create cleans itself up
+#    (default RETAIN leaves tables/bucket/log groups behind and the next deploy fails with
+#    "already exists"). Drop the flag once the stack holds real data.
 
 # 3. Build and upload frontend (same-origin: leave VITE_API_URL UNSET so the app calls /api)
 cd ../frontend

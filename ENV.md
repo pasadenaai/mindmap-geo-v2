@@ -73,4 +73,5 @@ Production vars go in `.env.aws` (never committed — use `.env.aws.template` as
 | `allowed_ips` | yes (fail closed) | Comma-separated CIDRs allowed through the API Gateway resource policy |
 | `cert_arn` | for the custom domain | ACM certificate ARN (same account, us-east-1) for `domain_name`. Without it: no custom domain, CORS origins empty |
 | `domain_name` | no | Site hostname; default `exploror.labs.pasadena.ai` |
+| `data_removal` | no | `destroy` deletes DynamoDB tables, log groups and the assets bucket with the stack (first-deploy/throwaway only; default RETAIN). The app secret is always RETAINed because Secrets Manager reserves a deleted secret's name for 7-30 days |
 | `api_access_logs` | no | `true` enables stage access logs to `/aws/apigateway/pai-mindmap-geo-v2-access`; only valid when the account-level API Gateway CloudWatch role is already set (owned by v1) |
