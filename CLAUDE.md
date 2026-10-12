@@ -39,6 +39,9 @@ docker compose --env-file .env.local -f docker-compose.local.yaml up -d --build
 | `frontend/src/hooks/useGlobePoints.js` | TopoJSON → land-dot positions + `latLonToVec3` |
 | `frontend/src/components/GlobeScene.jsx` | Three.js scene: globe, markers, arcs |
 | `frontend/src/components/DataPanel.jsx` | Right-side panel: point list, add form |
+| `frontend/src/components/AgentBar.jsx` | Type-to-search bar: any letter/digit (outside a text field) opens it; Enter runs the top result |
+| `frontend/src/agent/resolve.js` | Pure resolver: free text -> ranked actions (`select_country`). Tests: `cd frontend && npm test` |
+| `frontend/src/agent/actions.js` | Action allow-list + validation + execution through store setters (treat input as untrusted) |
 
 ## API surface
 

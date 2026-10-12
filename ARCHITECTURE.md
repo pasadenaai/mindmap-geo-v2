@@ -442,3 +442,21 @@ commits add content layers or new functionality on top of this stable base.
   This includes `v2_geo_events` (TTL-expired raw events): Gene chose RETAIN for it too; a test asserts that all
   tables are Retain by default.
 
+## Type-to-search agent bar (2026-10-12)
+**Decision:** phased. Phase 1 is a client-side, deterministic resolver; Phase 2 may swap in an LLM-backed endpoint.
+- **UI:** `AgentBar.jsx` listens on `document` for a single unmodified letter/digit while no text field is focused
+  (`INPUT`/`TEXTAREA`/`SELECT`/contenteditable are ignored), opens with that character, and runs Enter / click on the
+  highlighted result. Esc or click-outside closes. Mounted in `App.jsx` after login only.
+- **Contract:** the bar only ever executes `{ type: 'select_country', cca2 }`-shaped actions through
+  `agent/actions.js`, which rejects unknown types, malformed codes, unknown countries and countries without globe
+  geometry. The resolver today and a model tomorrow must both pass that gate, so a model cannot make the UI do
+  anything outside the allow-list. Adding an action type means editing `ACTION_TYPES` (resolve.js) and `validateAction`.
+- **Why not an LLM now:** the API Lambda has no internet egress, so Bedrock needs a `bedrock-runtime` VPC interface
+  endpoint (~$7/month + endpoint policy + IAM) and a new authenticated, throttled `/api/agent` route (cost control,
+  prompt-injection handling). Deferred until the action set justifies it (see TODO backlog).
+- **Effect on the CSP:** none (no new origins, no inline script).
+- **Known limits:** countries only (data comes from the already-loaded `globeCountries`); the bar renders above the
+  Periodic Table overlay, so typing there still selects a country behind it; only ASCII letters/digits open it, so
+  non-Latin keyboard layouts do not trigger it (country data and the resolver are Latin-only in Phase 1).
+- **Re-select:** choosing the already-selected country clears then re-sets it on the next tick so the camera re-flies
+  (GlobeScene only reacts to a change of `selectedCountry`).

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-12 — type-to-search agent bar, Phase 1 (branch: feat/agent-search-bar)
+- New `AgentBar`: typing any letter/digit outside a text field opens a search bar; Enter flies the globe to the country
+  (same store path as the Countries menu). Resolver handles names, official names, cca2/cca3 codes, common aliases
+  (usa, uk, uae, ivory coast...), intent phrases ("show me the uk") and a one-character typo.
+- New `agent/actions.js`: allow-listed, validated action execution (the contract a future LLM endpoint must meet).
+- 6 unit tests (`npm test`, `node --test`, no new dependencies) run in the CI `frontend-build` job.
+- Verified in a browser against a mock API: bar opens on a single key, Enter selects + flies, keys inside existing
+  fields are not hijacked, no-match message, Esc closes. Not verified: against the real AWS data (174 globe countries).
+
 ## 2026-10-12 — PR #1 merged, retain change deployed (branch: docs/post-merge-deploy-state)
 - Merged `pasadenaai/mindmap-geo-v2#1` (CI green, 4 jobs) and `pasadenaai/pasadena-ai-playbook#1`.
 - Redeployed `MindmapGeoV2Stack` from `main`: `v2_geo_events` Delete -> Retain; 22/22 tables Retain; site, `/health`, 250 countries and 118 elements verified live.
