@@ -305,7 +305,7 @@ would have been deleted with the stack.
 `DeletionPolicy`/`UpdateReplacePolicy` Delete → Retain on 21 tables and 2 log groups, no replacement. Verified after:
 21 tables Retain, app secret Retain, assets bucket Retain; seeded row counts unchanged; site and `/health` 200.
 
-## [OPEN] v2_geo_events keeps DeletionPolicy DELETE (deliberate, decision pending)
+## [ATTEMPTED] v2_geo_events kept DeletionPolicy DELETE (hard-coded DESTROY)
 **Reported:** 2026-10-12
 `GeoEventsTable` (`v2_geo_events`) is hard-coded `RemovalPolicy.DESTROY` in `infra/mindmap_geo_lambda_stack.py`:
 raw normalized hazard events, high churn, expired by TTL, no PITR, empty today (ingest cannot run in AWS). The
@@ -321,4 +321,11 @@ the custom resource was deleted. The handler failed before deleting anything, so
 **Resolution:** the resource is no longer in the template; the assets bucket is Retain. Cosmetic. The frontend
 bucket still uses auto-delete (rebuildable), so the provider Lambda and role remain by design.
 **Not verified:** the assets bucket's contents (the deployer lacks `s3:ListBucket` on it).
+
+### Update 2026-10-12 — decision: retain (re: "v2_geo_events kept DeletionPolicy DELETE")
+Gene chose RETAIN. `GeoEventsTable` now uses `data_removal` like every other table (code change in
+`infra/mindmap_geo_lambda_stack.py`); `test_data_is_retained_by_default` now asserts *every* table is Retain
+(was `>=`, which let a hard-coded DESTROY pass) and was verified to fail on the old code. PITR not enabled on
+this table (TTL-expired data). **Not deployed until the stack is updated**; promote to FIXED after the redeploy
+check shows 22/22 Retain.
 

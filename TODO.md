@@ -40,7 +40,7 @@ The key is in the v1 repo's git history and in the live v1 Lambda environment.
       review already run; 22 backend + 11 infra tests passed; secret scan clean at last run).
 - [ ] Merge `pasadenaai/pasadena-ai-playbook#1` (pattern doc + zone correction).
 - [x] Redeployed **without** `--context data_removal=destroy` (done 2026-10-12, before the merge): 21 tables, 2 log
-      groups and the assets bucket are RETAIN. `v2_geo_events` remains DESTROY by design (decision pending).
+      groups and the assets bucket are RETAIN. `v2_geo_events` was still DESTROY: switched to RETAIN in code (needs one more redeploy).
 
 ## Backlog (not blocking, in rough priority)
 - [ ] CI: pin GitHub Actions by commit SHA instead of tag; consider adding gitleaks and `cdk synth` once a deployer-free path exists.

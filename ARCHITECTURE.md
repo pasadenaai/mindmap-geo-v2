@@ -439,5 +439,6 @@ commits add content layers or new functionality on top of this stable base.
   links exist. Unknown paths are 404. Accepted: if it is down, it is down.
 - **Data persistence over rebuild speed.** Durable tables are RETAIN (default); `data_removal=destroy` is for
   first-deploy/throwaway stacks only. Repopulating gets slower as the dataset grows, so avoid any path that wipes it.
-  Exception pending decision: `v2_geo_events` (TTL-expired raw events), see KNOWN_ISSUES.
+  This includes `v2_geo_events` (TTL-expired raw events): Gene chose RETAIN for it too; a test asserts that all
+  tables are Retain by default.
 

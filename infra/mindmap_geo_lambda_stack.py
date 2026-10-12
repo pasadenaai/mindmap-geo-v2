@@ -257,7 +257,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
             partition_key=dynamodb.Attribute(name="event_id", type=S),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             time_to_live_attribute="ttl",
-            removal_policy=cdk.RemovalPolicy.DESTROY,
+            removal_policy=data_removal,
         )
         geo_events.add_global_secondary_index(
             index_name="hazard-event_time-index",

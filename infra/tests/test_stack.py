@@ -104,7 +104,8 @@ def _deletion_policies(t: Template, typ: str) -> set:
 
 def test_data_is_retained_by_default():
     t = _template(cert_arn=CERT)
-    assert _deletion_policies(t, "AWS::DynamoDB::Table") >= {"Retain"}
+    # == (not >=): every table must be Retain, so a hard-coded DESTROY on one table fails here.
+    assert _deletion_policies(t, "AWS::DynamoDB::Table") == {"Retain"}
     assert _deletion_policies(t, "AWS::SecretsManager::Secret") == {"Retain"}
 
 
