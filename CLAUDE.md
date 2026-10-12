@@ -70,8 +70,10 @@ FedRAMP posture: see `FEDRAMP_GAP_ANALYSIS.md`.
 
 ## AWS Lambda Deployment (beta — us-east-1)
 
-Lambda + API Gateway + private S3 behind one HTTPS custom domain (`exploror.labs.pasadena.ai`), ~$10/month
-(~$8 of that is WAF), IP-restricted. CDK stack is in `infra/`. No NAT, no ALB, no Fargate, **no CloudFront**
+Lambda (dedicated VPC, isolated subnets, DynamoDB + Secrets Manager endpoints) + API Gateway + private S3 behind
+one HTTPS custom domain (`exploror.labs.pasadena.ai`), ~$18/month (~$8 WAF, ~$7 endpoint), IP-restricted.
+**The VPC Lambda has no internet egress: the ingest routes (EIA/USGS/hazard feeds) cannot run in AWS** — ingest
+locally and `sync_to_aws.py --aws-prefix v2_`. CDK stack is in `infra/`. No NAT, no ALB, no Fargate, **no CloudFront**
 (CloudFront is not offered inside the GovCloud partition; every construct here exists there too).
 
 ### Architecture

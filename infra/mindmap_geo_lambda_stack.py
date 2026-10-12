@@ -15,16 +15,19 @@ CloudFront is deliberately not used: it is not offered inside the GovCloud parti
 construct here exists there too (partition-aware ARNs via self.partition).
 Access restricted to allowed IP addresses (resource policy) plus WAF.
 
-Estimated monthly cost: ~$2
+Estimated monthly cost: ~$18
   Lambda:          $0  (free tier: 1M req/month, 400K GB-seconds)
   API Gateway:     $0  (free tier: 1M calls/month for 12 months)
+  WAF:            ~$8  (1 web ACL $5 + 3 rules $3 + $0.60/M requests)
+  Secrets Mgr endpoint (1 AZ): ~$7.30
   S3 (frontend):  ~$0.05
-  DynamoDB:       ~$1.00  (17 tables, on-demand, low traffic)
+  DynamoDB:       ~$1.00  (on-demand, low traffic; gateway endpoint is free)
   ECR:            ~$0.50  (1 image ~500MB)
+  Flow logs:      ~$0-1
   ─────────────────────────
-  Total:          ~$2/month
+  Total:          ~$18/month
 
-No NAT Gateway. No ALB. No Fargate.
+No NAT Gateway (the VPC Lambda has no internet egress). No ALB. No Fargate.
 Upgrade to Fargate track (pai-aws01-infra) when ready for multi-user access.
 
 Access restriction:
@@ -98,6 +101,7 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_certificatemanager as acm,
     aws_dynamodb as dynamodb,
+    aws_ec2 as ec2,
     aws_iam as iam,
     aws_logs as logs,
     aws_ecr as ecr,
@@ -400,6 +404,86 @@ class MindmapGeoLambdaStack(cdk.Stack):
             removal_policy=cdk.RemovalPolicy.RETAIN,
         )
 
+        # ── Network: dedicated VPC, isolated subnets, endpoints only ──────────
+        # The API Lambda runs in private-isolated subnets: no internet gateway, no NAT, so it
+        # can reach only what has an endpoint here — DynamoDB (gateway, free) and Secrets
+        # Manager (interface, one AZ to keep cost down; reachable from both AZs). Endpoint
+        # policies pin each to this stack's own resources. Flow logs go to CloudWatch.
+        # Consequence: anything needing the public internet (the /api/geo/ingest/run/* feeds:
+        # EIA, USGS, hazard adapters) cannot run from this Lambda. See KNOWN_ISSUES.md.
+        azs = [f"{self.region}a", f"{self.region}b"]
+        vpc = ec2.Vpc(
+            self, "MindmapGeoVpc",
+            vpc_name="pai-mindmap-geo-v2-vpc",
+            ip_addresses=ec2.IpAddresses.cidr("10.60.0.0/24"),
+            availability_zones=azs,              # explicit: no context lookup at synth time
+            nat_gateways=0,
+            restrict_default_security_group=True,
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name="private",
+                    subnet_type=ec2.SubnetType.PRIVATE_ISOLATED,
+                    cidr_mask=26,
+                ),
+            ],
+        )
+
+        lambda_sg = ec2.SecurityGroup(
+            self, "ApiLambdaSg", vpc=vpc, allow_all_outbound=False,
+            description="pai-mindmap-geo-v2 API Lambda: HTTPS egress only",
+        )
+        # 443 to anywhere is bounded by routing: the subnets have no route to the internet,
+        # only to the endpoints below. (A prefix-list rule would need an account lookup.)
+        lambda_sg.add_egress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(443), "HTTPS to VPC endpoints")
+        endpoint_sg = ec2.SecurityGroup(
+            self, "SecretsEndpointSg", vpc=vpc, allow_all_outbound=False,
+            description="pai-mindmap-geo-v2 Secrets Manager endpoint: HTTPS from the API Lambda only",
+        )
+        endpoint_sg.add_ingress_rule(lambda_sg, ec2.Port.tcp(443), "API Lambda")
+
+        ddb_endpoint = vpc.add_gateway_endpoint(
+            "DynamoDbEndpoint", service=ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+        )
+        ddb_endpoint.add_to_policy(iam.PolicyStatement(
+            principals=[iam.AnyPrincipal()],
+            actions=[
+                "dynamodb:BatchGetItem", "dynamodb:BatchWriteItem", "dynamodb:ConditionCheckItem",
+                "dynamodb:DeleteItem", "dynamodb:DescribeTable", "dynamodb:GetItem",
+                "dynamodb:PutItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:UpdateItem",
+            ],
+            resources=[
+                f"arn:{self.partition}:dynamodb:{self.region}:{self.account}:table/{TP}*",
+                f"arn:{self.partition}:dynamodb:{self.region}:{self.account}:table/{TP}*/index/*",
+            ],
+        ))
+
+        secrets_endpoint = vpc.add_interface_endpoint(
+            "SecretsManagerEndpoint",
+            service=ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+            subnets=ec2.SubnetSelection(
+                subnet_type=ec2.SubnetType.PRIVATE_ISOLATED, availability_zones=[azs[0]],
+            ),
+            security_groups=[endpoint_sg],
+            private_dns_enabled=True,
+        )
+        secrets_endpoint.add_to_policy(iam.PolicyStatement(
+            principals=[iam.AnyPrincipal()],
+            actions=["secretsmanager:GetSecretValue"],
+            resources=[app_secret.secret_arn],
+        ))
+
+        flow_log_group = logs.LogGroup(
+            self, "VpcFlowLogs",
+            log_group_name="/aws/vpc/pai-mindmap-geo-v2-flow",
+            retention=SEVEN_YEARS,
+            removal_policy=cdk.RemovalPolicy.RETAIN,
+        )
+        vpc.add_flow_log(
+            "FlowLogsAll",
+            destination=ec2.FlowLogDestination.to_cloud_watch_logs(flow_log_group),
+            traffic_type=ec2.FlowLogTrafficType.ALL,
+        )
+
         # ── Lambda Function (FastAPI + Mangum) ────────────────────────────────
         # Container image from ECR. Build + push before deploying (see prerequisites).
         backend_repo = ecr.Repository.from_repository_name(
@@ -457,6 +541,10 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 # origin; empty when no custom domain is configured.
                 "CORS_ORIGINS": json.dumps(site_origins),
             },
+            vpc=vpc,
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_ISOLATED),
+            security_groups=[lambda_sg],
+            allow_public_subnet=False,
             log_group=log_group,
         )
 

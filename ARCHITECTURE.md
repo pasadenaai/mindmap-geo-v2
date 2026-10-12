@@ -176,7 +176,8 @@ No GSIs yet — all reads are full scans. Add GSIs if collections grow past ~1 0
 
 ## AWS deployment architecture
 
-Lambda + API Gateway + private S3 on one HTTPS origin, ~$10/month (~$8 WAF), IP-restricted.
+Lambda (in a dedicated VPC) + API Gateway + private S3 on one HTTPS origin, ~$18/month
+(~$8 WAF, ~$7 Secrets Manager endpoint), IP-restricted.
 CDK stack: `infra/mindmap_geo_lambda_stack.py`.
 
 ```
@@ -185,9 +186,22 @@ Browser ──HTTPS (TLS 1.2+)──> exploror.labs.pasadena.ai
   ├─ GET /, /{proxy+}    →  S3 service integration (private bucket, GetObject-only IAM role)
   ├─ ANY /api/{proxy+}   →  Lambda (FastAPI + Mangum, arm64, 512MB, 30s timeout)
   └─ GET /health         →  Lambda
-                                   ↓
-                              DynamoDB (v2_* tables, on-demand, us-east-1)
+                                   ↓  (dedicated VPC, isolated subnets, no IGW/NAT)
+                              DynamoDB gateway endpoint (policy: v2_* tables)
+                              Secrets Manager interface endpoint (policy: one secret)
 ```
+
+**Network:** the API Lambda runs in private-isolated subnets of a dedicated VPC
+(`10.60.0.0/24`, 2 AZs, `pai-mindmap-geo-v2-vpc`) with no internet gateway and no NAT.
+It reaches DynamoDB through a gateway endpoint and Secrets Manager through an interface endpoint
+(one AZ, reachable from both); each endpoint policy pins it to this stack's own resources.
+VPC Flow Logs go to `/aws/vpc/pai-mindmap-geo-v2-flow`. The default VPC is not used: its subnets
+are public and shared, and the playbook standard is one VPC per project.
+
+**Consequence — ingest cannot run from this Lambda.** `POST /api/geo/ingest/run/{source_id}`
+(EIA, USGS, hazard adapters) needs the public internet and will time out. Run ingest locally and
+push with `scripts/sync_to_aws.py --aws-prefix v2_` until an ingest worker is split out
+(FEDRAMP_GAP_ANALYSIS.md P-3/P-4).
 
 **Why API Gateway fronts S3 instead of CloudFront or an S3 website:** the S3 website endpoint is
 HTTP-only (login would travel in cleartext, SC-8), and CloudFront is not offered inside the

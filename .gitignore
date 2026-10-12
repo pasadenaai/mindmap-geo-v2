@@ -19,3 +19,6 @@ geo_localstack_data/
 .DS_Store
 cdk.out/
 infra/.venv/
+
+# CDK context cache contains the account ID (lookups re-run via the CDK lookup role)
+infra/cdk.context.json

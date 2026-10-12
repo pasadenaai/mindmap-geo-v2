@@ -187,3 +187,18 @@ Cannot be proven by synth; check after first deploy: greedy `{proxy+}` keys cont
 correctly to S3 keys; `Content-Type` and `Cache-Control` pass through; binary assets (PNG)
 are byte-identical; missing keys return 404 (S3 returns 403 without ListBucket).
 
+## [OPEN] Ingest routes cannot run from the VPC Lambda (no internet egress)
+**Reported:** 2026-10-12
+**Symptom (expected, not yet observed):** `POST /api/geo/ingest/run/{source_id}` for EIA, USGS and the
+hazard adapters call public HTTP APIs; the API Lambda sits in isolated subnets with no NAT, so the call
+times out (30 s Lambda limit).
+**Why accepted:** keeping the API Lambda fully private is the SC-7 argument; a NAT is ~$33/month.
+**Workaround:** run ingest locally and push with `python scripts/sync_to_aws.py --aws-prefix v2_`.
+**Next:** split an ingest worker out of the API Lambda (FEDRAMP_GAP_ANALYSIS.md P-3, P-4).
+
+## [OPEN] cdk synth needs EC2 lookups (use the deployer profile)
+**Reported:** 2026-10-12
+`cdk synth` for this stack does an `availability-zones` context lookup, which `ecsuser` cannot do. Use
+`AWS_PROFILE=mindmap-geo-v2-deployer` (goes through the CDK lookup role). `infra/cdk.context.json` caches
+the result, contains the account ID, and is git-ignored.
+

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — dedicated VPC for the API Lambda (branch: feat/https-front-door)
+- New VPC `pai-mindmap-geo-v2-vpc` (`10.60.0.0/24`, 2 AZs, isolated subnets, no IGW/NAT, default SG restricted); the API Lambda runs in it with a security group allowing HTTPS egress only.
+- DynamoDB gateway endpoint and Secrets Manager interface endpoint (one AZ), each with an endpoint policy scoped to this stack's resources; VPC Flow Logs to `/aws/vpc/pai-mindmap-geo-v2-flow`.
+- **Behaviour change:** the ingest routes (EIA, USGS, hazard adapters) can no longer reach the internet from AWS; run ingest locally and sync. Logged in KNOWN_ISSUES.
+- Gap analysis: SC-5/SC-7 rows updated and a POA&M-style plan of action (P-1 … P-12) added.
+- `infra/cdk.context.json` git-ignored (contains the account ID). Estimated cost ~$18/month.
+
 ## 2026-10-12 — HTTPS front door via API Gateway S3 proxy (branch: feat/https-front-door)
 - Frontend moved off the HTTP-only S3 website endpoint: private bucket, served through the same API Gateway as the API (S3 service integration), so the site is HTTPS on one origin. CloudFront deliberately not used (not offered inside the GovCloud partition).
 - Regional custom domain `exploror.labs.pasadena.ai` (TLS 1.2 policy) via `cert_arn` context; ACM cert issued in aws01 and DNS-validated in the DNS account; the execute-api default endpoint is disabled when a custom domain is set.
