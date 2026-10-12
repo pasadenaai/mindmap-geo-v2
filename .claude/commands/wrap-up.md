@@ -3,3 +3,4 @@ Wrap up the session:
 2. Run /code-review and /security-review on the diff; fix findings.
 3. Update `CHANGELOG.md` (branch, PR URL, bullets), `KNOWN_ISSUES.md`, `ARCHITECTURE.md`, `ENV.md` as needed.
 4. Commit (include the Co-Authored-By trailer) and open a PR for review.
+5. Update `TODO.md`: tick finished items, move them to `CHANGELOG.md`, and add anything new that the next session must start with.
