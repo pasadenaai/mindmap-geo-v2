@@ -1,60 +1,91 @@
 # TODO — mindmap-geo-v2 (consumed at the start of the next session)
 
-Written 2026-10-11 at the end of the deploy session. State: **live** at https://exploror.labs.pasadena.ai/
-(aws01 us-east-1, stack `MindmapGeoV2Stack`), IP-restricted to the allow-listed address. PR
-[#1](https://github.com/pasadenaai/mindmap-geo-v2/pull/1) is open and **not merged**; `main` has none of this.
+Written 2026-10-12 at the end of the PR-review / credential-hygiene session. State: **live** at
+https://exploror.labs.pasadena.ai/ (aws01 us-east-1, stack `MindmapGeoV2Stack`), IP-restricted.
+PR [#1](https://github.com/pasadenaai/mindmap-geo-v2/pull/1): CI green (4 jobs), mergeable, **no human review, not merged**.
 Work top to bottom. Tick items off and move finished ones to CHANGELOG.md; never delete a KNOWN_ISSUES entry.
+Never write full account IDs, IPs or key material into this repo (`scripts/scan_secrets.sh` fails CI on them).
 
-## 1. Verify the signed-in app under the CSP  *(DONE 2026-10-12: Gene confirmed no red console errors, no 4xx; KNOWN_ISSUES entries marked FIXED)*
-The login page was verified (clean console). Nothing behind login has been exercised yet.
-- [x] Sign in at https://exploror.labs.pasadena.ai/ as `anthropic`. Open the built-in browser pane so the
-      console can be read (the pane shares this machine's allow-listed IP).
-- [x] Globe renders; hover/click a country; open the **Countries** tab (≈250 flag images); open Cloud,
-      Resources → Periodic Table, an element profile.
-- [x] `read_console_messages`: no CSP violations (`default-src 'self'`, `connect-src 'self'`,
-      `worker-src 'self' blob:`, `img-src 'self' data: blob:`).
-- [x] Network: no 403 (WAF) or 429 (throttle) on the Countries tab.
-- [x] Fix any violation in the `CSP` constant in `frontend/vite.config.js`, rebuild, upload (see CLAUDE.md
-      deploy steps), re-check. Mark the KNOWN_ISSUES CSP / throttle entries FIXED **only after Gene confirms**.
-- If sign-in fails: check `v2_geo_users` (`anthropic`; hash replaced 2026-10-11, `token_version` 2) and the
-  lockout fields (`failed_logins`, `locked_until`); 5 failures lock for 15 min.
+## Where we left off (read this first)
+- **Verified live:** signed-in app clean under the CSP, no 403/429; frontend with the autocomplete fix deployed;
+  tables, log groups and the assets bucket are RETAIN in AWS (redeployed without `data_removal=destroy`).
+- **IAM:** deployer policy is v3 (adds `ecr:DescribeImages`, drops `acm:DeleteCertificate`); the repo template and
+  the `_IAM_INLINE_POLICIES/` copy match the live policy.
+- **Walkthrough of PR #1:** block 1 (stack) and block 2 (tests + IAM template) done. **Blocks 3-5 still to review:**
+  3 runtime code (`backend/app/main.py`, `frontend/vite.config.js`, `Login.jsx`, `scripts/*`), 4 CI/housekeeping
+  (`.github/workflows/ci.yml`, `.gitignore`, `.claude/commands/*`), 5 docs accuracy.
+  Decisions already made (ARCHITECTURE.md): keep the S3 403/404 -> 404 masking; no SPA fallback; data persistence first.
 
-## 2. Re-apply the deployer IAM policy in AWS  *(DONE 2026-10-12: policy version v2 set as default; deployer `ecr describe-images` verified after ~15 s propagation; temp file deleted)*
-The repo template and local file now include `ecr:DescribeImages`; the live IAM policy does not.
-- [x] `jq 'with_entries(select(.key|startswith("_")|not))' _IAM_INLINE_POLICIES/mindmap-geo-v2-cdk-deployer-policy.json > /tmp/p.json`
-- [x] `aws --profile pasadenaai-aws1 iam create-policy-version --policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/mindmap-geo-v2-cdk-deployer --policy-document file:///tmp/p.json --set-as-default`
-- [x] Verify: `aws --profile mindmap-geo-v2-deployer ecr describe-images --repository-name pai-mindmap-geo-v2-backend --region us-east-1`
-- [x] Delete `/tmp/p.json`.
-- Do not use an admin profile unless Gene says so for that step.
+## 1. Deploy the pending retain change  *(needs Gene's explicit "deploy")*
+`v2_geo_events` is still DeletionPolicy Delete in AWS; the code (commit `3255b01`) is already RETAIN. `cdk diff` showed
+exactly one resource changing (Delete -> Retain, no replacement).
+- [ ] Deployer profile, pinned lib: `pip install aws-cdk-lib==2.240.0` in `infra/.venv`; CDK CLI is 2.1120.0.
+- [ ] `allowed_ips` = the stack output `AllowedIps`; `cert_arn` = the `aws acm list-certificates` entry for the site
+      domain (the deployer can read both). **Do not pass `data_removal`.**
+- [ ] `cdk diff` -> only `GeoEventsTable` Delete -> Retain; then
+      `cdk deploy MindmapGeoV2Stack --app "python app.py" --context allowed_ips=... --context cert_arn=...`
+- [ ] Verify: `get-template` shows 22/22 tables Retain; `/health` and `/` return 200; counts unchanged
+      (250 countries, 118 elements).
+- [ ] Promote the KNOWN_ISSUES entry "v2_geo_events kept DeletionPolicy DELETE" to FIXED.
+- The previous retain redeploy logged 3x DELETE_FAILED on the assets bucket's auto-delete custom resource
+  (cosmetic, in KNOWN_ISSUES). Cleanup may be noisy again.
 
-## 3. Rotate the leaked v1 EIA API key  *(security, outstanding since 2026-10-08)*
-The key is in the v1 repo's git history and in the live v1 Lambda environment.
-- [x] Re-register at the provider (eia.gov/opendata) — Gene (2026-10-12). **Unconfirmed that the key differs from the leaked one.**
-- [x] v2 (done 2026-10-12; secret has EIA_API_KEY + SECRET_KEY, Lambda image republished, /health 200): `aws secretsmanager put-secret-value` on `pai-mindmap-geo-v2/app` (merge into the existing JSON,
-      keep `SECRET_KEY`), then force new Lambda environments (see CLAUDE.md step 5).
-- [ ] v1: update the Lambda env var or remove it; consider scrubbing history or just treat the old key as burned.
-- [ ] Note the rotation date in KNOWN_ISSUES.
+## 2. Finish the PR #1 review and merge  *(gate: Gene's review + explicit go)*
+- [ ] Walk blocks 3-5 (above), or Gene reviews in the GitHub UI. `gh pr checks 1` must be green.
+- [ ] Merge `pasadenaai/mindmap-geo-v2#1`, then `pasadenaai/pasadena-ai-playbook#1` (pattern doc + zone correction;
+      not looked at this session; it has no CI).
+- Branch protection is **unavailable** on this plan (private repo, free tier), so CI is advisory.
+- The loop to repeat: local checks (backend pytest, infra pytest, `npm run build`, `scripts/scan_secrets.sh`) ->
+  commit -> push -> `gh pr checks` -> review -> merge -> redeploy -> verify live.
 
-## 4. Merge the PRs
-- [ ] Only after item 1 passes and Gene confirms: merge `pasadenaai/mindmap-geo-v2#1` (review + security
-      review already run; 22 backend + 11 infra tests passed; secret scan clean at last run).
-- [ ] Merge `pasadenaai/pasadena-ai-playbook#1` (pattern doc + zone correction).
-- [x] Redeployed **without** `--context data_removal=destroy` (done 2026-10-12, before the merge): 21 tables, 2 log
-      groups and the assets bucket are RETAIN. `v2_geo_events` was still DESTROY: switched to RETAIN in code (needs one more redeploy).
+## 3. Credential rotation  *(security; in progress)*
+Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in plaintext (19 rows share them).
+- [x] Clean copy built: `~/Projects/_PasadenaAI/CLAUDE_md_status_20260502_CLEAN.xlsx` (secrets removed, IDs masked, datestamped).
+- [ ] **Gene:** swap the clean copy in; delete the original and the two older copies (`..._20260430.xlsx`,
+      `~/Downloads/CLAUDE_md_status.xlsx`). Do not sync any of them to a cloud drive.
+- [ ] **aws01 `pasadenaai_aws01_ecsuser`** (old key `...AD4B`, used by profiles `default`, `bedrock-dev`,
+      `pasadenaai-aws01`): new key `...PXEM` created 2026-10-12 and written to those 3 profiles; verified via STS for
+      `default` and `bedrock-dev`.
+      - [ ] Deactivate the OLD key `...AD4B` (`iam update-access-key --status Inactive`; reversible). Unseen consumers
+            are possible: ECS task definitions, GitHub secrets, CI, the Mac mini / PC. Watch for failures for a few days.
+      - [ ] Then delete it (admin) and delete `~/.aws/credentials.bak-20261012` (it holds the OLD secret).
+      - [ ] Update the masked IDs in the tracker (rows 3-11) to `...PXEM`.
+- [ ] **Six keys in other accounts** (account suffixes 9731, 2804, 0173, 0435, 6432, 1473; profiles `pasadenaai-aws02`,
+      `-aws03`, `-aws04`, `-aws05`, `-aws06A`, `-aws07A`): check `get-access-key-last-used` with each account's own
+      profile; deactivate stale ones, rotate active ones. The aws01 admin profile cannot see them.
+- [ ] Put every new key in 1Password (not a file). Longer term: SSO / short-lived credentials (POA&M P-13).
+- [ ] **Gene:** delete the Claude Code transcript that contains all 7 old secrets, AFTER rotation:
+      `~/Desktop/Anthropic/Claude_Code/.claude/projects/-Users-mlnotes-Projects/ae0cdf68-e6cb-4b83-9c51-531779ed5f4d.jsonl`
+      (Desktop may be iCloud-synced; the content was also sent to the API, so rotation is the real remedy).
+- Facts to remember: K12/K13 in the tracker are AWS OU names (false positive, not tokens). The `pasadenaai-aws01`
+  profile is broken (`AssumeRole` on `OrganizationAccountAccessRole` denied for ecsuser; same with the old key). The
+  ecsuser carries `pai-deployer-platform/data/compute` and `pai-geo-seed`, so it is deployer-class, not minimal.
+
+## 4. Other open security items
+- [ ] **EIA key:** Gene to compare the new key's last characters to the leaked one. If identical, the leak is NOT
+      remediated. Then update or remove the old key in the v1 Lambda (needs the function name + profile); note the date.
+- [ ] **Reset the `anthropic` app password** (it appeared in a screenshot on 2026-10-12):
+      `python scripts/create_user.py anthropic --table v2_geo_users`; confirm it bumps `token_version`.
+- [ ] **Deployer is admin-equivalent** via the CDK bootstrap roles (the cfn-exec role is AdministratorAccess).
+      KNOWN_ISSUES + P-13: scope the execution policy (re-bootstrap) or use short-lived deploy credentials.
+- [ ] Stop using a `default` AWS profile bound to a long-lived key.
 
 ## Backlog (not blocking, in rough priority)
-- [ ] Deployer is admin-equivalent via the CDK bootstrap role (KNOWN_ISSUES, P-13): scope the execution policy or move to short-lived creds.
-- [ ] CI: pin GitHub Actions by commit SHA instead of tag; consider adding gitleaks and `cdk synth` once a deployer-free path exists.
 - [ ] Add WAF logging + API access logs (`--context api_access_logs=true`) + alarms — POA&M P-2.
 - [ ] Reserved Lambda concurrency (P-5); define SC-5 DoS event types in the SSP (P-6).
 - [ ] Split an ingest worker from the API Lambda; ingest feeds cannot reach the internet from the VPC Lambda
-      (P-3/P-4; routes `POST /api/geo/ingest/run/*` currently time out in AWS).
+      (P-3/P-4; routes `POST /api/geo/ingest/run/*` time out in AWS). `v2_geo_events` stays empty until then.
+- [ ] CI: pin GitHub Actions by commit SHA instead of tag; consider gitleaks in CI (needs a license on org repos).
 - [ ] Self-host the Inter font and drop Google Fonts from the CSP (P-11).
 - [ ] Route HEAD for static files and `/health` if an uptime monitor is added (KNOWN_ISSUES).
-- [ ] Untested here: WAF block behaviour, non-allow-listed IP deny, external TLS 1.0/1.1 probe.
+- [ ] Untested: WAF block behaviour, non-allow-listed IP deny, external TLS 1.0/1.1 probe.
 - [ ] Airlines (1 row) and availability zones (1 row) are thin in the v1 source data.
-- [ ] Pin or document the CDK CLI vs `aws-cdk-lib` version drift (`aws-cdk-lib==2.240.0` worked with CLI 2.1120.0).
+- [ ] Pin or document the CDK CLI vs `aws-cdk-lib` drift (CI pins 2.240.0; `infra/requirements.txt` is still a range).
 - [ ] Hazard alerts Phase 1: record real USGS/GDACS payloads for fixtures (docs/HAZARD_ALERTS_DESIGN.md).
 - [ ] Bedrock model access check (deployer lacks `bedrock:ListFoundationModels`).
-- [ ] Tracker spreadsheet `CLAUDE_md_status_20260502.xlsx` holds plaintext IAM keys: move to a secrets store.
-- [ ] Your aws profiles: `pasadenaai-aws01` (broken) vs `pasadenaai-aws1` (admin) — rename/remove the broken one.
+- [ ] Rename/remove the broken `pasadenaai-aws01` profile (or grant the assume-role); keep `pasadenaai-aws1` (admin).
+- [ ] Write the session history file ("add to history") for 2026-10-12 if not yet done.
+
+## Admin-profile use this session (audit trail)
+`pasadenaai-aws1` was used on 2026-10-12 for: IAM policy v2 and v3 creation (approved); read-only policy and exec-role
+checks; `get-access-key-last-used` / `sts get-access-key-info` lookups (approved); ecsuser key creation (approved).

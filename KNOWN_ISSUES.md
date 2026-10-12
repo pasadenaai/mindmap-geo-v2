@@ -344,3 +344,17 @@ deploys to short-lived credentials (SSO / OIDC from CI). Tracked as P-13 in FEDR
 `acm:DeleteCertificate` on `Resource: "*"` removed from the deployer policy (live policy v3, template and local
 copy updated; Sid renamed `AcmCertificateRead`). Certificate deletion is an admin action.
 
+
+## [ATTEMPTED] Plaintext AWS keys in the CLAUDE.md status tracker and a session transcript
+**Reported:** 2026-10-12
+**Symptom:** `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs (19 rows); a Claude Code session
+transcript also held all 7 secrets in plaintext.
+**Fix attempted (2026-10-12):** clean tracker copy built; the aws01 `ecsuser` key was rotated locally (new key active
+in `~/.aws/credentials`, old key still Active pending deactivation); six keys in other accounts not yet checked.
+**Needs:** deactivate/delete old keys, rotate the other six, delete the old spreadsheets and the transcript, store the
+new keys in 1Password. See TODO.md section 3.
+
+## [OPEN] pasadenaai-aws01 AWS profile cannot assume OrganizationAccountAccessRole
+**Reported:** 2026-10-12
+`sts get-caller-identity` as `pasadenaai-aws01` returns AccessDenied on `AssumeRole` (the ecsuser lacks the
+permission); identical before and after the key rotation. Use `pasadenaai-aws1` for admin work.
