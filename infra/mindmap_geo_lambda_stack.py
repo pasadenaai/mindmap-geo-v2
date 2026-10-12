@@ -121,21 +121,14 @@ APP_SECRET_NAME = "pai-mindmap-geo-v2/app"
 DEFAULT_DOMAIN = "exploror.labs.pasadena.ai"  # labs codename for mindmap-geo (domains_pasadenaai.md)
 
 # Response headers added to every object served from S3 (API responses get their own set from
-# the FastAPI middleware). Google Fonts is the only third-party origin the frontend loads.
-# TODO: self-host Inter and drop fonts.googleapis.com / fonts.gstatic.com from the CSP.
-CSP = (
-    "default-src 'self'; script-src 'self'; "
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-    "font-src 'self' data: https://fonts.gstatic.com; "
-    "img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; "
-    "base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
-)
+# the FastAPI middleware). No Content-Security-Policy here: API Gateway static header mappings
+# cannot express single quotes (the escape is emitted literally), so the SPA's CSP ships as a
+# <meta> tag injected at build time by frontend/vite.config.js.
 SECURITY_HEADERS = {
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "no-referrer",
-    "Content-Security-Policy": CSP,
 }
 
 

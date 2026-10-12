@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — first deployment (branch: feat/https-front-door)
+- **Deployed `MindmapGeoV2Stack` to aws01 us-east-1** (CloudFormation `CREATE_COMPLETE`, 76 resources) with `data_removal=destroy`; `https://exploror.labs.pasadena.ai/` serves the SPA over TLS 1.2+.
+- First attempt rolled back (Lambda role lacked VPC ENI permissions); fixed with a managed policy and regression test; retained orphans were cleaned up by an admin.
+- API Gateway emitted the CSP header with literal backslashes (`\'self\'`); CSP now ships as a `<meta>` tag injected at build time (`frontend/vite.config.js`, production build only) and the header mapping was removed. Regression test added.
+- Verified post-deploy: HTTPS 200, PNG byte-identical (SHA-256), correct content types, gzip, 404 for missing keys, `/health` 200 from the VPC Lambda, unauthenticated POST 401, raw S3 URL 403, default execute-api URL 403.
+- Not yet verified: login, globe/Countries tab under the CSP (needs a user), WAF block behaviour, non-allow-listed IP deny, TLS 1.0/1.1 rejection by an external probe. DynamoDB tables are empty (seed with `sync_to_aws.py --aws-prefix v2_`).
+
 ## 2026-10-12 — dedicated VPC for the API Lambda (branch: feat/https-front-door)
 - New VPC `pai-mindmap-geo-v2-vpc` (`10.60.0.0/24`, 2 AZs, isolated subnets, no IGW/NAT, default SG restricted); the API Lambda runs in it with a security group allowing HTTPS egress only.
 - DynamoDB gateway endpoint and Secrets Manager interface endpoint (one AZ), each with an endpoint policy scoped to this stack's resources; VPC Flow Logs to `/aws/vpc/pai-mindmap-geo-v2-flow`.

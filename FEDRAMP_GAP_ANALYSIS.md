@@ -32,7 +32,7 @@ Legend: ✅ addressed in code · 🟡 partial · ❌ gap · 📄 organizational/
 | SC-13 FIPS cryptography | ❌ | Not using FIPS endpoints or GovCloud; JWT uses HS256 with a shared secret. |
 | SI-2 Flaw remediation | 🟡 | Pinned dependencies; no automated update process. |
 | SI-4 System monitoring | ❌ | No alarms or anomaly detection. |
-| SI-10 Input validation | 🟡 | Pydantic validation on request bodies. Security headers (HSTS, CSP, nosniff, frame-deny, no-referrer) on site and API responses. CORS still allows all methods/headers with credentials, but is limited to the site's own origin. |
+| SI-10 Input validation | 🟡 | Pydantic validation on request bodies. Security headers (HSTS, nosniff, frame-deny, no-referrer) on site and API responses; the SPA's CSP ships as a `<meta>` tag at build time (API Gateway static header mappings cannot carry single quotes), so `frame-ancestors` relies on `X-Frame-Options`. CORS still allows all methods/headers with credentials, but is limited to the site's own origin. |
 | SR (supply chain) | ❌ | No SBOM, no provenance, no dependency review. |
 | PL-2, CA-2, IR-*, CP-2, AT-*, PS-*, PM-* | 📄 | No SSP, IR plan, contingency plan, training or personnel controls. Organizational, tracked in `pasadenaai/fedramp-compliance`. |
 

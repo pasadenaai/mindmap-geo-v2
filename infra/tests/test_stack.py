@@ -113,3 +113,12 @@ def test_data_removal_destroy_deletes_data_but_never_the_secret():
     assert _deletion_policies(t, "AWS::DynamoDB::Table") == {"Delete"}
     assert "Retain" not in _deletion_policies(t, "AWS::Logs::LogGroup")
     assert _deletion_policies(t, "AWS::SecretsManager::Secret") == {"Retain"}
+
+
+def test_static_header_mappings_have_no_escaped_quotes(t):
+    """Regression: API Gateway emits `\\'` literally, which silently corrupts a CSP value."""
+    for res in t.find_resources("AWS::ApiGateway::Method").values():
+        for ir in res["Properties"]["Integration"].get("IntegrationResponses", []):
+            for name, value in (ir.get("ResponseParameters") or {}).items():
+                assert "\\" not in str(value), f"{name} contains a backslash: {value}"
+                assert "Content-Security-Policy" not in name, "CSP must ship via <meta>, not a mapping"
