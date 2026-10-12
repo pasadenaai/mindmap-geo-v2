@@ -430,3 +430,14 @@ static is correct.
 dot land mask, country borders/hover/selection/fly-to, graticule, cloud region overlays,
 reference meridians (Prime, IDL, UTC zones), and the countries detail panel. All subsequent
 commits add content layers or new functionality on top of this stable base.
+
+## Design decisions (2026-10-12, review of PR #1)
+- **S3 403/404 are both returned as 404.** Deliberate obscurity: do not tell an outside party more than needed
+  (a missing key and a permission problem look the same). Check CloudWatch/S3 config, not the HTTP status, to
+  diagnose.
+- **No SPA fallback.** There is no `index.html` error document; the app has no client-side router, so no deep
+  links exist. Unknown paths are 404. Accepted: if it is down, it is down.
+- **Data persistence over rebuild speed.** Durable tables are RETAIN (default); `data_removal=destroy` is for
+  first-deploy/throwaway stacks only. Repopulating gets slower as the dataset grows, so avoid any path that wipes it.
+  Exception pending decision: `v2_geo_events` (TTL-expired raw events), see KNOWN_ISSUES.
+

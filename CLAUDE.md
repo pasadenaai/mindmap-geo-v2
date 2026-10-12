@@ -183,7 +183,7 @@ aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.ht
 - Target account: whichever the active AWS profile resolves to (`CDK_DEFAULT_ACCOUNT`, us-east-1); no account IDs are stored in this repo
 - CDK bootstrap is required once per account/region
 - Deploy identity: IAM user `mindmap-geo-v2-cdk-deployer` (permissions in `infra/iam/cdk-deployer-policy.template.json`); it assumes the account's CDK bootstrap roles, so it holds no direct create rights. `ecsuser` stays app-runtime only
-- `ensure_tables()` is skipped in Lambda (APP_ENV=aws) — CDK creates all 17 tables on first deploy
+- `ensure_tables()` is skipped in Lambda (APP_ENV=aws) — CDK creates all 22 tables on first deploy
 
 ### DynamoDB tables (us-east-1)
 All tables use on-demand billing with PITR enabled and `RemovalPolicy.RETAIN`.

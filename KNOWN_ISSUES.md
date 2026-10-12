@@ -296,3 +296,29 @@ Gene completed the signed-in walk-through (TODO #1) and confirmed: no red consol
 network tab. The CSP-meta approach, the `/api/`-scoped WAF rate rule and the 200 rps / burst 400 throttle are
 therefore marked FIXED. Not covered by this check: WAF block behaviour, non-allow-listed IP deny, external
 TLS 1.0/1.1 probe (still in the TODO backlog).
+
+## [FIXED] Tables held a DELETE policy after the first-deploy `data_removal=destroy` flag
+**Reported:** 2026-10-12
+**Symptom:** the live stack was created with `data_removal=destroy`, so tables, log groups and the assets bucket
+would have been deleted with the stack.
+**Fix:** redeployed without the flag (2026-10-12, 407 s, `UPDATE_COMPLETE`). `cdk diff` beforehand showed only
+`DeletionPolicy`/`UpdateReplacePolicy` Delete → Retain on 21 tables and 2 log groups, no replacement. Verified after:
+21 tables Retain, app secret Retain, assets bucket Retain; seeded row counts unchanged; site and `/health` 200.
+
+## [OPEN] v2_geo_events keeps DeletionPolicy DELETE (deliberate, decision pending)
+**Reported:** 2026-10-12
+`GeoEventsTable` (`v2_geo_events`) is hard-coded `RemovalPolicy.DESTROY` in `infra/mindmap_geo_lambda_stack.py`:
+raw normalized hazard events, high churn, expired by TTL, no PITR, empty today (ingest cannot run in AWS). The
+stack therefore has 22 tables: 21 durable + this one. Decide whether to keep it ephemeral (re-derivable from the
+feeds) or switch it to `data_removal`/RETAIN.
+
+## [ATTEMPTED] DELETE_FAILED on the assets bucket's auto-delete custom resource during the retain redeploy
+**Reported:** 2026-10-12
+**Symptom:** CloudFormation cleanup logged three DELETE_FAILED for `Custom::S3AutoDeleteObjects` (handler role got
+AccessDenied on `s3:GetBucketTagging`); the stack still ended `UPDATE_COMPLETE`.
+**Root cause:** the same update removed the bucket-policy statement that granted the handler role access, before
+the custom resource was deleted. The handler failed before deleting anything, so no objects were removed.
+**Resolution:** the resource is no longer in the template; the assets bucket is Retain. Cosmetic. The frontend
+bucket still uses auto-delete (rebuildable), so the provider Lambda and role remain by design.
+**Not verified:** the assets bucket's contents (the deployer lacks `s3:ListBucket` on it).
+
