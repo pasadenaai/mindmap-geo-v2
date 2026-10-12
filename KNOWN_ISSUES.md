@@ -202,3 +202,23 @@ times out (30 s Lambda limit).
 `AWS_PROFILE=mindmap-geo-v2-deployer` (goes through the CDK lookup role). `infra/cdk.context.json` caches
 the result, contains the account ID, and is git-ignored.
 
+## [ATTEMPTED] Static assets counted against WAF rate rule and stage throttle
+**Reported:** 2026-10-12 (code review)
+**Symptom (predicted):** the country list renders one flag `<img>` per row (~250); with the SPA now served
+through API Gateway these count toward the WAF per-IP rate rule (1000/5 min) and the stage throttle
+(was 50 rps / burst 20), causing 403/429 on the countries tab.
+**Fix attempted:** rate rule scoped to `/api/`; stage throttle 200 rps / burst 400; hashed bundles
+immutable, other files 5 min cache. **Needs:** post-deploy confirmation (open Countries tab, no 4xx).
+
+## [OPEN] CSP not yet exercised against the built app
+**Reported:** 2026-10-12 (code review)
+`script-src 'self'`, `connect-src 'self'`, `worker-src 'self' blob:` were written without running the
+built Three.js app under them; local dev sends no CSP. After deploy, check the browser console for
+violations and adjust `CSP` in `infra/mindmap_geo_lambda_stack.py`.
+
+## [OPEN] ApiS3ReadRole trust policy has no confused-deputy condition
+**Reported:** 2026-10-12 (code review)
+`apigateway.amazonaws.com` is trusted without `aws:SourceAccount`/`aws:SourceArn`. Not applied because
+the supported condition keys for the API Gateway service principal were not verified and a wrong key
+would break static serving. Low impact (bucket holds only public build output).
+
