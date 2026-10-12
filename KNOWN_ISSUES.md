@@ -240,3 +240,22 @@ RETAIN). Default stays RETAIN. Covered by `infra/tests/test_stack.py`.
 `aws secretsmanager delete-secret --secret-id pai-mindmap-geo-v2/app --force-delete-without-recovery`
 (admin identity) before retrying.
 
+## [ATTEMPTED] CSP header emitted with literal backslashes by API Gateway
+**Reported:** 2026-10-12 (found in the first post-deploy check)
+**Symptom:** `content-security-policy: default-src \'self\'; ...` — the `\'` escape in a static header
+mapping is not interpreted, so every source expression is invalid and a browser would block scripts.
+**Fix attempted:** header mapping removed; CSP injected as `<meta http-equiv>` by a build-only Vite plugin
+(`frontend/vite.config.js`). Login page loads with a clean console on the live site.
+**Needs user confirmation:** globe, Countries tab and DataPanel under the CSP (requires an authenticated session).
+
+## [OPEN] HEAD requests to the site return 403
+**Reported:** 2026-10-12
+Only `GET` is routed for static files and `/health`, so `curl -I` and uptime monitors using HEAD get
+403 "Missing Authentication Token". Browsers are unaffected. Add HEAD methods if a monitor needs them.
+
+## [OPEN] Site has no data until the v2 tables are seeded
+**Reported:** 2026-10-12
+All `v2_*` tables are empty after the first deploy; `/api/geo/countries` returns an empty list. Seed with
+`python scripts/sync_to_aws.py --aws-prefix v2_` (needs the LocalStack data dir from the old repo) and create a
+login with `python scripts/create_user.py <username> --table v2_geo_users`.
+
