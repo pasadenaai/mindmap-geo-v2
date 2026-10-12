@@ -69,6 +69,8 @@ POST   /api/geo/ingest/run/:source_id            (auth; cannot reach the interne
 POST   /api/auth/login, /refresh, /logout; GET /api/auth/me; POST /api/auth/register (closed unless ALLOW_REGISTRATION)
 
 GET    /health
+
+POST   /api/agent    {query} -> {action: {type:'select_country', cca2}|null, message}   (auth required; agent Lambda in AWS)
 ```
 
 **Auth:** every POST/PATCH/PUT/DELETE under `/api/geo/*` requires `Authorization: Bearer <access token>`
@@ -160,6 +162,12 @@ python scripts/sync_to_aws.py --aws-prefix v2_
 # Create a login (registration is closed in AWS)
 python scripts/create_user.py <username> --table v2_geo_users
 ```
+
+### Agent Lambda (natural-language search)
+Separate function `pai-mindmap-geo-v2-agent`, outside the VPC, same ECR image (`cmd app.agent_main.handler`). Deploy order:
+rebuild + push the image, `cdk deploy`, then add the key: merge `ANTHROPIC_API_KEY` into the `pai-mindmap-geo-v2/app`
+secret (same pattern as `EIA_API_KEY`) and update both functions' code (`aws lambda update-function-code` for
+`pai-mindmap-geo-v2-backend` and `pai-mindmap-geo-v2-agent`).
 
 ### Updating after code changes
 ```bash

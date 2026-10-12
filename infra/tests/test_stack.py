@@ -49,10 +49,58 @@ def test_no_internet_path_from_vpc(t):
     t.resource_count_is("AWS::EC2::FlowLog", 1)
 
 
+def _image_fn(t, name):
+    fns = t.find_resources("AWS::Lambda::Function", {"Properties": {"FunctionName": name}})
+    assert len(fns) == 1, name
+    return next(iter(fns.values()))["Properties"]
+
+
 def test_api_lambda_runs_in_vpc(t):
+    assert "VpcConfig" in _image_fn(t, "pai-mindmap-geo-v2-backend")
+
+
+def test_only_two_image_functions_and_only_the_agent_is_outside_the_vpc(t):
+    """The no-egress boundary stays intact: exactly one function (the agent) is outside the VPC."""
     fns = t.find_resources("AWS::Lambda::Function", {"Properties": {"PackageType": "Image"}})
-    assert len(fns) == 1
-    assert "VpcConfig" in next(iter(fns.values()))["Properties"]
+    outside = [r["Properties"]["FunctionName"] for r in fns.values() if "VpcConfig" not in r["Properties"]]
+    assert outside == ["pai-mindmap-geo-v2-agent"]
+    assert _image_fn(t, "pai-mindmap-geo-v2-agent")["ImageConfig"]["Command"] == ["app.agent_main.handler"]
+
+
+def _agent_policy_statements(t):
+    out = []
+    for res in t.find_resources("AWS::IAM::Policy").values():
+        if res["Properties"]["PolicyName"] == "pai-mindmap-geo-v2-agent":
+            out = res["Properties"]["PolicyDocument"]["Statement"]
+    assert out, "agent policy not found"
+    return out
+
+
+def test_agent_role_is_read_only_and_scoped(t):
+    """The agent can read the secret and the countries table and nothing else (no writes, no S3, no wildcards)."""
+    stmts = _agent_policy_statements(t)
+    actions = {a for st in stmts for a in (st["Action"] if isinstance(st["Action"], list) else [st["Action"]])}
+    assert actions == {
+        "secretsmanager:GetSecretValue",
+        "dynamodb:GetItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:DescribeTable",
+        "logs:CreateLogStream", "logs:PutLogEvents",
+    }
+    ddb = next(st for st in stmts if st.get("Sid") == "ReadCountriesTableOnly")
+    assert "geo_countries" in str(ddb["Resource"]) and "*" not in str(ddb["Resource"]).replace("::", "")
+    assert not any(st["Resource"] == "*" for st in stmts)
+
+
+def test_agent_route_is_post_only_with_its_own_throttle(t):
+    resources = t.find_resources("AWS::ApiGateway::Resource", {"Properties": {"PathPart": "agent"}})
+    assert len(resources) == 1
+    methods = t.find_resources("AWS::ApiGateway::Method", {"Properties": {"HttpMethod": "POST"}})
+    assert any("Agent" in str(m["Properties"]["Integration"]["Uri"]) for m in methods.values())
+    t.has_resource_properties("AWS::ApiGateway::Stage", {
+        "MethodSettings": Match.array_with([Match.object_like({
+            "ResourcePath": "/~1api~1agent", "HttpMethod": "POST",
+            "ThrottlingRateLimit": 2, "ThrottlingBurstLimit": 5,
+        })]),
+    })
 
 
 def test_lambda_role_can_manage_vpc_enis(t):

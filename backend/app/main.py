@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.security import require_auth
 from app.repositories.dynamo import ensure_tables
-from app.routers import geo, elements, ingest, auth
+from app.routers import geo, elements, ingest, auth, agent as agent_router
 from app.ingest.registry import SOURCES
 
 logging.basicConfig(level=logging.INFO)
@@ -79,6 +79,9 @@ async def security_headers(request: Request, call_next):
 
 
 app.include_router(auth.router, prefix="/api")
+# In AWS the agent runs as its own non-VPC Lambda (app/agent_main.py); the VPC Lambda has no egress.
+if settings.app_env != "aws":
+    app.include_router(agent_router.router, prefix="/api")
 # Data routers: all writes require an access token (see core.security.require_auth)
 _protected = [Depends(require_auth)]
 app.include_router(geo.router, prefix="/api", dependencies=_protected)

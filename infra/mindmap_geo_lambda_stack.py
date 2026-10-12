@@ -564,6 +564,70 @@ class MindmapGeoLambdaStack(cdk.Stack):
             log_group=log_group,
         )
 
+        # ── Agent Lambda (natural-language search; Anthropic API) ─────────────
+        # A SEPARATE function OUTSIDE the VPC. The API Lambda above has no internet egress by
+        # design, and the Anthropic API is a public endpoint, so the one function that needs egress
+        # is isolated rather than giving the whole API a NAT. It holds only: read of the app secret
+        # (JWT key to verify tokens + ANTHROPIC_API_KEY), read of the countries table, and logs. It
+        # cannot write to DynamoDB, touch S3, or reach the VPC. Same image, different handler.
+        # Recorded as FEDRAMP_GAP_ANALYSIS.md P-14 (egress to a commercial third-party API).
+        agent_role = iam.Role(
+            self, "MindmapGeoAgentRole",
+            role_name="pai-mindmap-geo-v2-agent-role",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+        )
+        agent_role.attach_inline_policy(iam.Policy(
+            self, "PaiMindmapGeoAgentPolicy",
+            policy_name="pai-mindmap-geo-v2-agent",
+            statements=[
+                iam.PolicyStatement(
+                    sid="ReadAppSecret",
+                    actions=["secretsmanager:GetSecretValue"],
+                    resources=[app_secret.secret_arn],
+                ),
+                iam.PolicyStatement(
+                    sid="ReadCountriesTableOnly",
+                    actions=["dynamodb:GetItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:DescribeTable"],
+                    resources=[f"arn:{self.partition}:dynamodb:{self.region}:{self.account}:table/{TP}geo_countries"],
+                ),
+                iam.PolicyStatement(
+                    sid="CloudWatchLogs",
+                    actions=["logs:CreateLogStream", "logs:PutLogEvents"],
+                    resources=[
+                        f"arn:{self.partition}:logs:{self.region}:{self.account}:log-group:/aws/lambda/pai-mindmap-geo-v2-agent",
+                        f"arn:{self.partition}:logs:{self.region}:{self.account}:log-group:/aws/lambda/pai-mindmap-geo-v2-agent:*",
+                    ],
+                ),
+            ],
+        ))
+        agent_log_group = logs.LogGroup(
+            self, "MindmapGeoAgentLogs",
+            log_group_name="/aws/lambda/pai-mindmap-geo-v2-agent",
+            retention=SEVEN_YEARS,
+            removal_policy=data_removal,
+        )
+        agent_fn = lambda_.DockerImageFunction(
+            self, "MindmapGeoAgentFn",
+            function_name="pai-mindmap-geo-v2-agent",
+            code=lambda_.DockerImageCode.from_ecr(
+                repository=backend_repo,
+                tag_or_digest="latest",
+                cmd=["app.agent_main.handler"],
+            ),
+            architecture=lambda_.Architecture.ARM_64,
+            role=agent_role,
+            timeout=cdk.Duration.seconds(20),
+            memory_size=512,
+            environment={
+                "APP_ENV": "aws",
+                "SECRETS_BACKEND": "aws",
+                "AWS_SECRET_NAME": APP_SECRET_NAME,
+                "DYNAMO_GEO_COUNTRIES_TABLE": f"{TP}geo_countries",
+                "CORS_ORIGINS": json.dumps(site_origins),
+            },
+            log_group=agent_log_group,
+        )
+
         # ── S3 buckets (both PRIVATE) ─────────────────────────────────────────
         # No S3 website endpoint (it is HTTP-only and would fail SC-8). The frontend bucket is
         # read only by the API Gateway service-integration role defined below.
@@ -625,6 +689,11 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 # scoped to /api/ plus Lambda concurrency (FEDRAMP_GAP_ANALYSIS.md P-5).
                 throttling_rate_limit=200,
                 throttling_burst_limit=400,
+                method_options={
+                    "/api/agent/POST": apigw.MethodDeploymentOptions(
+                        throttling_rate_limit=2, throttling_burst_limit=5,
+                    ),
+                },
                 access_log_destination=(
                     apigw.LogGroupLogDestination(access_log_group) if access_log_group else None
                 ),
@@ -670,7 +739,14 @@ class MindmapGeoLambdaStack(cdk.Stack):
             proxy=True,
             allow_test_invoke=False,
         )
-        api.root.add_resource("api").add_resource("{proxy+}").add_method("ANY", backend_integration)
+        api_resource = api.root.add_resource("api")
+        api_resource.add_resource("{proxy+}").add_method("ANY", backend_integration)
+        # A static /api/agent resource wins over /api/{proxy+}: this one route goes to the agent
+        # Lambda (outside the VPC). Every call can spend model budget, so it has its own tight
+        # method-level throttle on top of the stage default and the WAF rate rule.
+        api_resource.add_resource("agent").add_method(
+            "POST", apigw.LambdaIntegration(agent_fn, proxy=True, allow_test_invoke=False),
+        )
         api.root.add_resource("health").add_method("GET", backend_integration)
 
         # ── Static site routes: everything else → private S3 ──────────────────

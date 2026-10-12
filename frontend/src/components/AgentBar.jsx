@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useGeoStore } from '../store'
 import { resolveCountries } from '../agent/resolve'
 import { runAction } from '../agent/actions'
+import { agent } from '../api'
 import './AgentBar.css'
 
 // Typing any letter or digit anywhere (outside a text field) opens this bar with that character
@@ -23,10 +24,15 @@ export default function AgentBar() {
   const [query, setQuery]     = useState('')
   const [active, setActive]   = useState(0)
   const [message, setMessage] = useState('')
+  const [asking, setAsking]   = useState(false)
+  const askRef = useRef(0)            // bumped to cancel/ignore an in-flight assistant request
   const inputRef = useRef(null)
   const wrapRef  = useRef(null)
 
-  const close = useCallback(() => { setOpen(false); setQuery(''); setActive(0); setMessage('') }, [])
+  const close = useCallback(() => {
+    askRef.current += 1
+    setOpen(false); setQuery(''); setActive(0); setMessage(''); setAsking(false)
+  }, [])
 
   // Global "just start typing" listener.
   useEffect(() => {
@@ -62,10 +68,36 @@ export default function AgentBar() {
 
   const results = useMemo(() => resolveCountries(query, globeCountries), [query, globeCountries])
 
+  // The local resolver found nothing: ask the backend assistant (Anthropic API, server-side). Its
+  // answer goes through the same validated action path as a local result.
+  async function askAssistant() {
+    const q = query.trim()
+    if (!q || asking) return
+    const id = ++askRef.current
+    setAsking(true)
+    setMessage('Asking the assistant…')
+    try {
+      const res = await agent.resolve(q)
+      if (askRef.current !== id) return               // closed, edited or superseded meanwhile
+      if (!res?.action) { setMessage(`No match for “${q}”`); return }
+      const r = runAction(res.action, { globeCountries, selectedCountry, setSelectedCountry })
+      if (r.ok) close()
+      else setMessage(`Can't do that: ${r.reason}`)
+    } catch (err) {
+      if (askRef.current === id) {
+        setMessage(/→ 401/.test(String(err?.message))
+          ? 'Your session expired. Sign in again.'
+          : 'Assistant unavailable. Try a country name.')
+      }
+    } finally {
+      if (askRef.current === id) setAsking(false)
+    }
+  }
+
   function execute(result) {
     if (!result) {
       if (globeCountries.length === 0) setMessage('Countries are still loading, try again in a moment')
-      else setMessage(query.trim() ? `No match for “${query.trim()}”` : '')
+      else askAssistant()
       return
     }
     const r = runAction(result.action, { globeCountries, selectedCountry, setSelectedCountry })
@@ -84,7 +116,7 @@ export default function AgentBar() {
 
   const loading = globeCountries.length === 0
   const status = loading ? 'Loading countries…'
-    : results.length === 0 && query.trim() ? `No match for “${query.trim()}”`
+    : results.length === 0 && query.trim() ? 'No local match. Press Enter to ask the assistant'
     : `${results.length} result${results.length === 1 ? '' : 's'}`
 
   return (
@@ -100,7 +132,7 @@ export default function AgentBar() {
           type="text"
           value={query}
           placeholder="Where to? Try “france”, “jp” or “show me the uk”"
-          onChange={e => { setQuery(e.target.value); setActive(0); setMessage('') }}
+          onChange={e => { askRef.current += 1; setAsking(false); setQuery(e.target.value); setActive(0); setMessage('') }}
           onKeyDown={onInputKey}
           role="combobox"
           aria-expanded={results.length > 0}

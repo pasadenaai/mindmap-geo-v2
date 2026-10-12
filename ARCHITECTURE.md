@@ -442,7 +442,12 @@ commits add content layers or new functionality on top of this stable base.
   This includes `v2_geo_events` (TTL-expired raw events): Gene chose RETAIN for it too; a test asserts that all
   tables are Retain by default.
 
-## Type-to-search agent bar (2026-10-12)
+## Type-to-search assistant bar (2026-10-12)
+**Terminology (decided 2026-10-12):** this feature is a *search assistant*: ONE schema-forced model call whose answer
+is validated and then executed by the UI. It is deliberately **not an agent** (no tool loop, no multi-step planning, no
+autonomy). The word "agent" is reserved for future functionality that will actually loop over tools. Code paths still
+use the historical names `agent/`, `/api/agent` and `pai-mindmap-geo-v2-agent`; a real agent should live under a
+different namespace (e.g. `/api/agents/*`) or this one should be renamed first (cheapest before first deploy).
 **Decision:** phased. Phase 1 is a client-side, deterministic resolver; Phase 2 may swap in an LLM-backed endpoint.
 - **UI:** `AgentBar.jsx` listens on `document` for a single unmodified letter/digit while no text field is focused
   (`INPUT`/`TEXTAREA`/`SELECT`/contenteditable are ignored), opens with that character, and runs Enter / click on the
@@ -451,7 +456,20 @@ commits add content layers or new functionality on top of this stable base.
   `agent/actions.js`, which rejects unknown types, malformed codes, unknown countries and countries without globe
   geometry. The resolver today and a model tomorrow must both pass that gate, so a model cannot make the UI do
   anything outside the allow-list. Adding an action type means editing `ACTION_TYPES` (resolve.js) and `validateAction`.
-- **Why not an LLM now:** the API Lambda has no internet egress, so Bedrock needs a `bedrock-runtime` VPC interface
+- **Phase 2 (built 2026-10-12): backend assistant (single call, not an agent).** `POST /api/agent` {query} -> {action, message}. When the local
+  resolver finds nothing, the bar calls it. It runs as its **own Lambda outside the VPC** (`pai-mindmap-geo-v2-agent`,
+  same image, handler `app.agent_main.handler`) because the API Lambda has no internet egress and the Anthropic API is
+  public. Route precedence: the static `/api/agent` resource wins over `/api/{proxy+}`. Flow: JWT verified (same
+  `SECRET_KEY`) -> globe countries read from the DynamoDB countries table (cached 5 min per container) -> one Messages
+  call to the model (Haiku 4.5, temperature 0, forced tool call `select_country{cca2}` | `no_match`, country list in a
+  prompt-cached system block) -> the returned CCA2 is **validated against the table** before it is returned ->
+  the frontend validates again through `agent/actions.js`. Failures return a generic 503 (no upstream detail).
+- **Agent Lambda blast radius:** its role can only read the app secret, read the countries table and write its own
+  logs (asserted by `infra/tests`). Method-level throttle 2 rps / burst 5 on `POST /api/agent` plus the WAF `/api/` rate
+  rule; the endpoint always requires an access token. Boundary exception recorded as FEDRAMP P-14.
+- **Not deployed by merging:** needs the image rebuilt and pushed to ECR, `cdk deploy`, and `ANTHROPIC_API_KEY` added to
+  the secret out-of-band.
+- **Why not an LLM in Phase 1:** the API Lambda has no internet egress, so Bedrock needs a `bedrock-runtime` VPC interface
   endpoint (~$7/month + endpoint policy + IAM) and a new authenticated, throttled `/api/agent` route (cost control,
   prompt-injection handling). Deferred until the action set justifies it (see TODO backlog).
 - **Effect on the CSP:** none (no new origins, no inline script).

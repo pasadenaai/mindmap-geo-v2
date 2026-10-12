@@ -89,7 +89,19 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
       KNOWN_ISSUES + P-13: scope the execution policy (re-bootstrap) or use short-lived deploy credentials.
 - [ ] Stop using a `default` AWS profile bound to a long-lived key.
 
+## Agent backend rollout  *(needs Gene: key + explicit "deploy")*
+- [ ] Add `ANTHROPIC_API_KEY` to the `pai-mindmap-geo-v2/app` secret (Gene; Claude never handles the key).
+- [ ] Build + push the arm64 image (adds the `anthropic` SDK), `cdk diff` (expect: new function, role, log group,
+      `/api/agent` resource+method, stage method throttle; nothing else), `cdk deploy`.
+- [ ] Update code of both Lambdas, then verify: signed-in `POST /api/agent` for "largest country in south america"
+      returns BR; unauthenticated call -> 401; CloudWatch shows no key in logs.
+- [ ] Publish the frontend that calls `/api/agent` (S3 sync from `main`).
+- [ ] Set a monthly Anthropic spend cap; consider Bedrock (P-14).
+
 ## Backlog (not blocking, in rough priority)
+- [ ] Naming: `/api/agent`, `agent/` and `pai-mindmap-geo-v2-agent` are a single-call assistant. Gene plans real agent
+      functionality elsewhere in the app, so rename these (e.g. `assistant`) BEFORE the first deploy of the Lambda, or give
+      real agents a separate namespace (`/api/agents/*`). Renaming after deploy means a function replacement.
 - [ ] Agent bar Phase 2 (decision needed): extend actions beyond countries (Periodic Table element, DataPanel tab,
       cloud region, airline, resource layers) and/or an LLM-backed `/api/agent` route. LLM needs: Bedrock VPC endpoint
       (~$7/mo), model access check, IAM, auth required + throttle, structured-output schema = `ACTION_TYPES`, tests.

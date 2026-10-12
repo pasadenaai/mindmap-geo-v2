@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-12 — agent bar published; backend assistant (branch: feat/agent-backend-api)
+- Published the Phase 1 bar to the live site (S3 upload from `main` 4648421; live bundle verified, `/` and `/health` 200).
+- New `POST /api/agent`: a single-call search assistant (not an agent; see ARCHITECTURE.md terminology). Anthropic Messages API, forced tool call, answer validated against the DynamoDB countries
+  table) served by a new non-VPC Lambda `pai-mindmap-geo-v2-agent` (read-only role, own throttle, FEDRAMP P-14).
+- Frontend: when the local resolver finds nothing, Enter asks the assistant; failures degrade to a message.
+- Tests: backend +9 (31 total), infra +4 (18 total; boundary tests verified to fail when broken).
+- **Not deployed**: needs image push, `cdk deploy`, and `ANTHROPIC_API_KEY` in Secrets Manager (see CLAUDE.md).
+
 ## 2026-10-12 — type-to-search agent bar, Phase 1 (branch: feat/agent-search-bar)
 - New `AgentBar`: typing any letter/digit outside a text field opens a search bar; Enter flies the globe to the country
   (same store path as the Countries menu). Resolver handles names, official names, cca2/cca3 codes, common aliases
