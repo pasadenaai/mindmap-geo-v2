@@ -225,7 +225,7 @@ LLM_MODEL_ID = <model id>               (provider-specific; verify)
 
 | Phase | Scope | Done when |
 |---|---|---|
-| 0 ✅ | Schema + tables in CDK, adapter interface, fixtures | Tables synthesize (not yet deployed); USGS and GDACS parsers pass fixture tests. **Done 2026-10-11** — see `backend/app/hazards/`, `backend/tests/test_hazards.py`, and the four `v2_geo_events/alerts/alerts_archive/event_rollups` tables in the CDK stack. Fixtures are hand-written approximations: record real payloads before Phase 1. |
+| 0 ✅ | Schema + tables in CDK, adapter interface, fixtures | Tables are deployed in the live stack (2026-10-12); USGS and GDACS parsers pass fixture tests. **Done 2026-10-11** — see `backend/app/hazards/`, `backend/tests/test_hazards.py`, and the four `v2_geo_events/alerts/alerts_archive/event_rollups` tables in the CDK stack. Fixtures are hand-written approximations: record real payloads before Phase 1. |
 | 1 | USGS quakes + GDACS + EONET; deterministic scoring; globe layer; deterministic banner (no LLM) | Events visible globally within 15 min of publication; scoring tests green |
 | 2 | Strands agent on Bedrock; alerts panel; server-side validation; provider switch | Agent output always passes validation; Anthropic path passes same tests with a fake and manual eval |
 | 3 | FIRMS, cyclone tracks, tsunami, volcano aviation codes; more travel/supply precision (mine/port coordinates) | Added source-by-source behind flags |

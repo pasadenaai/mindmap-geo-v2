@@ -59,6 +59,12 @@ POST   /api/geo/configs
 PATCH  /api/geo/configs/:id
 DELETE /api/geo/configs/:id
 
+GET    /api/geo/elements, /elements/symbol/:symbol, /elements/:atomic_number, /elements/country/:cca2   (PUT = auth)
+GET    /api/geo/ingest/sources, /sources/:id, /log, /log/:run_id, /resources/:cca2
+POST   /api/geo/ingest/run/:source_id            (auth; cannot reach the internet from the AWS VPC Lambda)
+
+POST   /api/auth/login, /refresh, /logout; GET /api/auth/me; POST /api/auth/register (closed unless ALLOW_REGISTRATION)
+
 GET    /health
 ```
 
@@ -186,7 +192,7 @@ aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.ht
 - `ensure_tables()` is skipped in Lambda (APP_ENV=aws) — CDK creates all 22 tables on first deploy
 
 ### DynamoDB tables (us-east-1)
-All tables use on-demand billing with PITR enabled and `RemovalPolicy.RETAIN`.
+22 tables (names carry the `v2_` prefix in AWS). All use on-demand billing and `RemovalPolicy.RETAIN`; PITR is on except `geo_events` (TTL-expired, high churn).
 
 | Table | Partition Key | Notes |
 |---|---|---|
@@ -207,6 +213,11 @@ All tables use on-demand billing with PITR enabled and `RemovalPolicy.RETAIN`.
 | `geo_country_resources` | `cca2` | Energy resources per country (EIA) |
 | `geo_ingest_sources` | `source_id` | External data source registry |
 | `geo_ingest_log` | `run_id` | Ingestion run history |
+| `geo_users` | `user_id` | Accounts (GSI on `username`); never synced between environments |
+| `geo_events` | `event_id` | Normalized hazard events, TTL; GSI `hazard` + `event_time` |
+| `geo_alerts` | `alert_id` | Live advisory alerts; GSI `status` + `created_at` |
+| `geo_alerts_archive` | `hazard` + `created_at_alert_id` | Alert history; GSI `primary_cca2` + `created_at` |
+| `geo_event_rollups` | `cca2` + `day_hazard` | Daily per-country, per-hazard rollups |
 
 ## Session conventions
 
