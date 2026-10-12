@@ -55,6 +55,18 @@ def test_api_lambda_runs_in_vpc(t):
     assert "VpcConfig" in next(iter(fns.values()))["Properties"]
 
 
+def test_lambda_role_can_manage_vpc_enis(t):
+    """Regression: a role passed to the function does not get the VPC policy automatically."""
+    t.has_resource_properties("AWS::IAM::Role", {
+        "RoleName": "pai-mindmap-geo-v2-lambda-role",
+        "ManagedPolicyArns": Match.array_with([
+            Match.object_like({"Fn::Join": Match.array_with([Match.array_with([
+                Match.string_like_regexp("service-role/AWSLambdaVPCAccessExecutionRole"),
+            ])])}),
+        ]),
+    })
+
+
 def test_waf_attached_to_stage(t):
     t.resource_count_is("AWS::WAFv2::WebACL", 1)
     t.resource_count_is("AWS::WAFv2::WebACLAssociation", 1)

@@ -331,6 +331,13 @@ class MindmapGeoLambdaStack(cdk.Stack):
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
         )
 
+        # CDK only attaches the VPC ENI permissions when it creates the role itself; this role
+        # is passed in, so without this the function create fails with "execution role does not
+        # have permissions to call CreateNetworkInterface".
+        lambda_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name(
+            "service-role/AWSLambdaVPCAccessExecutionRole"
+        ))
+
         # ── Inline policy 1: pai-mindmap-geo-v2-execution ────────────────────────
         # CloudWatch Logs + read of the single app secret (least privilege).
         lambda_role.attach_inline_policy(iam.Policy(
