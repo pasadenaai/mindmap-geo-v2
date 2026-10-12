@@ -202,7 +202,7 @@ times out (30 s Lambda limit).
 `AWS_PROFILE=mindmap-geo-v2-deployer` (goes through the CDK lookup role). `infra/cdk.context.json` caches
 the result, contains the account ID, and is git-ignored.
 
-## [ATTEMPTED] Static assets counted against WAF rate rule and stage throttle
+## [FIXED] Static assets counted against WAF rate rule and stage throttle
 **Reported:** 2026-10-12 (code review)
 **Symptom (predicted):** the country list renders one flag `<img>` per row (~250); with the SPA now served
 through API Gateway these count toward the WAF per-IP rate rule (1000/5 min) and the stage throttle
@@ -210,7 +210,7 @@ through API Gateway these count toward the WAF per-IP rate rule (1000/5 min) and
 **Fix attempted:** rate rule scoped to `/api/`; stage throttle 200 rps / burst 400; hashed bundles
 immutable, other files 5 min cache. **Needs:** post-deploy confirmation (open Countries tab, no 4xx).
 
-## [OPEN] CSP not yet exercised against the built app
+## [FIXED] CSP not yet exercised against the built app
 **Reported:** 2026-10-12 (code review)
 `script-src 'self'`, `connect-src 'self'`, `worker-src 'self' blob:` were written without running the
 built Three.js app under them; local dev sends no CSP. After deploy, check the browser console for
@@ -240,7 +240,7 @@ RETAIN). Default stays RETAIN. Covered by `infra/tests/test_stack.py`.
 `aws secretsmanager delete-secret --secret-id pai-mindmap-geo-v2/app --force-delete-without-recovery`
 (admin identity) before retrying.
 
-## [ATTEMPTED] CSP header emitted with literal backslashes by API Gateway
+## [FIXED] CSP header emitted with literal backslashes by API Gateway
 **Reported:** 2026-10-12 (found in the first post-deploy check)
 **Symptom:** `content-security-policy: default-src \'self\'; ...` — the `\'` escape in a static header
 mapping is not interpreted, so every source expression is invalid and a browser would block scripts.
@@ -268,7 +268,7 @@ Still empty by design: `v2_geo_users` (create a login), points/arcs/configs, haz
 Known thin data: `geo_airlines` and `geo_availability_zones` have 1 row each in the v1 source data.
 `sync_to_aws.py` no longer needs `dynamodb:ListTables` (credential check uses STS).
 
-### Update 2026-10-12 — [ATTEMPTED] CSP and throttle PARTIALLY verified in a signed-in session (re: "CSP header emitted with literal backslashes", "CSP not yet exercised", "Static assets counted against WAF rate rule")
+### Update 2026-10-12 — [FIXED] CSP and throttle verified (first PARTIALLY, then confirmed by Gene) in a signed-in session (re: "CSP header emitted with literal backslashes", "CSP not yet exercised", "Static assets counted against WAF rate rule")
 Gene signed in at the live site. After Resources → Periodic Table → Fe, a console capture (cropped; it began
 mid-log) showed no CSP violations, only a Chrome `requestAnimationFrame` 342 ms performance notice and an
 input-autocomplete advisory. Gene reported the network tab looked fine ("from what I can see"). **Not yet
@@ -291,3 +291,8 @@ the call was still denied. Verified with the deployer profile.
 **Unconfirmed:** that the key from re-registration differs from the leaked one (EIA may re-send the same key),
 and whether the old key is still valid. Compare the last characters of both keys; if identical, the leak is not remediated.
 
+### Update 2026-10-12 (later) — user confirmation (re: the three CSP/throttle entries above)
+Gene completed the signed-in walk-through (TODO #1) and confirmed: no red console errors and no 4xx in the
+network tab. The CSP-meta approach, the `/api/`-scoped WAF rate rule and the 200 rps / burst 400 throttle are
+therefore marked FIXED. Not covered by this check: WAF block behaviour, non-allow-listed IP deny, external
+TLS 1.0/1.1 probe (still in the TODO backlog).

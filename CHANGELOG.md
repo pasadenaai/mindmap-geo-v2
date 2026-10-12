@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2026-10-12 — post-deploy verification and key rotation (branch: feat/https-front-door)
-- Signed-in app partially checked under the CSP: after Periodic Table → Fe the (cropped) console showed no CSP violations and the network tab looked fine. Countries tab, Cloud and globe interactions not yet explicitly confirmed.
+- Signed-in app verified under the CSP by Gene (globe, Countries tab, Periodic Table → Fe): no red console errors, no 4xx. CSP and throttle KNOWN_ISSUES entries promoted to FIXED.
 - Login inputs now carry `autocomplete="username"` / `"current-password"` (`"new-password"` in register mode).
 - Deployer IAM policy v2 (adds `ecr:DescribeImages`) applied and verified.
 - New EIA key written to the v2 Secrets Manager secret; Lambda image republished. Whether it differs from the leaked key is unconfirmed; v1 environment still holds the old key.

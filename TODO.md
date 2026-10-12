@@ -5,16 +5,16 @@ Written 2026-10-11 at the end of the deploy session. State: **live** at https://
 [#1](https://github.com/pasadenaai/mindmap-geo-v2/pull/1) is open and **not merged**; `main` has none of this.
 Work top to bottom. Tick items off and move finished ones to CHANGELOG.md; never delete a KNOWN_ISSUES entry.
 
-## 1. Verify the signed-in app under the CSP  *(do first)*
+## 1. Verify the signed-in app under the CSP  *(DONE 2026-10-12: Gene confirmed no red console errors, no 4xx; KNOWN_ISSUES entries marked FIXED)*
 The login page was verified (clean console). Nothing behind login has been exercised yet.
-- [ ] Sign in at https://exploror.labs.pasadena.ai/ as `anthropic`. Open the built-in browser pane so the
+- [x] Sign in at https://exploror.labs.pasadena.ai/ as `anthropic`. Open the built-in browser pane so the
       console can be read (the pane shares this machine's allow-listed IP).
-- [ ] Globe renders; hover/click a country; open the **Countries** tab (≈250 flag images); open Cloud,
+- [x] Globe renders; hover/click a country; open the **Countries** tab (≈250 flag images); open Cloud,
       Resources → Periodic Table, an element profile.
-- [ ] `read_console_messages`: no CSP violations (`default-src 'self'`, `connect-src 'self'`,
+- [x] `read_console_messages`: no CSP violations (`default-src 'self'`, `connect-src 'self'`,
       `worker-src 'self' blob:`, `img-src 'self' data: blob:`).
-- [ ] Network: no 403 (WAF) or 429 (throttle) on the Countries tab.
-- [ ] Fix any violation in the `CSP` constant in `frontend/vite.config.js`, rebuild, upload (see CLAUDE.md
+- [x] Network: no 403 (WAF) or 429 (throttle) on the Countries tab.
+- [x] Fix any violation in the `CSP` constant in `frontend/vite.config.js`, rebuild, upload (see CLAUDE.md
       deploy steps), re-check. Mark the KNOWN_ISSUES CSP / throttle entries FIXED **only after Gene confirms**.
 - If sign-in fails: check `v2_geo_users` (`anthropic`; hash replaced 2026-10-11, `token_version` 2) and the
   lockout fields (`failed_logins`, `locked_until`); 5 failures lock for 15 min.
