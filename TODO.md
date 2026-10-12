@@ -19,18 +19,18 @@ The login page was verified (clean console). Nothing behind login has been exerc
 - If sign-in fails: check `v2_geo_users` (`anthropic`; hash replaced 2026-10-11, `token_version` 2) and the
   lockout fields (`failed_logins`, `locked_until`); 5 failures lock for 15 min.
 
-## 2. Re-apply the deployer IAM policy in AWS  *(needs the aws01 admin profile `pasadenaai-aws1`)*
+## 2. Re-apply the deployer IAM policy in AWS  *(DONE 2026-10-12: policy version v2 set as default; deployer `ecr describe-images` verified after ~15 s propagation; temp file deleted)*
 The repo template and local file now include `ecr:DescribeImages`; the live IAM policy does not.
-- [ ] `jq 'with_entries(select(.key|startswith("_")|not))' _IAM_INLINE_POLICIES/mindmap-geo-v2-cdk-deployer-policy.json > /tmp/p.json`
-- [ ] `aws --profile pasadenaai-aws1 iam create-policy-version --policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/mindmap-geo-v2-cdk-deployer --policy-document file:///tmp/p.json --set-as-default`
-- [ ] Verify: `aws --profile mindmap-geo-v2-deployer ecr describe-images --repository-name pai-mindmap-geo-v2-backend --region us-east-1`
-- [ ] Delete `/tmp/p.json`.
+- [x] `jq 'with_entries(select(.key|startswith("_")|not))' _IAM_INLINE_POLICIES/mindmap-geo-v2-cdk-deployer-policy.json > /tmp/p.json`
+- [x] `aws --profile pasadenaai-aws1 iam create-policy-version --policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/mindmap-geo-v2-cdk-deployer --policy-document file:///tmp/p.json --set-as-default`
+- [x] Verify: `aws --profile mindmap-geo-v2-deployer ecr describe-images --repository-name pai-mindmap-geo-v2-backend --region us-east-1`
+- [x] Delete `/tmp/p.json`.
 - Do not use an admin profile unless Gene says so for that step.
 
 ## 3. Rotate the leaked v1 EIA API key  *(security, outstanding since 2026-10-08)*
 The key is in the v1 repo's git history and in the live v1 Lambda environment.
-- [ ] Rotate at the provider (eia.gov/opendata) — Gene.
-- [ ] v2: `aws secretsmanager put-secret-value` on `pai-mindmap-geo-v2/app` (merge into the existing JSON,
+- [x] Re-register at the provider (eia.gov/opendata) — Gene (2026-10-12). **Unconfirmed that the key differs from the leaked one.**
+- [x] v2 (done 2026-10-12; secret has EIA_API_KEY + SECRET_KEY, Lambda image republished, /health 200): `aws secretsmanager put-secret-value` on `pai-mindmap-geo-v2/app` (merge into the existing JSON,
       keep `SECRET_KEY`), then force new Lambda environments (see CLAUDE.md step 5).
 - [ ] v1: update the Lambda env var or remove it; consider scrubbing history or just treat the old key as burned.
 - [ ] Note the rotation date in KNOWN_ISSUES.

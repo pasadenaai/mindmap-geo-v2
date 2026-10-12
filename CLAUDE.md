@@ -136,8 +136,8 @@ aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.ht
 # 5. Set EIA_API_KEY (optional — needed for EIA energy data ingest). Keys live only in
 #    Secrets Manager (secret `pai-mindmap-geo-v2/app`), never in Lambda env vars or git.
 #    Get a free key at https://www.eia.gov/opendata/ then merge it into the secret:
-CUR=$(aws secretsmanager get-secret-value --secret-id pai-mindmap-geo-v2/app --query SecretString --output text)
-aws secretsmanager put-secret-value --secret-id pai-mindmap-geo-v2/app \
+CUR=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id pai-mindmap-geo-v2/app --query SecretString --output text)
+aws --region us-east-1 secretsmanager put-secret-value --secret-id pai-mindmap-geo-v2/app \
   --secret-string "$(echo "$CUR" | jq --arg k "$EIA_API_KEY" '.EIA_API_KEY=$k')"
 # Lambda reads the secret at cold start; update the function config or wait for a new execution environment.
 ```

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — post-deploy verification and key rotation (branch: feat/https-front-door)
+- Signed-in app partially checked under the CSP: after Periodic Table → Fe the (cropped) console showed no CSP violations and the network tab looked fine. Countries tab, Cloud and globe interactions not yet explicitly confirmed.
+- Login inputs now carry `autocomplete="username"` / `"current-password"` (`"new-password"` in register mode).
+- Deployer IAM policy v2 (adds `ecr:DescribeImages`) applied and verified.
+- New EIA key written to the v2 Secrets Manager secret; Lambda image republished. Whether it differs from the leaked key is unconfirmed; v1 environment still holds the old key.
+- CLAUDE.md secret-update commands now pass `--region us-east-1`.
+
 ## 2026-10-12 — first deployment (branch: feat/https-front-door)
 - **Deployed `MindmapGeoV2Stack` to aws01 us-east-1** (CloudFormation `CREATE_COMPLETE`, 76 resources) with `data_removal=destroy`; `https://exploror.labs.pasadena.ai/` serves the SPA over TLS 1.2+.
 - First attempt rolled back (Lambda role lacked VPC ENI permissions); fixed with a managed policy and regression test; retained orphans were cleaned up by an admin.

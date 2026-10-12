@@ -268,3 +268,26 @@ Still empty by design: `v2_geo_users` (create a login), points/arcs/configs, haz
 Known thin data: `geo_airlines` and `geo_availability_zones` have 1 row each in the v1 source data.
 `sync_to_aws.py` no longer needs `dynamodb:ListTables` (credential check uses STS).
 
+### Update 2026-10-12 — [ATTEMPTED] CSP and throttle PARTIALLY verified in a signed-in session (re: "CSP header emitted with literal backslashes", "CSP not yet exercised", "Static assets counted against WAF rate rule")
+Gene signed in at the live site. After Resources → Periodic Table → Fe, a console capture (cropped; it began
+mid-log) showed no CSP violations, only a Chrome `requestAnimationFrame` 342 ms performance notice and an
+input-autocomplete advisory. Gene reported the network tab looked fine ("from what I can see"). **Not yet
+explicitly confirmed:** red errors above the cropped capture, the Countries tab (~250 flags, 403/429), Cloud,
+and the globe interactions. Status stays ATTEMPTED until Gene confirms FIXED; the autocomplete advisory is
+fixed in `Login.jsx`.
+
+## [FIXED] Deployer lacked ecr:DescribeImages
+**Reported:** 2026-10-12
+**Symptom:** `aws ecr describe-images` as `mindmap-geo-v2-cdk-deployer` returned AccessDeniedException.
+**Root cause:** the live managed policy was v1 (without the action); the repo template already had it.
+**Fix:** policy version v2 created and set as default (2026-10-12). IAM propagation took ~15 s, during which
+the call was still denied. Verified with the deployer profile.
+
+## [ATTEMPTED] Leaked v1 EIA API key replaced in v2 only (rotation unconfirmed)
+**Reported:** 2026-10-08
+**Fix attempted (2026-10-12):** key obtained via eia.gov registration and merged into `pai-mindmap-geo-v2/app`
+(keys `EIA_API_KEY`, `SECRET_KEY`); Lambda image republished to start fresh environments.
+**Still open:** the v1 Lambda environment and v1 git history still hold the old key; treat it as burned.
+**Unconfirmed:** that the key from re-registration differs from the leaked one (EIA may re-send the same key),
+and whether the old key is still valid. Compare the last characters of both keys; if identical, the leak is not remediated.
+
