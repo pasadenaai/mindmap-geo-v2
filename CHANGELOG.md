@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — branch protection active (branch: docs/branch-protection-active)
+- Account upgraded to GitHub Pro; `main` is protected: PR required (0 approvals, solo owner), checks `backend-tests`,
+  `infra-tests`, `frontend-build`, `secret-scan` required and up to date, no force-push or deletion, enforced for admins.
+  Supersedes the earlier "branch protection unavailable, checks advisory" note below.
+- `docs/BRANCH_PROTECTION_WITHOUT_PRO.md` replaced by `docs/BRANCH_PROTECTION.md` (rule, bypass procedure, remaining controls).
+- Management-account ID scrubbed from the PR #2 branch history before merge (identifier only, no credential).
+
 ## 2026-10-12 — PR #1 merged, retain change deployed (branch: docs/post-merge-deploy-state)
 - Merged `pasadenaai/mindmap-geo-v2#1` (CI green, 4 jobs) and `pasadenaai/pasadena-ai-playbook#1`.
 - Redeployed `MindmapGeoV2Stack` from `main`: `v2_geo_events` Delete -> Retain; 22/22 tables Retain; site, `/health`, 250 countries and 118 elements verified live.

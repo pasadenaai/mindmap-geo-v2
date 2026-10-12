@@ -90,9 +90,11 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
 - [ ] Stop using a `default` AWS profile bound to a long-lived key.
 
 ## Backlog (not blocking, in rough priority)
-- [ ] Branch protection is unavailable on the free plan and Gene chose not to upgrade (2026-10-12): implement the
-      compensating controls in `docs/BRANCH_PROTECTION_WITHOUT_PRO.md` (pre-push hook, Claude permission rules, `main-came-from-pr`
-      CI tripwire, mirror + deploy tags, fine-grained PAT).
+- [x] Branch protection on `main` is ACTIVE (GitHub Pro, 2026-10-12): PR + 4 required checks, strict, no force-push/delete,
+      applies to admins. See `docs/BRANCH_PROTECTION.md`.
+- [ ] Branch protection follow-ups (`docs/BRANCH_PROTECTION.md`): Claude agent deny/ask rules in `.claude/settings.json`;
+      weekly mirror clone + a tag per deploy; scoped fine-grained PAT.
+- [ ] `pasadena-ai-playbook`: add a minimal CI check, then apply the same branch protection rule.
 - [ ] Add WAF logging + API access logs (`--context api_access_logs=true`) + alarms — POA&M P-2.
 - [ ] Reserved Lambda concurrency (P-5); define SC-5 DoS event types in the SSP (P-6).
 - [ ] Split an ingest worker from the API Lambda; ingest feeds cannot reach the internet from the VPC Lambda
