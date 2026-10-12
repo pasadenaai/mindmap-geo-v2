@@ -1,9 +1,9 @@
-"""Agent route: auth required, table-validated output, generic failures, cache-control on the country block."""
+"""Assistant route: auth required, table-validated output, generic failures, cache-control on the country block."""
 from types import SimpleNamespace
 
 import pytest
 
-from app.agent import service
+from app.assistant import service
 
 COUNTRIES = [
     {"cca2": "FR", "cca3": "FRA", "name_common": "France", "name_official": "French Republic",
@@ -58,7 +58,7 @@ def use_model(monkeypatch, fake):
 
 def post(client, q, tok=None):
     h = {"Authorization": f"Bearer {tok}"} if tok else {}
-    return client.post("/api/agent", json={"query": q}, headers=h)
+    return client.post("/api/assistant", json={"query": q}, headers=h)
 
 
 def test_requires_auth(client):
@@ -118,6 +118,6 @@ def test_request_shape_sent_to_model(client, monkeypatch):
     assert call["messages"][0]["content"] == "paris france"          # control chars stripped
 
 
-def test_agent_lambda_headers_match_main():
-    from app import agent_main, main
-    assert agent_main.SECURITY_HEADERS == main.SECURITY_HEADERS
+def test_assistant_lambda_headers_match_main():
+    from app import assistant_main, main
+    assert assistant_main.SECURITY_HEADERS == main.SECURITY_HEADERS

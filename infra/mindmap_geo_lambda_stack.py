@@ -564,21 +564,21 @@ class MindmapGeoLambdaStack(cdk.Stack):
             log_group=log_group,
         )
 
-        # ── Agent Lambda (natural-language search; Anthropic API) ─────────────
+        # ── Assistant Lambda (natural-language search; Anthropic API) ─────────────
         # A SEPARATE function OUTSIDE the VPC. The API Lambda above has no internet egress by
         # design, and the Anthropic API is a public endpoint, so the one function that needs egress
         # is isolated rather than giving the whole API a NAT. It holds only: read of the app secret
         # (JWT key to verify tokens + ANTHROPIC_API_KEY), read of the countries table, and logs. It
         # cannot write to DynamoDB, touch S3, or reach the VPC. Same image, different handler.
         # Recorded as FEDRAMP_GAP_ANALYSIS.md P-14 (egress to a commercial third-party API).
-        agent_role = iam.Role(
-            self, "MindmapGeoAgentRole",
-            role_name="pai-mindmap-geo-v2-agent-role",
+        assistant_role = iam.Role(
+            self, "MindmapGeoAssistantRole",
+            role_name="pai-mindmap-geo-v2-assistant-role",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
         )
-        agent_role.attach_inline_policy(iam.Policy(
-            self, "PaiMindmapGeoAgentPolicy",
-            policy_name="pai-mindmap-geo-v2-agent",
+        assistant_role.attach_inline_policy(iam.Policy(
+            self, "PaiMindmapGeoAssistantPolicy",
+            policy_name="pai-mindmap-geo-v2-assistant",
             statements=[
                 iam.PolicyStatement(
                     sid="ReadAppSecret",
@@ -594,28 +594,28 @@ class MindmapGeoLambdaStack(cdk.Stack):
                     sid="CloudWatchLogs",
                     actions=["logs:CreateLogStream", "logs:PutLogEvents"],
                     resources=[
-                        f"arn:{self.partition}:logs:{self.region}:{self.account}:log-group:/aws/lambda/pai-mindmap-geo-v2-agent",
-                        f"arn:{self.partition}:logs:{self.region}:{self.account}:log-group:/aws/lambda/pai-mindmap-geo-v2-agent:*",
+                        f"arn:{self.partition}:logs:{self.region}:{self.account}:log-group:/aws/lambda/pai-mindmap-geo-v2-assistant",
+                        f"arn:{self.partition}:logs:{self.region}:{self.account}:log-group:/aws/lambda/pai-mindmap-geo-v2-assistant:*",
                     ],
                 ),
             ],
         ))
-        agent_log_group = logs.LogGroup(
-            self, "MindmapGeoAgentLogs",
-            log_group_name="/aws/lambda/pai-mindmap-geo-v2-agent",
+        assistant_log_group = logs.LogGroup(
+            self, "MindmapGeoAssistantLogs",
+            log_group_name="/aws/lambda/pai-mindmap-geo-v2-assistant",
             retention=SEVEN_YEARS,
             removal_policy=data_removal,
         )
-        agent_fn = lambda_.DockerImageFunction(
-            self, "MindmapGeoAgentFn",
-            function_name="pai-mindmap-geo-v2-agent",
+        assistant_fn = lambda_.DockerImageFunction(
+            self, "MindmapGeoAssistantFn",
+            function_name="pai-mindmap-geo-v2-assistant",
             code=lambda_.DockerImageCode.from_ecr(
                 repository=backend_repo,
                 tag_or_digest="latest",
-                cmd=["app.agent_main.handler"],
+                cmd=["app.assistant_main.handler"],
             ),
             architecture=lambda_.Architecture.ARM_64,
-            role=agent_role,
+            role=assistant_role,
             timeout=cdk.Duration.seconds(20),
             memory_size=512,
             environment={
@@ -625,7 +625,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 "DYNAMO_GEO_COUNTRIES_TABLE": f"{TP}geo_countries",
                 "CORS_ORIGINS": json.dumps(site_origins),
             },
-            log_group=agent_log_group,
+            log_group=assistant_log_group,
         )
 
         # ── S3 buckets (both PRIVATE) ─────────────────────────────────────────
@@ -690,7 +690,7 @@ class MindmapGeoLambdaStack(cdk.Stack):
                 throttling_rate_limit=200,
                 throttling_burst_limit=400,
                 method_options={
-                    "/api/agent/POST": apigw.MethodDeploymentOptions(
+                    "/api/assistant/POST": apigw.MethodDeploymentOptions(
                         throttling_rate_limit=2, throttling_burst_limit=5,
                     ),
                 },
@@ -741,11 +741,11 @@ class MindmapGeoLambdaStack(cdk.Stack):
         )
         api_resource = api.root.add_resource("api")
         api_resource.add_resource("{proxy+}").add_method("ANY", backend_integration)
-        # A static /api/agent resource wins over /api/{proxy+}: this one route goes to the agent
+        # A static /api/assistant resource wins over /api/{proxy+}: this one route goes to the assistant
         # Lambda (outside the VPC). Every call can spend model budget, so it has its own tight
         # method-level throttle on top of the stage default and the WAF rate rule.
-        api_resource.add_resource("agent").add_method(
-            "POST", apigw.LambdaIntegration(agent_fn, proxy=True, allow_test_invoke=False),
+        api_resource.add_resource("assistant").add_method(
+            "POST", apigw.LambdaIntegration(assistant_fn, proxy=True, allow_test_invoke=False),
         )
         api.root.add_resource("health").add_method("GET", backend_integration)
 

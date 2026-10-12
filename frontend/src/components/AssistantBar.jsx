@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useGeoStore } from '../store'
-import { resolveCountries } from '../agent/resolve'
-import { runAction } from '../agent/actions'
-import { agent } from '../api'
-import './AgentBar.css'
+import { resolveCountries } from '../assistant/resolve'
+import { runAction } from '../assistant/actions'
+import { assistant } from '../api'
+import './AssistantBar.css'
 
 // Typing any letter or digit anywhere (outside a text field) opens this bar with that character
 // already entered. Enter runs the highlighted result through the validated action layer
-// (agent/actions.js), which drives the same store setter the nav menus use.
+// (assistant/actions.js), which drives the same store setter the nav menus use.
 
 function isEditable(el) {
   if (!el || el === document.body) return false
@@ -16,7 +16,7 @@ function isEditable(el) {
     el.getAttribute?.('role') === 'textbox'
 }
 
-export default function AgentBar() {
+export default function AssistantBar() {
   const globeCountries      = useGeoStore(s => s.globeCountries)
   const selectedCountry     = useGeoStore(s => s.selectedCountry)
   const setSelectedCountry  = useGeoStore(s => s.setSelectedCountry)
@@ -77,7 +77,7 @@ export default function AgentBar() {
     setAsking(true)
     setMessage('Asking the assistant…')
     try {
-      const res = await agent.resolve(q)
+      const res = await assistant.resolve(q)
       if (askRef.current !== id) return               // closed, edited or superseded meanwhile
       if (!res?.action) { setMessage(`No match for “${q}”`); return }
       const r = runAction(res.action, { globeCountries, selectedCountry, setSelectedCountry })
@@ -120,15 +120,15 @@ export default function AgentBar() {
     : `${results.length} result${results.length === 1 ? '' : 's'}`
 
   return (
-    <div className="agentbar" ref={wrapRef} role="dialog" aria-label="Quick search">
-      <div className="agentbar__field">
-        <svg className="agentbar__icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <div className="assistantbar" ref={wrapRef} role="dialog" aria-label="Quick search">
+      <div className="assistantbar__field">
+        <svg className="assistantbar__icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.3"/>
           <path d="M10.5 10.5l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
         </svg>
         <input
           ref={inputRef}
-          className="agentbar__input"
+          className="assistantbar__input"
           type="text"
           value={query}
           placeholder="Where to? Try “france”, “jp” or “show me the uk”"
@@ -136,38 +136,38 @@ export default function AgentBar() {
           onKeyDown={onInputKey}
           role="combobox"
           aria-expanded={results.length > 0}
-          aria-controls="agentbar-list"
-          aria-activedescendant={results[active] ? `agentbar-opt-${active}` : undefined}
+          aria-controls="assistantbar-list"
+          aria-activedescendant={results[active] ? `assistantbar-opt-${active}` : undefined}
           autoComplete="off"
           spellCheck={false}
           maxLength={80}
         />
-        <button className="agentbar__close" onClick={close} aria-label="Close search">✕</button>
+        <button className="assistantbar__close" onClick={close} aria-label="Close search">✕</button>
       </div>
 
       {/* Always rendered so aria-controls resolves; hidden when empty. */}
-      <ul className="agentbar__list" id="agentbar-list" role="listbox" hidden={results.length === 0}>
+      <ul className="assistantbar__list" id="assistantbar-list" role="listbox" hidden={results.length === 0}>
           {results.map((r, i) => (
             <li
               key={r.action.cca2}
-              id={`agentbar-opt-${i}`}
+              id={`assistantbar-opt-${i}`}
               role="option"
               aria-selected={i === active}
-              className={`agentbar__item${i === active ? ' agentbar__item--active' : ''}`}
+              className={`assistantbar__item${i === active ? ' assistantbar__item--active' : ''}`}
               onMouseMove={() => active !== i && setActive(i)}
               onMouseDown={e => e.preventDefault()}   // keep input focus
               onClick={() => execute(r)}
             >
-              <span className="agentbar__flag">{r.flag || '🌐'}</span>
-              <span className="agentbar__label">{r.label}</span>
-              <span className="agentbar__detail">{r.detail}</span>
+              <span className="assistantbar__flag">{r.flag || '🌐'}</span>
+              <span className="assistantbar__label">{r.label}</span>
+              <span className="assistantbar__detail">{r.detail}</span>
             </li>
           ))}
       </ul>
 
-      <div className="agentbar__footer" aria-live="polite">
+      <div className="assistantbar__footer" aria-live="polite">
         <span>{message || status}</span>
-        <span className="agentbar__hint">↑↓ move · Enter go · Esc close</span>
+        <span className="assistantbar__hint">↑↓ move · Enter go · Esc close</span>
       </div>
     </div>
   )

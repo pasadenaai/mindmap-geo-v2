@@ -39,9 +39,9 @@ docker compose --env-file .env.local -f docker-compose.local.yaml up -d --build
 | `frontend/src/hooks/useGlobePoints.js` | TopoJSON → land-dot positions + `latLonToVec3` |
 | `frontend/src/components/GlobeScene.jsx` | Three.js scene: globe, markers, arcs |
 | `frontend/src/components/DataPanel.jsx` | Right-side panel: point list, add form |
-| `frontend/src/components/AgentBar.jsx` | Type-to-search bar: any letter/digit (outside a text field) opens it; Enter runs the top result |
-| `frontend/src/agent/resolve.js` | Pure resolver: free text -> ranked actions (`select_country`). Tests: `cd frontend && npm test` |
-| `frontend/src/agent/actions.js` | Action allow-list + validation + execution through store setters (treat input as untrusted) |
+| `frontend/src/components/AssistantBar.jsx` | Type-to-search bar: any letter/digit (outside a text field) opens it; Enter runs the top result |
+| `frontend/src/assistant/resolve.js` | Pure resolver: free text -> ranked actions (`select_country`). Tests: `cd frontend && npm test` |
+| `frontend/src/assistant/actions.js` | Action allow-list + validation + execution through store setters (treat input as untrusted) |
 
 ## API surface
 
@@ -70,7 +70,7 @@ POST   /api/auth/login, /refresh, /logout; GET /api/auth/me; POST /api/auth/regi
 
 GET    /health
 
-POST   /api/agent    {query} -> {action: {type:'select_country', cca2}|null, message}   (auth required; agent Lambda in AWS)
+POST   /api/assistant    {query} -> {action: {type:'select_country', cca2}|null, message}   (auth required; assistant Lambda in AWS)
 ```
 
 **Auth:** every POST/PATCH/PUT/DELETE under `/api/geo/*` requires `Authorization: Bearer <access token>`
@@ -163,11 +163,11 @@ python scripts/sync_to_aws.py --aws-prefix v2_
 python scripts/create_user.py <username> --table v2_geo_users
 ```
 
-### Agent Lambda (natural-language search)
-Separate function `pai-mindmap-geo-v2-agent`, outside the VPC, same ECR image (`cmd app.agent_main.handler`). Deploy order:
+### Assistant Lambda (natural-language search)
+Separate function `pai-mindmap-geo-v2-assistant`, outside the VPC, same ECR image (`cmd app.assistant_main.handler`). Deploy order:
 rebuild + push the image, `cdk deploy`, then add the key: merge `ANTHROPIC_API_KEY` into the `pai-mindmap-geo-v2/app`
 secret (same pattern as `EIA_API_KEY`) and update both functions' code (`aws lambda update-function-code` for
-`pai-mindmap-geo-v2-backend` and `pai-mindmap-geo-v2-agent`).
+`pai-mindmap-geo-v2-backend` and `pai-mindmap-geo-v2-assistant`).
 
 ### Updating after code changes
 ```bash

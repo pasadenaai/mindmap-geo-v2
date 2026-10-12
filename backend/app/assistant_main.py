@@ -1,7 +1,7 @@
-"""Lambda entrypoint for the agent route (`POST /api/agent`).
+"""Lambda entrypoint for the assistant route (`POST /api/assistant`).
 
 Deployed as its OWN function, outside the VPC, because the API Lambda has no internet egress and
-the Anthropic API is a public endpoint. Same image, different handler (`app.agent_main.handler`).
+the Anthropic API is a public endpoint. Same image, different handler (`app.assistant_main.handler`).
 It carries only what it needs: the JWT secret (to verify access tokens), read access to the countries
 table, and the Anthropic key. It exposes no other routes.
 """
@@ -11,7 +11,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
-from app.routers import agent
+from app.routers import assistant
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,7 +26,7 @@ SECURITY_HEADERS = {
 if settings.app_env == "aws":
     SECURITY_HEADERS["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
 
-app = FastAPI(title="mindmap-geo agent", docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title="mindmap-geo assistant", docs_url=None, redoc_url=None, openapi_url=None)
 
 
 @app.middleware("http")
@@ -43,7 +43,7 @@ async def unhandled(request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": "Internal server error"}, headers=SECURITY_HEADERS)
 
 
-app.include_router(agent.router, prefix="/api")
+app.include_router(assistant.router, prefix="/api")
 
 try:
     from mangum import Mangum

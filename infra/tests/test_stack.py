@@ -59,26 +59,26 @@ def test_api_lambda_runs_in_vpc(t):
     assert "VpcConfig" in _image_fn(t, "pai-mindmap-geo-v2-backend")
 
 
-def test_only_two_image_functions_and_only_the_agent_is_outside_the_vpc(t):
-    """The no-egress boundary stays intact: exactly one function (the agent) is outside the VPC."""
+def test_only_two_image_functions_and_only_the_assistant_is_outside_the_vpc(t):
+    """The no-egress boundary stays intact: exactly one function (the assistant) is outside the VPC."""
     fns = t.find_resources("AWS::Lambda::Function", {"Properties": {"PackageType": "Image"}})
     outside = [r["Properties"]["FunctionName"] for r in fns.values() if "VpcConfig" not in r["Properties"]]
-    assert outside == ["pai-mindmap-geo-v2-agent"]
-    assert _image_fn(t, "pai-mindmap-geo-v2-agent")["ImageConfig"]["Command"] == ["app.agent_main.handler"]
+    assert outside == ["pai-mindmap-geo-v2-assistant"]
+    assert _image_fn(t, "pai-mindmap-geo-v2-assistant")["ImageConfig"]["Command"] == ["app.assistant_main.handler"]
 
 
-def _agent_policy_statements(t):
+def _assistant_policy_statements(t):
     out = []
     for res in t.find_resources("AWS::IAM::Policy").values():
-        if res["Properties"]["PolicyName"] == "pai-mindmap-geo-v2-agent":
+        if res["Properties"]["PolicyName"] == "pai-mindmap-geo-v2-assistant":
             out = res["Properties"]["PolicyDocument"]["Statement"]
-    assert out, "agent policy not found"
+    assert out, "assistant policy not found"
     return out
 
 
-def test_agent_role_is_read_only_and_scoped(t):
-    """The agent can read the secret and the countries table and nothing else (no writes, no S3, no wildcards)."""
-    stmts = _agent_policy_statements(t)
+def test_assistant_role_is_read_only_and_scoped(t):
+    """The assistant can read the secret and the countries table and nothing else (no writes, no S3, no wildcards)."""
+    stmts = _assistant_policy_statements(t)
     actions = {a for st in stmts for a in (st["Action"] if isinstance(st["Action"], list) else [st["Action"]])}
     assert actions == {
         "secretsmanager:GetSecretValue",
@@ -90,14 +90,14 @@ def test_agent_role_is_read_only_and_scoped(t):
     assert not any(st["Resource"] == "*" for st in stmts)
 
 
-def test_agent_route_is_post_only_with_its_own_throttle(t):
-    resources = t.find_resources("AWS::ApiGateway::Resource", {"Properties": {"PathPart": "agent"}})
+def test_assistant_route_is_post_only_with_its_own_throttle(t):
+    resources = t.find_resources("AWS::ApiGateway::Resource", {"Properties": {"PathPart": "assistant"}})
     assert len(resources) == 1
     methods = t.find_resources("AWS::ApiGateway::Method", {"Properties": {"HttpMethod": "POST"}})
-    assert any("Agent" in str(m["Properties"]["Integration"]["Uri"]) for m in methods.values())
+    assert any("Assistant" in str(m["Properties"]["Integration"]["Uri"]) for m in methods.values())
     t.has_resource_properties("AWS::ApiGateway::Stage", {
         "MethodSettings": Match.array_with([Match.object_like({
-            "ResourcePath": "/~1api~1agent", "HttpMethod": "POST",
+            "ResourcePath": "/~1api~1assistant", "HttpMethod": "POST",
             "ThrottlingRateLimit": 2, "ThrottlingBurstLimit": 5,
         })]),
     })

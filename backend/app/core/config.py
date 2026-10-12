@@ -58,9 +58,9 @@ class Settings(BaseSettings):
     # External data source API keys
     eia_api_key: Optional[str] = Field(None, alias="EIA_API_KEY")
 
-    # Agent (natural-language search). The key lives in Secrets Manager in AWS (ANTHROPIC_API_KEY).
+    # Assistant (natural-language search). The key lives in Secrets Manager in AWS (ANTHROPIC_API_KEY).
     anthropic_api_key: Optional[str] = Field(None, alias="ANTHROPIC_API_KEY")
-    agent_model: str = Field("claude-haiku-4-5-20251001", alias="AGENT_MODEL")
+    assistant_model: str = Field("claude-haiku-4-5-20251001", alias="ASSISTANT_MODEL")
 
     # S3
     s3_endpoint_url: Optional[str] = Field(None, alias="S3_ENDPOINT_URL")

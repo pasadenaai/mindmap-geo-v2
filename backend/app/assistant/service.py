@@ -52,7 +52,7 @@ TOOLS = [
 ]
 
 
-class AgentUnavailable(Exception):
+class AssistantUnavailable(Exception):
     """The model could not be reached or is not configured (surfaced as a generic 502/503)."""
 
 
@@ -82,8 +82,8 @@ def country_block(countries: list[dict]) -> str:
 
 def get_client():
     if not settings.anthropic_api_key:
-        raise AgentUnavailable("ANTHROPIC_API_KEY is not configured")
-    import anthropic  # lazy: only the agent path needs the SDK
+        raise AssistantUnavailable("ANTHROPIC_API_KEY is not configured")
+    import anthropic  # lazy: only the assistant path needs the SDK
     return anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key, timeout=10.0, max_retries=1)
 
 
@@ -95,14 +95,14 @@ async def resolve(query: str, client: Optional[Any] = None) -> dict:
 
     countries = await load_countries()
     if not countries:
-        raise AgentUnavailable("country table is empty")
+        raise AssistantUnavailable("country table is empty")
     valid = {c["cca2"] for c in countries}
 
     own_client = client is None
     client = client or get_client()
     try:
         resp = await client.messages.create(
-            model=settings.agent_model,
+            model=settings.assistant_model,
             max_tokens=150,
             system=[
                 {"type": "text", "text": SYSTEM_PROMPT},
@@ -114,7 +114,7 @@ async def resolve(query: str, client: Optional[Any] = None) -> dict:
         )
     except Exception as exc:                                   # network, auth, rate limit, timeout
         logger.warning("Anthropic call failed: %s", type(exc).__name__)
-        raise AgentUnavailable(type(exc).__name__) from exc
+        raise AssistantUnavailable(type(exc).__name__) from exc
     finally:
         if own_client:                      # do not leak the SDK's HTTP connection pool per request
             try:
