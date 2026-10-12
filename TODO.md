@@ -62,9 +62,13 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
       written to `~/.aws/credentials`; old keys set **Inactive** (reversible), not deleted. Old secrets sit in
       `~/.aws/credentials.bak-20261012-others`: shred it when the watch period ends.
       - [ ] Watch period (~2026-10-19): then `iam delete-access-key` for the six inactive keys (each account's own profile).
-      - [ ] **Config gotcha:** `~/.aws/config` `[profile pasadenaai-aws0X]` blocks use `role_arn` + `source_profile=default`
-            (aws01 ecsuser cannot assume it), which SHADOWS these static keys. Plain `--profile pasadenaai-aws02` fails;
-            fix the config blocks (remove `role_arn`/`source_profile`) so the profiles use their own keys.
+      - [x] **Config gotcha FIXED 2026-10-12:** removed `role_arn`/`source_profile` from the `pasadenaai-aws01`..`aws07A`
+            blocks in `~/.aws/config` (backup `~/.aws/config.bak-20261012`); each profile now uses its own static key.
+            `pasadenaai-aws01` is now a duplicate of `default` (delete it if unwanted).
+      - [ ] **aws13 / aws25 provisioning DEFERRED (Gene, 2026-10-12):** needs management-account (`[mgmt-account-id]`)
+            credentials; `OrganizationAccountAccessRole` trusts only that account and the aws01 admin cannot assume it.
+            Then create `pasadenaai_aws13_ecsuser` / `pasadenaai_aws25_ecsuser` with the three standard policies.
+            `pasadenaai-aws26` is a static-key user (`pasadenaai_claude26`), not the ecsuser pattern.
 - [ ] Put every new key in 1Password (not a file). Longer term: SSO / short-lived credentials (POA&M P-13).
 - [ ] **Gene:** delete the Claude Code transcript that contains all 7 old secrets, AFTER rotation:
       `~/Desktop/Anthropic/Claude_Code/.claude/projects/-Users-mlnotes-Projects/ae0cdf68-e6cb-4b83-9c51-531779ed5f4d.jsonl`
