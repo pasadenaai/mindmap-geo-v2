@@ -89,9 +89,20 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
       KNOWN_ISSUES + P-13: scope the execution policy (re-bootstrap) or use short-lived deploy credentials.
 - [ ] Stop using a `default` AWS profile bound to a long-lived key.
 
+## Assistant backend rollout  *(needs Gene: key + explicit "deploy")*
+- [ ] Add `ANTHROPIC_API_KEY` to the `pai-mindmap-geo-v2/app` secret (Gene; Claude never handles the key).
+- [ ] Build + push the arm64 image (adds the `anthropic` SDK), `cdk diff` (expect: new function, role, log group,
+      `/api/assistant` resource+method, stage method throttle; nothing else), `cdk deploy`.
+- [ ] Update code of both Lambdas, then verify: signed-in `POST /api/assistant` for "largest country in south america"
+      returns BR; unauthenticated call -> 401; CloudWatch shows no key in logs.
+- [ ] Publish the frontend that calls `/api/assistant` (S3 sync from `main`).
+- [ ] Set a monthly Anthropic spend cap; consider Bedrock (P-14).
+
 ## Backlog (not blocking, in rough priority)
-- [ ] Agent bar Phase 2 (decision needed): extend actions beyond countries (Periodic Table element, DataPanel tab,
-      cloud region, airline, resource layers) and/or an LLM-backed `/api/agent` route. LLM needs: Bedrock VPC endpoint
+- [x] Naming: renamed agent -> assistant (route, module, Lambda, frontend) before the first deploy, so "agent" is free for real
+      agent functionality (Gene, 2026-10-12).
+- [ ] Assistant bar Phase 2 (decision needed): extend actions beyond countries (Periodic Table element, DataPanel tab,
+      cloud region, airline, resource layers) and/or an LLM-backed `/api/assistant` route. LLM needs: Bedrock VPC endpoint
       (~$7/mo), model access check, IAM, auth required + throttle, structured-output schema = `ACTION_TYPES`, tests.
 - [ ] Branch protection is unavailable on the free plan and Gene chose not to upgrade (2026-10-12): implement the
       compensating controls in `docs/BRANCH_PROTECTION_WITHOUT_PRO.md` (pre-push hook, Claude permission rules, `main-came-from-pr`

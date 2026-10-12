@@ -4,7 +4,7 @@ import DataPanel from './components/DataPanel'
 import Legend from './components/Legend'
 import TopNav from './components/TopNav'
 import Login from './components/auth/Login'
-import AgentBar from './components/AgentBar'
+import AssistantBar from './components/AssistantBar'
 import { useGeoStore, useAuthStore } from './store'
 import './App.css'
 
@@ -48,7 +48,7 @@ export default function App() {
       <Legend />
       <DataPanel />
 
-      <AgentBar />
+      <AssistantBar />
     </div>
   )
 }

@@ -36,6 +36,11 @@ export const auth = {
   refresh:  ()                   => request('POST', '/auth/refresh',  {}, false),
 }
 
+// ── Assistant (natural-language country lookup; requires a token) ────────────────
+export const assistant = {
+  resolve: (query) => request('POST', '/assistant', { query }, true),
+}
+
 // ── Geo Points ────────────────────────────────────────────────────────────────
 export const geo = {
   points: {

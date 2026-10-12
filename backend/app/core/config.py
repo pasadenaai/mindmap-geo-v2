@@ -58,6 +58,10 @@ class Settings(BaseSettings):
     # External data source API keys
     eia_api_key: Optional[str] = Field(None, alias="EIA_API_KEY")
 
+    # Assistant (natural-language search). The key lives in Secrets Manager in AWS (ANTHROPIC_API_KEY).
+    anthropic_api_key: Optional[str] = Field(None, alias="ANTHROPIC_API_KEY")
+    assistant_model: str = Field("claude-haiku-4-5-20251001", alias="ASSISTANT_MODEL")
+
     # S3
     s3_endpoint_url: Optional[str] = Field(None, alias="S3_ENDPOINT_URL")
     s3_public_endpoint_url: Optional[str] = Field(None, alias="S3_PUBLIC_ENDPOINT_URL")
@@ -78,7 +82,7 @@ class Settings(BaseSettings):
 
 
 def _load_aws_secret(name: str, region: str) -> dict:
-    """Fetch the app secret (JSON object: SECRET_KEY, EIA_API_KEY) from Secrets Manager."""
+    """Fetch the app secret (JSON object: SECRET_KEY, EIA_API_KEY, ANTHROPIC_API_KEY) from Secrets Manager."""
     import boto3  # imported lazily; only needed when SECRETS_BACKEND=aws
 
     client = boto3.client("secretsmanager", region_name=region)
@@ -92,6 +96,7 @@ def get_settings() -> Settings:
         values = _load_aws_secret(s.aws_secret_name, s.aws_region)
         s.secret_key = values.get("SECRET_KEY") or s.secret_key
         s.eia_api_key = values.get("EIA_API_KEY") or s.eia_api_key
+        s.anthropic_api_key = values.get("ANTHROPIC_API_KEY") or s.anthropic_api_key
     if not s.secret_key:
         if s.app_env == "aws":
             raise RuntimeError("SECRET_KEY is not configured (set it in Secrets Manager)")
