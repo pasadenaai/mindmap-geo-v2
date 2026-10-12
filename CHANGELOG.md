@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-12 — PR #1 merged, retain change deployed (branch: docs/post-merge-deploy-state)
+- Merged `pasadenaai/mindmap-geo-v2#1` (CI green, 4 jobs) and `pasadenaai/pasadena-ai-playbook#1`.
+- Redeployed `MindmapGeoV2Stack` from `main`: `v2_geo_events` Delete -> Retain; 22/22 tables Retain; site, `/health`, 250 countries and 118 elements verified live.
+- PR review blocks 3-5 walked: session commands fixed (verify-first order, all test suites, history step); `.gitignore` excludes `*.xlsx`/`*.csv`; stale "not yet deployed" statements and the 22-table / auth / elements / ingest docs corrected.
+- Old ecsuser key check ~15 min after deactivation: STS fine on the new key, no CloudTrail events from the old key after 14:14 (thin signal; watch period continues).
+
 ## 2026-10-12 — post-deploy verification and key rotation (branch: feat/https-front-door)
 - Credential hygiene: 7 plaintext AWS key pairs found in the tracker spreadsheet; clean copy built; aws01 ecsuser key rotated locally and the old key deactivated (reversible; verify-first checklist in TODO.md section 0). See TODO.md / KNOWN_ISSUES.md.
 - Redeployed `MindmapGeoV2Stack` without `data_removal=destroy`: tables, log groups and assets bucket now RETAIN (`cdk diff` showed policy flips only). PR review decisions recorded in ARCHITECTURE.md.

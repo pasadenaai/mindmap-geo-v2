@@ -2,7 +2,7 @@
 
 Written 2026-10-12 at the end of the PR-review / credential-hygiene session. State: **live** at
 https://exploror.labs.pasadena.ai/ (aws01 us-east-1, stack `MindmapGeoV2Stack`), IP-restricted.
-PR [#1](https://github.com/pasadenaai/mindmap-geo-v2/pull/1): CI green (4 jobs), mergeable, **no human review, not merged**.
+PR #1 was **merged** 2026-10-12 (Gene deferred his own full review; blocks 1-5 were walked by Claude).
 Work top to bottom. Tick items off and move finished ones to CHANGELOG.md; never delete a KNOWN_ISSUES entry.
 Never write full account IDs, IPs or key material into this repo (`scripts/scan_secrets.sh` fails CI on them).
 
@@ -24,7 +24,7 @@ Anything that still used the old key now fails with `InvalidClientTokenId`. Conf
       (they were verified at deactivation time). `pasadenaai-aws01` is expected to fail: it was already broken.
 - [ ] **Ask Gene what has failed since:** ECS tasks / task definitions, GitHub Actions secrets, CI, the Mac mini,
       the PC, any `.env` or script that carries the old key. Look for `InvalidClientTokenId` / `UnrecognizedClient`.
-- [ ] **CloudTrail:** `aws --profile pasadenaai-aws1 --region us-east-1 cloudtrail lookup-events --lookup-attributes
+- [~] **CloudTrail** (first pass 2026-10-12 ~14:30: nothing after deactivation, but only ~15 min elapsed; re-run before the delete): `aws --profile pasadenaai-aws1 --region us-east-1 cloudtrail lookup-events --lookup-attributes
       AttributeKey=AccessKeyId,AttributeValue=<OLD KEY ID>` and look for events dated after deactivation (those are
       attempts by a consumer that still holds the old key). Page through ALL results (the first check only saw the
       newest 50 events, all from this machine). The old key ID is in `~/.aws/credentials.bak-20261012`
@@ -38,27 +38,12 @@ Anything that still used the old key now fails with `InvalidClientTokenId`. Conf
       the live `v2_geo_events` policy is still Delete (section 1); the clean spreadsheet has not been swapped in
       (section 3); the EIA key was never compared to the leaked one (section 4).
 
-## 1. Deploy the pending retain change  *(needs Gene's explicit "deploy")*
-`v2_geo_events` is still DeletionPolicy Delete in AWS; the code (commit `3255b01`) is already RETAIN. `cdk diff` showed
-exactly one resource changing (Delete -> Retain, no replacement).
-- [ ] Deployer profile, pinned lib: `pip install aws-cdk-lib==2.240.0` in `infra/.venv`; CDK CLI is 2.1120.0.
-- [ ] `allowed_ips` = the stack output `AllowedIps`; `cert_arn` = the `aws acm list-certificates` entry for the site
-      domain (the deployer can read both). **Do not pass `data_removal`.**
-- [ ] `cdk diff` -> only `GeoEventsTable` Delete -> Retain; then
-      `cdk deploy MindmapGeoV2Stack --app "python app.py" --context allowed_ips=... --context cert_arn=...`
-- [ ] Verify: `get-template` shows 22/22 tables Retain; `/health` and `/` return 200; counts unchanged
-      (250 countries, 118 elements).
-- [ ] Promote the KNOWN_ISSUES entry "v2_geo_events kept DeletionPolicy DELETE" to FIXED.
-- The previous retain redeploy logged 3x DELETE_FAILED on the assets bucket's auto-delete custom resource
-  (cosmetic, in KNOWN_ISSUES). Cleanup may be noisy again.
+## 1. Deploy the pending retain change  *(DONE 2026-10-12: 22/22 Retain, KNOWN_ISSUES entry FIXED)*
 
-## 2. Finish the PR #1 review and merge  *(gate: Gene's review + explicit go)*
-- [ ] Walk blocks 3-5 (above), or Gene reviews in the GitHub UI. `gh pr checks 1` must be green.
-- [ ] Merge `pasadenaai/mindmap-geo-v2#1`, then `pasadenaai/pasadena-ai-playbook#1` (pattern doc + zone correction;
-      not looked at this session; it has no CI).
-- Branch protection is **unavailable** on this plan (private repo, free tier), so CI is advisory.
-- The loop to repeat: local checks (backend pytest, infra pytest, `npm run build`, `scripts/scan_secrets.sh`) ->
-  commit -> push -> `gh pr checks` -> review -> merge -> redeploy -> verify live.
+## 2. PR #1 review and merge  *(DONE 2026-10-12; both PRs merged)*
+- [ ] **Gene:** review the merged diff when time allows (post-merge); open follow-ups as new PRs.
+- Optional follow-ups from block 3: generic message in the 500 handler (do not echo exception text); CI step asserting
+  the CSP meta tag in `dist/index.html`; `table_exists` should report AccessDenied distinctly.
 
 ## 3. Credential rotation  *(security; in progress)*
 Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in plaintext (19 rows share them).
