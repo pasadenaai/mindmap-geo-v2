@@ -65,10 +65,13 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
       - [x] **Config gotcha FIXED 2026-10-12:** removed `role_arn`/`source_profile` from the `pasadenaai-aws01`..`aws07A`
             blocks in `~/.aws/config` (backup `~/.aws/config.bak-20261012`); each profile now uses its own static key.
             `pasadenaai-aws01` is now a duplicate of `default` (delete it if unwanted).
-      - [ ] **aws13 / aws25 provisioning DEFERRED (Gene, 2026-10-12):** needs management-account (`[mgmt-account-id]`)
-            credentials; `OrganizationAccountAccessRole` trusts only that account and the aws01 admin cannot assume it.
-            Then create `pasadenaai_aws13_ecsuser` / `pasadenaai_aws25_ecsuser` with the three standard policies.
-            `pasadenaai-aws26` is a static-key user (`pasadenaai_claude26`), not the ecsuser pattern.
+      - [ ] **ACTION ITEM (future): provision aws13 and aws25.** Deferred by Gene 2026-10-12. Blocked on credentials
+            for the Organizations management account (ID in Claude's memory file / the Organizations console, not in
+            this repo): `OrganizationAccountAccessRole` trusts only that account and the aws01 admin cannot assume it.
+            When available: create `pasadenaai_aws13_ecsuser` / `pasadenaai_aws25_ecsuser` with the three standard
+            policies (`pai-deployer-platform`, `-data`, `-compute`, templated from aws01; no AdministratorAccess),
+            write keys to the `pasadenaai-aws13` / `-aws25` profiles, record in the tracker.
+            Also consider bringing `pasadenaai-aws26` (static-key user `pasadenaai_claude26`) to the ecsuser pattern.
 - [ ] Put every new key in 1Password (not a file). Longer term: SSO / short-lived credentials (POA&M P-13).
 - [ ] **Gene:** delete the Claude Code transcript that contains all 7 old secrets, AFTER rotation:
       `~/Desktop/Anthropic/Claude_Code/.claude/projects/-Users-mlnotes-Projects/ae0cdf68-e6cb-4b83-9c51-531779ed5f4d.jsonl`
