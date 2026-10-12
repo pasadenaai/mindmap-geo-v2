@@ -157,3 +157,211 @@ script update is merged to main.
 **Fix attempts:**
 **Resolution:**
 -->
+
+## [ATTEMPTED] Frontend served over HTTP-only S3 website endpoint (SC-8)
+**Reported:** 2026-10-08 (FEDRAMP_GAP_ANALYSIS.md)
+**Symptom:** Login credentials and JWTs would travel in cleartext to the S3 website endpoint.
+**Fix attempted (2026-10-12):** private S3 bucket + API Gateway S3 service integration on a Regional
+custom domain with ACM cert and TLS 1.2 policy; WAF on the stage. CloudFront rejected (not in GovCloud).
+**Status:** in code, `cdk synth`/`diff` clean, **not deployed**; promote to FIXED only after a
+user-confirmed deploy and the post-deploy checks (HTTPS 200, PNG checksum match, TLS 1.0/1.1 rejected).
+
+## [OPEN] Google Fonts is a third-party origin
+**Reported:** 2026-10-12
+**Symptom:** `frontend/index.html` loads Inter from fonts.googleapis.com / fonts.gstatic.com, so the CSP
+must allow them and the page makes a third-party request from inside the intended boundary.
+**Next:** self-host Inter (woff2 in `frontend/public/`), drop the origins from `CSP` in
+`infra/mindmap_geo_lambda_stack.py`.
+
+## [OPEN] CDK CLI vs aws-cdk-lib version drift
+**Reported:** 2026-10-12
+**Symptom:** `infra/requirements.txt` allows `aws-cdk-lib>=2.130,<3`; a fresh install resolves to a
+library newer than the installed CLI (2.1120.0 supports cloud-assembly schema 53; lib 2.273 emits 54)
+and `cdk synth/diff/deploy` aborts with "CLI is not compatible with the CDK library".
+**Workaround:** `pip install aws-cdk-lib==2.240.0` (verified), or upgrade the CLI (`npm i -g aws-cdk`).
+**Next:** pin an upper bound or document a minimum CLI version.
+
+## [OPEN] Unverified behaviours of the API Gateway S3 proxy
+**Reported:** 2026-10-12
+Cannot be proven by synth; check after first deploy: greedy `{proxy+}` keys containing `/` map
+correctly to S3 keys; `Content-Type` and `Cache-Control` pass through; binary assets (PNG)
+are byte-identical; missing keys return 404 (S3 returns 403 without ListBucket).
+
+## [OPEN] Ingest routes cannot run from the VPC Lambda (no internet egress)
+**Reported:** 2026-10-12
+**Symptom (expected, not yet observed):** `POST /api/geo/ingest/run/{source_id}` for EIA, USGS and the
+hazard adapters call public HTTP APIs; the API Lambda sits in isolated subnets with no NAT, so the call
+times out (30 s Lambda limit).
+**Why accepted:** keeping the API Lambda fully private is the SC-7 argument; a NAT is ~$33/month.
+**Workaround:** run ingest locally and push with `python scripts/sync_to_aws.py --aws-prefix v2_`.
+**Next:** split an ingest worker out of the API Lambda (FEDRAMP_GAP_ANALYSIS.md P-3, P-4).
+
+## [OPEN] cdk synth needs EC2 lookups (use the deployer profile)
+**Reported:** 2026-10-12
+`cdk synth` for this stack does an `availability-zones` context lookup, which `ecsuser` cannot do. Use
+`AWS_PROFILE=mindmap-geo-v2-deployer` (goes through the CDK lookup role). `infra/cdk.context.json` caches
+the result, contains the account ID, and is git-ignored.
+
+## [FIXED] Static assets counted against WAF rate rule and stage throttle
+**Reported:** 2026-10-12 (code review)
+**Symptom (predicted):** the country list renders one flag `<img>` per row (~250); with the SPA now served
+through API Gateway these count toward the WAF per-IP rate rule (1000/5 min) and the stage throttle
+(was 50 rps / burst 20), causing 403/429 on the countries tab.
+**Fix attempted:** rate rule scoped to `/api/`; stage throttle 200 rps / burst 400; hashed bundles
+immutable, other files 5 min cache. **Needs:** post-deploy confirmation (open Countries tab, no 4xx).
+
+## [FIXED] CSP not yet exercised against the built app
+**Reported:** 2026-10-12 (code review)
+`script-src 'self'`, `connect-src 'self'`, `worker-src 'self' blob:` were written without running the
+built Three.js app under them; local dev sends no CSP. After deploy, check the browser console for
+violations and adjust `CSP` in `infra/mindmap_geo_lambda_stack.py`.
+
+## [OPEN] ApiS3ReadRole trust policy has no confused-deputy condition
+**Reported:** 2026-10-12 (code review)
+`apigateway.amazonaws.com` is trusted without `aws:SourceAccount`/`aws:SourceArn`. Not applied because
+the supported condition keys for the API Gateway service principal were not verified and a wrong key
+would break static serving. Low impact (bucket holds only public build output).
+
+## [ATTEMPTED] First deploy rolled back: Lambda role lacked VPC ENI permissions
+**Reported:** 2026-10-12
+**Symptom:** `cdk deploy` -> `AWS::Lambda::Function` CREATE_FAILED "The provided execution role does not
+have permissions to call CreateNetworkInterface"; stack ended ROLLBACK_COMPLETE.
+**Root cause:** CDK attaches `AWSLambdaVPCAccessExecutionRole` only to a role it creates; the stack passes its own.
+**Fix attempted:** managed policy added to the role plus a regression test (fails without the fix).
+**Side effect:** resources with `RemovalPolicy.RETAIN` (21 `v2_*` tables, secret `pai-mindmap-geo-v2/app`,
+assets bucket, log groups) survive a failed create and block the next deploy with "already exists". They
+must be deleted by an admin identity before redeploying (the deployer user has no delete rights).
+
+## [ATTEMPTED] Failed first create leaves RETAINed orphans that block the next deploy
+**Reported:** 2026-10-12
+**Fix attempted:** `--context data_removal=destroy` (tables, log groups, assets bucket DESTROY; secret always
+RETAIN). Default stays RETAIN. Covered by `infra/tests/test_stack.py`.
+**Residual:** a failed create still leaves the secret `pai-mindmap-geo-v2/app`; delete it with
+`aws secretsmanager delete-secret --secret-id pai-mindmap-geo-v2/app --force-delete-without-recovery`
+(admin identity) before retrying.
+
+## [FIXED] CSP header emitted with literal backslashes by API Gateway
+**Reported:** 2026-10-12 (found in the first post-deploy check)
+**Symptom:** `content-security-policy: default-src \'self\'; ...` — the `\'` escape in a static header
+mapping is not interpreted, so every source expression is invalid and a browser would block scripts.
+**Fix attempted:** header mapping removed; CSP injected as `<meta http-equiv>` by a build-only Vite plugin
+(`frontend/vite.config.js`). Login page loads with a clean console on the live site.
+**Needs user confirmation:** globe, Countries tab and DataPanel under the CSP (requires an authenticated session).
+
+## [OPEN] HEAD requests to the site return 403
+**Reported:** 2026-10-12
+Only `GET` is routed for static files and `/health`, so `curl -I` and uptime monitors using HEAD get
+403 "Missing Authentication Token". Browsers are unaffected. Add HEAD methods if a monitor needs them.
+
+## [OPEN] Site has no data until the v2 tables are seeded
+**Reported:** 2026-10-12
+All `v2_*` tables are empty after the first deploy; `/api/geo/countries` returns an empty list. Seed with
+`python scripts/sync_to_aws.py --aws-prefix v2_` (needs the LocalStack data dir from the old repo) and create a
+login with `python scripts/create_user.py <username> --table v2_geo_users`.
+
+### Update 2026-10-12 — [ATTEMPTED] tables seeded (re: "Site has no data until the v2 tables are seeded")
+Seeded the `v2_*` tables from the v1 LocalStack data (copy, v1 state untouched) with
+`sync_to_aws.py --aws-prefix v2_`: 250 countries, 227 cloud regions, 70 country-element and 119
+country-resource rows, 6 ingest sources, 5 ingest-log rows; `geo_elements` (empty locally) seeded from
+`backend/data/elements.json` (118). Counts verified with Scan COUNT and via the live API.
+Still empty by design: `v2_geo_users` (create a login), points/arcs/configs, hazard tables.
+Known thin data: `geo_airlines` and `geo_availability_zones` have 1 row each in the v1 source data.
+`sync_to_aws.py` no longer needs `dynamodb:ListTables` (credential check uses STS).
+
+### Update 2026-10-12 — [FIXED] CSP and throttle verified (first PARTIALLY, then confirmed by Gene) in a signed-in session (re: "CSP header emitted with literal backslashes", "CSP not yet exercised", "Static assets counted against WAF rate rule")
+Gene signed in at the live site. After Resources → Periodic Table → Fe, a console capture (cropped; it began
+mid-log) showed no CSP violations, only a Chrome `requestAnimationFrame` 342 ms performance notice and an
+input-autocomplete advisory. Gene reported the network tab looked fine ("from what I can see"). **Not yet
+explicitly confirmed:** red errors above the cropped capture, the Countries tab (~250 flags, 403/429), Cloud,
+and the globe interactions. Status stays ATTEMPTED until Gene confirms FIXED; the autocomplete advisory is
+fixed in `Login.jsx`.
+
+## [FIXED] Deployer lacked ecr:DescribeImages
+**Reported:** 2026-10-12
+**Symptom:** `aws ecr describe-images` as `mindmap-geo-v2-cdk-deployer` returned AccessDeniedException.
+**Root cause:** the live managed policy was v1 (without the action); the repo template already had it.
+**Fix:** policy version v2 created and set as default (2026-10-12). IAM propagation took ~15 s, during which
+the call was still denied. Verified with the deployer profile.
+
+## [ATTEMPTED] Leaked v1 EIA API key replaced in v2 only (rotation unconfirmed)
+**Reported:** 2026-10-08
+**Fix attempted (2026-10-12):** key obtained via eia.gov registration and merged into `pai-mindmap-geo-v2/app`
+(keys `EIA_API_KEY`, `SECRET_KEY`); Lambda image republished to start fresh environments.
+**Still open:** the v1 Lambda environment and v1 git history still hold the old key; treat it as burned.
+**Unconfirmed:** that the key from re-registration differs from the leaked one (EIA may re-send the same key),
+and whether the old key is still valid. Compare the last characters of both keys; if identical, the leak is not remediated.
+
+### Update 2026-10-12 (later) — user confirmation (re: the three CSP/throttle entries above)
+Gene completed the signed-in walk-through (TODO #1) and confirmed: no red console errors and no 4xx in the
+network tab. The CSP-meta approach, the `/api/`-scoped WAF rate rule and the 200 rps / burst 400 throttle are
+therefore marked FIXED. Not covered by this check: WAF block behaviour, non-allow-listed IP deny, external
+TLS 1.0/1.1 probe (still in the TODO backlog).
+
+## [FIXED] Tables held a DELETE policy after the first-deploy `data_removal=destroy` flag
+**Reported:** 2026-10-12
+**Symptom:** the live stack was created with `data_removal=destroy`, so tables, log groups and the assets bucket
+would have been deleted with the stack.
+**Fix:** redeployed without the flag (2026-10-12, 407 s, `UPDATE_COMPLETE`). `cdk diff` beforehand showed only
+`DeletionPolicy`/`UpdateReplacePolicy` Delete → Retain on 21 tables and 2 log groups, no replacement. Verified after:
+21 tables Retain, app secret Retain, assets bucket Retain; seeded row counts unchanged; site and `/health` 200.
+
+## [ATTEMPTED] v2_geo_events kept DeletionPolicy DELETE (hard-coded DESTROY)
+**Reported:** 2026-10-12
+`GeoEventsTable` (`v2_geo_events`) is hard-coded `RemovalPolicy.DESTROY` in `infra/mindmap_geo_lambda_stack.py`:
+raw normalized hazard events, high churn, expired by TTL, no PITR, empty today (ingest cannot run in AWS). The
+stack therefore has 22 tables: 21 durable + this one. Decide whether to keep it ephemeral (re-derivable from the
+feeds) or switch it to `data_removal`/RETAIN.
+
+## [ATTEMPTED] DELETE_FAILED on the assets bucket's auto-delete custom resource during the retain redeploy
+**Reported:** 2026-10-12
+**Symptom:** CloudFormation cleanup logged three DELETE_FAILED for `Custom::S3AutoDeleteObjects` (handler role got
+AccessDenied on `s3:GetBucketTagging`); the stack still ended `UPDATE_COMPLETE`.
+**Root cause:** the same update removed the bucket-policy statement that granted the handler role access, before
+the custom resource was deleted. The handler failed before deleting anything, so no objects were removed.
+**Resolution:** the resource is no longer in the template; the assets bucket is Retain. Cosmetic. The frontend
+bucket still uses auto-delete (rebuildable), so the provider Lambda and role remain by design.
+**Not verified:** the assets bucket's contents (the deployer lacks `s3:ListBucket` on it).
+
+### Update 2026-10-12 — decision: retain (re: "v2_geo_events kept DeletionPolicy DELETE")
+Gene chose RETAIN. `GeoEventsTable` now uses `data_removal` like every other table (code change in
+`infra/mindmap_geo_lambda_stack.py`); `test_data_is_retained_by_default` now asserts *every* table is Retain
+(was `>=`, which let a hard-coded DESTROY pass) and was verified to fail on the old code. PITR not enabled on
+this table (TTL-expired data). **Not deployed until the stack is updated**; promote to FIXED after the redeploy
+check shows 22/22 Retain.
+
+## [OPEN] Deployer user is account-admin-equivalent through the CDK bootstrap role
+**Reported:** 2026-10-12 (PR review walkthrough)
+**Symptom:** `mindmap-geo-v2-cdk-deployer` has no direct create rights, but it assumes
+`cdk-hnb659fds-deploy-role-*`, which passes `cdk-hnb659fds-cfn-exec-role-*`. That role has `AdministratorAccess`
+(verified 2026-10-12), so the user can deploy any CloudFormation stack, including IAM, in the account.
+**Impact:** compromise of the deployer's long-lived access keys is account takeover, not "v2 only".
+**Mitigation now:** `_principle` in the IAM template states this plainly; keep the keys out of spreadsheets/chat.
+**Next:** re-bootstrap with a scoped `--cloudformation-execution-policies` (or a permissions boundary), or move
+deploys to short-lived credentials (SSO / OIDC from CI). Tracked as P-13 in FEDRAMP_GAP_ANALYSIS.md.
+
+## [FIXED] Deployer could delete any ACM certificate in the account
+**Reported:** 2026-10-12
+`acm:DeleteCertificate` on `Resource: "*"` removed from the deployer policy (live policy v3, template and local
+copy updated; Sid renamed `AcmCertificateRead`). Certificate deletion is an admin action.
+
+
+## [ATTEMPTED] Plaintext AWS keys in the CLAUDE.md status tracker and a session transcript
+**Reported:** 2026-10-12
+**Symptom:** `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs (19 rows); a Claude Code session
+transcript also held all 7 secrets in plaintext.
+**Fix attempted (2026-10-12):** clean tracker copy built; the aws01 `ecsuser` key was rotated locally (new key active
+in `~/.aws/credentials`, old key still Active pending deactivation); six keys in other accounts not yet checked.
+**Needs:** deactivate/delete old keys, rotate the other six, delete the old spreadsheets and the transcript, store the
+new keys in 1Password. See TODO.md section 3.
+
+## [OPEN] pasadenaai-aws01 AWS profile cannot assume OrganizationAccountAccessRole
+**Reported:** 2026-10-12
+`sts get-caller-identity` as `pasadenaai-aws01` returns AccessDenied on `AssumeRole` (the ecsuser lacks the
+permission); identical before and after the key rotation. Use `pasadenaai-aws1` for admin work.
+
+### Update 2026-10-12 14:14 (re: "Plaintext AWS keys in the CLAUDE.md status tracker and a session transcript")
+aws01 `ecsuser` old key (`...AD4B`) set **Inactive** (reversible); the new key (`...PXEM`) is Active and verified
+for `default` and `bedrock-dev`. The old key is rejected (`InvalidClientTokenId`). First CloudTrail page (newest 50
+events, us-east-1) showed only this machine (aws-cli, CDK, boto3, aws-sdk-js). **Not yet verified:** full CloudTrail
+history, ECS / GitHub / CI / other machines. Delete the old key only after the watch period (see TODO.md section 0).
+

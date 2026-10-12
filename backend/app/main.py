@@ -55,6 +55,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Baseline response headers for every API response (SC-8 / SI-10 hygiene). Static site
+# responses get the equivalent set from the API Gateway S3 integration
+# (infra/mindmap_geo_lambda_stack.py). API responses are JSON, so the CSP is maximally strict
+# and nothing may be cached (auth tokens, user data).
+SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer",
+    "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
+    "Cache-Control": "no-store",
+}
+if settings.app_env == "aws":
+    SECURITY_HEADERS["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    for name, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(name, value)
+    return response
+
+
 app.include_router(auth.router, prefix="/api")
 # Data routers: all writes require an access token (see core.security.require_auth)
 _protected = [Depends(require_auth)]
@@ -71,9 +94,12 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         request.url,
         traceback.format_exc(),
     )
+    # Unhandled-exception responses are produced by Starlette's ServerErrorMiddleware, which
+    # sits outside the middleware above, so the security headers are applied here explicitly.
     return JSONResponse(
         status_code=500,
         content={"detail": f"Internal server error: {type(exc).__name__}: {exc}"},
+        headers=SECURITY_HEADERS,
     )
 
 

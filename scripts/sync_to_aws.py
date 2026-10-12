@@ -159,8 +159,9 @@ def main():
     try:
         local = local_resource(args.local_endpoint)
         aws = aws_resource()
-        # Fail fast: verify AWS credentials before scanning anything
-        aws.meta.client.list_tables(Limit=1)
+        # Fail fast: verify AWS credentials before scanning anything. STS needs no DynamoDB
+        # permission, so least-privilege deployer identities (no ListTables) work too.
+        boto3.client("sts", region_name="us-east-1").get_caller_identity()
     except NoCredentialsError:
         print("ERROR: No AWS credentials found.", file=sys.stderr)
         print("       Set AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY or configure ~/.aws/credentials", file=sys.stderr)

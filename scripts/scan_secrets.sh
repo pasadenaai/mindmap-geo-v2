@@ -17,12 +17,13 @@ PAT='AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY|gh[pousr]_[
 if files | xargs grep -I -n -E -i "$PAT" 2>/dev/null; then
   echo "FAIL: credential-like literal found" >&2; rc=1
 fi
-# 12-digit AWS account IDs and IPv4 addresses (RFC 5737 / loopback / 0.0.0.0 allowed)
+# 12-digit AWS account IDs and IPv4 addresses (RFC 5737 / loopback / 0.0.0.0 allowed;
+# 10.60.0.0 is this project's private VPC CIDR, not a host address)
 if files | xargs grep -I -n -E '\b[0-9]{12}\b' 2>/dev/null | grep -v -E '000000000000'; then
   echo "FAIL: possible AWS account ID" >&2; rc=1
 fi
 if files | xargs grep -I -n -E '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' 2>/dev/null \
-   | grep -v -E '\b(127\.0\.0\.1|0\.0\.0\.0|192\.0\.2\.|198\.51\.100\.|203\.0\.113\.|YOUR\.IP\.HERE|1\.2\.3\.4|5\.6\.7\.8)\b' \
+   | grep -v -E '\b(127\.0\.0\.1|0\.0\.0\.0|192\.0\.2\.|198\.51\.100\.|203\.0\.113\.|YOUR\.IP\.HERE|1\.2\.3\.4|5\.6\.7\.8|10\.60\.0\.0)\b' \
    | grep -v -E 'requirements|package|==|version'; then
   echo "FAIL: possible IP address" >&2; rc=1
 fi

@@ -59,6 +59,12 @@ POST   /api/geo/configs
 PATCH  /api/geo/configs/:id
 DELETE /api/geo/configs/:id
 
+GET    /api/geo/elements, /elements/symbol/:symbol, /elements/:atomic_number, /elements/country/:cca2   (PUT = auth)
+GET    /api/geo/ingest/sources, /sources/:id, /log, /log/:run_id, /resources/:cca2
+POST   /api/geo/ingest/run/:source_id            (auth; cannot reach the internet from the AWS VPC Lambda)
+
+POST   /api/auth/login, /refresh, /logout; GET /api/auth/me; POST /api/auth/register (closed unless ALLOW_REGISTRATION)
+
 GET    /health
 ```
 
@@ -66,27 +72,32 @@ GET    /health
 (`require_auth` in `backend/app/core/security.py`). Reads are public unless `REQUIRE_AUTH_FOR_READS=true`.
 Registration is closed unless `ALLOW_REGISTRATION=true` (set in the local example env); create AWS users with
 `python scripts/create_user.py <username>`. Run tests: `cd backend && pip install -r requirements-dev.txt && pytest tests`.
+Infra assertions (private buckets, no IGW/NAT, WAF, TLS 1.2): `cd infra && pip install -r requirements.txt pytest && pytest tests`.
 FedRAMP posture: see `FEDRAMP_GAP_ANALYSIS.md`.
 
 ## AWS Lambda Deployment (beta — us-east-1)
 
-Same low-cost pattern as mindmap-app-v3: Lambda + API Gateway + S3, ~$2/month, IP-restricted.
-CDK stack is in `infra/`. No NAT, no ALB, no Fargate.
+Lambda (dedicated VPC, isolated subnets, DynamoDB + Secrets Manager endpoints) + API Gateway + private S3 behind
+one HTTPS custom domain (`exploror.labs.pasadena.ai`), ~$18/month (~$8 WAF, ~$7 endpoint), IP-restricted.
+**The VPC Lambda has no internet egress: the ingest routes (EIA/USGS/hazard feeds) cannot run in AWS** — ingest
+locally and `sync_to_aws.py --aws-prefix v2_`. CDK stack is in `infra/`. No NAT, no ALB, no Fargate, **no CloudFront**
+(CloudFront is not offered inside the GovCloud partition; every construct here exists there too).
 
 ### Architecture
 ```
-Browser (IP-restricted)
-  ├─ GET /         →  S3 static site  (React/Vite build, IP-locked via bucket policy)
-  └─ /api/*        →  API Gateway → Lambda (FastAPI + Mangum, IP-locked via resource policy)
+Browser ──HTTPS (TLS 1.2+)──> API Gateway, Regional custom domain + ACM cert, WAF, IP allowlist
+  ├─ GET /, /{proxy+}   →  S3 service integration (PRIVATE bucket, GetObject-only role)
+  ├─ ANY /api/{proxy+}  →  Lambda (FastAPI + Mangum)
+  └─ GET /health        →  Lambda
                               ↓
-                         DynamoDB (real AWS, us-east-1) — 17 tables, all geo_* + cloud regions
+                         DynamoDB (real AWS, us-east-1) — v2_* tables
 ```
 
 ### URLs (placeholders — read the real values from the CDK stack outputs)
 | Resource | URL |
 |---|---|
-| Frontend (S3 static site) | http://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>.s3-website-us-east-1.amazonaws.com |
-| API (API Gateway → Lambda) | https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta/ |
+| Site + API (same origin) | https://exploror.labs.pasadena.ai/ (`/api/*` is the API) |
+| Default execute-api URL | disabled when a custom domain is configured (`cert_arn` context) |
 
 ### Deploying (first time)
 ```bash
@@ -101,24 +112,38 @@ docker buildx build --platform linux/arm64 --provenance=false \
 # 2. Deploy CDK stack (find your IP first: curl https://checkip.amazonaws.com)
 cd infra
 python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+#    cert_arn = ACM cert for the hostname (same account + us-east-1). Issued once; the DNS zone
+#    lives in a different AWS account, so the validation CNAME and the final site CNAME are
+#    created there by hand (CDK does not touch DNS).
 cdk deploy MindmapGeoV2Stack \
   --app "python app.py" \
-  --context allowed_ips=YOUR.IP.HERE/32
+  --context allowed_ips=YOUR.IP.HERE/32 \
+  --context cert_arn=arn:aws:acm:us-east-1:<ACCOUNT_ID>:certificate/<ID>
+# Then: CNAME exploror.labs.pasadena.ai -> the RegionalDomainName stack output (DNS account).
+#    First deploy only: add `--context data_removal=destroy` so a failed create cleans itself up
+#    (default RETAIN leaves tables/bucket/log groups behind and the next deploy fails with
+#    "already exists"). Drop the flag once the stack holds real data.
 
-# 3. Build and upload frontend
+# 3. Build and upload frontend (same-origin: leave VITE_API_URL UNSET so the app calls /api)
 cd ../frontend
-VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
-aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete
+npm ci && npm run build
+aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete --exclude "*.py" \
+  --cache-control "public,max-age=300"
+aws s3 cp dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --recursive --exclude "*" \
+  --include "assets/*.js" --include "assets/*.css" \
+  --cache-control "public,max-age=31536000,immutable"   # hashed Vite bundles only
+aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.html \
+  --cache-control "no-cache" --content-type "text/html; charset=utf-8"
 # Note: flags/airlines assets are in frontend/public/assets/ and bundled by Vite —
 # no separate assets sync needed.
 
-# 4. CORS_ORIGINS is derived from the account in the CDK stack (no manual Lambda env edit needed)
+# 4. CORS_ORIGINS is derived from the site domain in the CDK stack (no manual Lambda env edit needed)
 
 # 5. Set EIA_API_KEY (optional — needed for EIA energy data ingest). Keys live only in
 #    Secrets Manager (secret `pai-mindmap-geo-v2/app`), never in Lambda env vars or git.
 #    Get a free key at https://www.eia.gov/opendata/ then merge it into the secret:
-CUR=$(aws secretsmanager get-secret-value --secret-id pai-mindmap-geo-v2/app --query SecretString --output text)
-aws secretsmanager put-secret-value --secret-id pai-mindmap-geo-v2/app \
+CUR=$(aws --region us-east-1 secretsmanager get-secret-value --secret-id pai-mindmap-geo-v2/app --query SecretString --output text)
+aws --region us-east-1 secretsmanager put-secret-value --secret-id pai-mindmap-geo-v2/app \
   --secret-string "$(echo "$CUR" | jq --arg k "$EIA_API_KEY" '.EIA_API_KEY=$k')"
 # Lambda reads the secret at cold start; update the function config or wait for a new execution environment.
 ```
@@ -149,18 +174,25 @@ aws lambda wait function-updated --function-name pai-mindmap-geo-v2-backend --re
 
 # Frontend
 cd frontend
-VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
-aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete
+npm run build            # VITE_API_URL unset -> same-origin /api
+aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete --exclude "*.py" \
+  --cache-control "public,max-age=300"
+aws s3 cp dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --recursive --exclude "*" \
+  --include "assets/*.js" --include "assets/*.css" \
+  --cache-control "public,max-age=31536000,immutable"   # hashed Vite bundles only
+aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.html \
+  --cache-control "no-cache" --content-type "text/html; charset=utf-8"
 # Note: flags/airlines assets are in frontend/public/assets/ — bundled by Vite, no separate sync.
 ```
 
 ### AWS account notes
 - Target account: whichever the active AWS profile resolves to (`CDK_DEFAULT_ACCOUNT`, us-east-1); no account IDs are stored in this repo
 - CDK bootstrap is required once per account/region
-- `ensure_tables()` is skipped in Lambda (APP_ENV=aws) — CDK creates all 17 tables on first deploy
+- Deploy identity: IAM user `mindmap-geo-v2-cdk-deployer` (permissions in `infra/iam/cdk-deployer-policy.template.json`); it assumes the account's CDK bootstrap roles, so it holds no direct create rights. `ecsuser` stays app-runtime only
+- `ensure_tables()` is skipped in Lambda (APP_ENV=aws) — CDK creates all 22 tables on first deploy
 
 ### DynamoDB tables (us-east-1)
-All tables use on-demand billing with PITR enabled and `RemovalPolicy.RETAIN`.
+22 tables (names carry the `v2_` prefix in AWS). All use on-demand billing and `RemovalPolicy.RETAIN`; PITR is on except `geo_events` (TTL-expired, high churn).
 
 | Table | Partition Key | Notes |
 |---|---|---|
@@ -181,6 +213,11 @@ All tables use on-demand billing with PITR enabled and `RemovalPolicy.RETAIN`.
 | `geo_country_resources` | `cca2` | Energy resources per country (EIA) |
 | `geo_ingest_sources` | `source_id` | External data source registry |
 | `geo_ingest_log` | `run_id` | Ingestion run history |
+| `geo_users` | `user_id` | Accounts (GSI on `username`); never synced between environments |
+| `geo_events` | `event_id` | Normalized hazard events, TTL; GSI `hazard` + `event_time` |
+| `geo_alerts` | `alert_id` | Live advisory alerts; GSI `status` + `created_at` |
+| `geo_alerts_archive` | `hazard` + `created_at_alert_id` | Alert history; GSI `primary_cca2` + `created_at` |
+| `geo_event_rollups` | `cca2` + `day_hazard` | Daily per-country, per-hazard rollups |
 
 ## Session conventions
 

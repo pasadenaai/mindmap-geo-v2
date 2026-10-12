@@ -1,0 +1,163 @@
+{
+  "_comment": "Managed policy for the mindmap-geo-v2-cdk-deployer IAM user. Replace ${ACCOUNT_ID} with the target account (us-east-1). IAM rejects the '_'-prefixed keys: strip them with jq 'with_entries(select(.key|startswith(\"_\")|not))' before create-policy.",
+  "_principle": "One CDK deployer per project. Infra is created by CloudFormation through the account's CDK bootstrap roles (qualifier hnb659fds). This user has no DIRECT create rights over DynamoDB/Lambda/API Gateway/WAF, but it can assume the bootstrap deploy role, which passes the CloudFormation execution role. In this account that role has AdministratorAccess (verified 2026-10-12), so this user is account-admin-equivalent through that path: protect its access keys accordingly. The statements below only cover the manual deploy-time steps for v2 resources. ecsuser stays app-runtime only.",
+  "_attach": "Create as a customer-managed policy named mindmap-geo-v2-cdk-deployer and attach to the user. Do NOT inline it: user inline policies are capped at 2,048 chars; managed policies at 6,144.",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AssumeCdkBootstrapRoles",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": [
+        "arn:aws:iam::${ACCOUNT_ID}:role/cdk-hnb659fds-deploy-role-${ACCOUNT_ID}-us-east-1",
+        "arn:aws:iam::${ACCOUNT_ID}:role/cdk-hnb659fds-file-publishing-role-${ACCOUNT_ID}-us-east-1",
+        "arn:aws:iam::${ACCOUNT_ID}:role/cdk-hnb659fds-image-publishing-role-${ACCOUNT_ID}-us-east-1",
+        "arn:aws:iam::${ACCOUNT_ID}:role/cdk-hnb659fds-lookup-role-${ACCOUNT_ID}-us-east-1"
+      ]
+    },
+    {
+      "Sid": "CdkBootstrapVersionRead",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:us-east-1:${ACCOUNT_ID}:parameter/cdk-bootstrap/hnb659fds/version"
+    },
+    {
+      "Sid": "StackRead",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:GetTemplate"
+      ],
+      "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:stack/MindmapGeoV2Stack/*"
+    },
+    {
+      "Sid": "AcmSiteCertificate",
+      "Effect": "Allow",
+      "Action": [
+        "acm:RequestCertificate",
+        "acm:AddTagsToCertificate"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "ForAllValues:StringLike": {
+          "acm:DomainNames": [
+            "exploror.labs.pasadena.ai",
+            "*.labs.pasadena.ai"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AcmCertificateRead",
+      "Effect": "Allow",
+      "Action": [
+        "acm:DescribeCertificate",
+        "acm:ListCertificates",
+        "acm:GetCertificate"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ApiGatewayAccountRead",
+      "Effect": "Allow",
+      "Action": "apigateway:GET",
+      "Resource": "arn:aws:apigateway:us-east-1::/account"
+    },
+    {
+      "Sid": "EcrAuthToken",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "EcrBackendRepo",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:CreateRepository",
+        "ecr:DescribeRepositories",
+        "ecr:DescribeImages",
+        "ecr:TagResource",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ecr:PutImage",
+        "ecr:ListImages"
+      ],
+      "Resource": "arn:aws:ecr:us-east-1:${ACCOUNT_ID}:repository/pai-mindmap-geo-v2-backend"
+    },
+    {
+      "Sid": "LambdaCodeUpdate",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:UpdateFunctionCode",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration"
+      ],
+      "Resource": "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:function:pai-mindmap-geo-v2-backend"
+    },
+    {
+      "Sid": "FrontendBucketList",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::pai-mindmap-geo-v2-frontend-${ACCOUNT_ID}"
+    },
+    {
+      "Sid": "FrontendBucketObjects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::pai-mindmap-geo-v2-frontend-${ACCOUNT_ID}/*"
+    },
+    {
+      "Sid": "AppSecretManage",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:PutSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-1:${ACCOUNT_ID}:secret:pai-mindmap-geo-v2/app-*"
+    },
+    {
+      "Sid": "SeedV2Tables",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/v2_*",
+        "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/v2_*/index/*"
+      ]
+    },
+    {
+      "Sid": "LambdaLogsRead",
+      "Effect": "Allow",
+      "Action": [
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:FilterLogEvents",
+        "logs:GetLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/lambda/pai-mindmap-geo-v2-*",
+        "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/lambda/pai-mindmap-geo-v2-*:*"
+      ]
+    }
+  ]
+}

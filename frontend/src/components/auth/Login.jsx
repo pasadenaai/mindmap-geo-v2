@@ -33,8 +33,8 @@ export default function Login() {
         </div>
         <h2 style={styles.title}>{mode === 'login' ? 'Sign In' : 'Create Account'}</h2>
         <form onSubmit={submit} style={styles.form}>
-          <input style={styles.input} type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required autoFocus/>
-          <input style={styles.input} type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required/>
+          <input style={styles.input} type="text" autoComplete="username" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required autoFocus/>
+          <input style={styles.input} type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required/>
           {error && <p style={styles.error}>{error}</p>}
           <button style={{...styles.btn, opacity: loading ? 0.7 : 1}} type="submit" disabled={loading}>
             {loading ? 'Please wait…' : mode === 'login' ? 'Sign In' : 'Create Account'}

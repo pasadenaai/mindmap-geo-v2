@@ -1,5 +1,44 @@
 # Changelog
 
+## 2026-10-12 — post-deploy verification and key rotation (branch: feat/https-front-door)
+- Credential hygiene: 7 plaintext AWS key pairs found in the tracker spreadsheet; clean copy built; aws01 ecsuser key rotated locally and the old key deactivated (reversible; verify-first checklist in TODO.md section 0). See TODO.md / KNOWN_ISSUES.md.
+- Redeployed `MindmapGeoV2Stack` without `data_removal=destroy`: tables, log groups and assets bucket now RETAIN (`cdk diff` showed policy flips only). PR review decisions recorded in ARCHITECTURE.md.
+- `v2_geo_events` switched from hard-coded DESTROY to `data_removal` (RETAIN); the retention test now asserts every table is Retain.
+- Infra tests +4 (S3 role GetObject-only, IP allowlist, WAF `/api/` scope, Lambda 443-only egress); each verified to fail when the boundary is broken.
+- Deployer IAM policy v3: `acm:DeleteCertificate` removed; template comment now states the deployer is admin-equivalent via the CDK bootstrap role (P-13).
+- Signed-in app verified under the CSP by Gene (globe, Countries tab, Periodic Table → Fe): no red console errors, no 4xx. CSP and throttle KNOWN_ISSUES entries promoted to FIXED.
+- Login inputs now carry `autocomplete="username"` / `"current-password"` (`"new-password"` in register mode).
+- Deployer IAM policy v2 (adds `ecr:DescribeImages`) applied and verified.
+- New EIA key written to the v2 Secrets Manager secret; Lambda image republished. Whether it differs from the leaked key is unconfirmed; v1 environment still holds the old key.
+- CLAUDE.md secret-update commands now pass `--region us-east-1`.
+- Added `.github/workflows/ci.yml`: backend tests, infra tests (aws-cdk-lib pinned 2.240.0), frontend build, secret scan. Offline, no AWS credentials. Branch protection is unavailable on this plan, so checks are advisory.
+- CI moved to `ubuntu-26.04` and `checkout`/`setup-python`/`setup-node` v7 (Node 24 action runtime), ahead of the `ubuntu-latest` migration that starts 2026-10-19.
+
+## 2026-10-12 — first deployment (branch: feat/https-front-door)
+- **Deployed `MindmapGeoV2Stack` to aws01 us-east-1** (CloudFormation `CREATE_COMPLETE`, 76 resources) with `data_removal=destroy`; `https://exploror.labs.pasadena.ai/` serves the SPA over TLS 1.2+.
+- First attempt rolled back (Lambda role lacked VPC ENI permissions); fixed with a managed policy and regression test; retained orphans were cleaned up by an admin.
+- API Gateway emitted the CSP header with literal backslashes (`\'self\'`); CSP now ships as a `<meta>` tag injected at build time (`frontend/vite.config.js`, production build only) and the header mapping was removed. Regression test added.
+- Verified post-deploy: HTTPS 200, PNG byte-identical (SHA-256), correct content types, gzip, 404 for missing keys, `/health` 200 from the VPC Lambda, unauthenticated POST 401, raw S3 URL 403, default execute-api URL 403.
+- Not yet verified: login, globe/Countries tab under the CSP (needs a user), WAF block behaviour, non-allow-listed IP deny, TLS 1.0/1.1 rejection by an external probe. DynamoDB tables are empty (seed with `sync_to_aws.py --aws-prefix v2_`).
+
+## 2026-10-12 — dedicated VPC for the API Lambda (branch: feat/https-front-door)
+- New VPC `pai-mindmap-geo-v2-vpc` (`10.60.0.0/24`, 2 AZs, isolated subnets, no IGW/NAT, default SG restricted); the API Lambda runs in it with a security group allowing HTTPS egress only.
+- DynamoDB gateway endpoint and Secrets Manager interface endpoint (one AZ), each with an endpoint policy scoped to this stack's resources; VPC Flow Logs to `/aws/vpc/pai-mindmap-geo-v2-flow`.
+- **Behaviour change:** the ingest routes (EIA, USGS, hazard adapters) can no longer reach the internet from AWS; run ingest locally and sync. Logged in KNOWN_ISSUES.
+- Gap analysis: SC-5/SC-7 rows updated and a POA&M-style plan of action (P-1 … P-12) added.
+- `infra/cdk.context.json` git-ignored (contains the account ID). Estimated cost ~$18/month.
+
+## 2026-10-12 — HTTPS front door via API Gateway S3 proxy (branch: feat/https-front-door)
+- Frontend moved off the HTTP-only S3 website endpoint: private bucket, served through the same API Gateway as the API (S3 service integration), so the site is HTTPS on one origin. CloudFront deliberately not used (not offered inside the GovCloud partition).
+- Regional custom domain `exploror.labs.pasadena.ai` (TLS 1.2 policy) via `cert_arn` context; ACM cert issued in aws01 and DNS-validated in the DNS account; the execute-api default endpoint is disabled when a custom domain is set.
+- WAF web ACL on the stage (AWS managed Common + KnownBadInputs, per-IP rate limit); IP allowlist resource policy kept.
+- Lambda routes narrowed to `/api/{proxy+}` and `/health`; everything else is served from S3.
+- Both buckets private (Block Public Access, TLS-only, S3-managed encryption). Assets bucket was publicly readable behind an IP deny.
+- Security headers on site (API Gateway response mapping) and API (FastAPI middleware); CORS origin derived from the site domain instead of the S3 website URL; ARNs partition-aware.
+- Removed unused `__API_BASE__` define from `vite.config.js`; AWS builds leave `VITE_API_URL` unset.
+- New policy `_IAM_INLINE_POLICIES/mindmap-geo-v2-cdk-deployer-policy.json` (outside repo). Not deployed.
+- Verified: 20 backend tests pass; `cdk synth` and `cdk diff` (via the deployer profile) succeed against the real cert ARN.
+
 ## 2026-10-11 — hazard alerts Phase 0 (branch: main)
 - New `backend/app/hazards/`: normalized `HazardEvent`, `HazardAdapter` interface, USGS earthquake and GDACS parsers (pure functions; malformed records skipped, text length-bounded).
 - Fixture tests (`backend/tests/test_hazards.py`, 10 new tests); fixtures are hand-written approximations to be replaced with recorded payloads.
