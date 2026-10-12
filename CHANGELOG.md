@@ -6,6 +6,7 @@
 - Deployer IAM policy v2 (adds `ecr:DescribeImages`) applied and verified.
 - New EIA key written to the v2 Secrets Manager secret; Lambda image republished. Whether it differs from the leaked key is unconfirmed; v1 environment still holds the old key.
 - CLAUDE.md secret-update commands now pass `--region us-east-1`.
+- Added `.github/workflows/ci.yml`: backend tests, infra tests (aws-cdk-lib pinned 2.240.0), frontend build, secret scan. Offline, no AWS credentials. Branch protection is unavailable on this plan, so checks are advisory.
 
 ## 2026-10-12 — first deployment (branch: feat/https-front-door)
 - **Deployed `MindmapGeoV2Stack` to aws01 us-east-1** (CloudFormation `CREATE_COMPLETE`, 76 resources) with `data_removal=destroy`; `https://exploror.labs.pasadena.ai/` serves the SPA over TLS 1.2+.

@@ -43,6 +43,7 @@ The key is in the v1 repo's git history and in the live v1 Lambda environment.
       to RETAIN (command in CLAUDE.md; pass the same `allowed_ips` and `cert_arn`).
 
 ## Backlog (not blocking, in rough priority)
+- [ ] CI: pin GitHub Actions by commit SHA instead of tag; consider adding gitleaks and `cdk synth` once a deployer-free path exists.
 - [ ] Add WAF logging + API access logs (`--context api_access_logs=true`) + alarms — POA&M P-2.
 - [ ] Reserved Lambda concurrency (P-5); define SC-5 DoS event types in the SSP (P-6).
 - [ ] Split an ingest worker from the API Lambda; ingest feeds cannot reach the internet from the VPC Lambda
