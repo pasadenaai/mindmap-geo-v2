@@ -59,4 +59,5 @@ Informal tracker, not the FedRAMP POA&M template: no owners or dates yet. Cost f
 | P-10 | Commercial region, no FIPS endpoints; check managed rule-group availability and API/WAF feature parity in GovCloud | SC-13, SC-7 | Partition-aware config is in place; migrate under `*.gov.pasadena.ai`, FIPS endpoints | account + effort | Open |
 | P-11 | Third-party origin: Google Fonts | SC-7, SR | Self-host Inter; drop fonts.googleapis.com / fonts.gstatic.com from the CSP | $0 | Open |
 | P-12 | No Security Hub / Config / GuardDuty; no CloudTrail data events or log-archive account | CA-7, SI-4, AU-9 | Enable org-level services; send logs to an archive account | varies | Open |
+| P-13 | Deployer IAM user reaches AdministratorAccess via the CDK bootstrap deploy/execution roles | AC-6, AC-2(5), IA-5 | Scope the CloudFormation execution policy (re-bootstrap) or use short-lived deploy credentials; rotate deployer keys | $0 + effort | Open |
 

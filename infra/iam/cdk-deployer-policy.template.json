@@ -1,6 +1,6 @@
 {
   "_comment": "Managed policy for the mindmap-geo-v2-cdk-deployer IAM user. Replace ${ACCOUNT_ID} with the target account (us-east-1). IAM rejects the '_'-prefixed keys: strip them with jq 'with_entries(select(.key|startswith(\"_\")|not))' before create-policy.",
-  "_principle": "One CDK deployer per project. Infra is created by CloudFormation through the account's existing CDK bootstrap roles (qualifier hnb659fds), so this user holds no direct rights over DynamoDB/Lambda/API Gateway/WAF resource creation. It only assumes the bootstrap roles and performs the manual deploy-time steps for v2 resources. ecsuser stays app-runtime only.",
+  "_principle": "One CDK deployer per project. Infra is created by CloudFormation through the account's CDK bootstrap roles (qualifier hnb659fds). This user has no DIRECT create rights over DynamoDB/Lambda/API Gateway/WAF, but it can assume the bootstrap deploy role, which passes the CloudFormation execution role. In this account that role has AdministratorAccess (verified 2026-10-12), so this user is account-admin-equivalent through that path: protect its access keys accordingly. The statements below only cover the manual deploy-time steps for v2 resources. ecsuser stays app-runtime only.",
   "_attach": "Create as a customer-managed policy named mindmap-geo-v2-cdk-deployer and attach to the user. Do NOT inline it: user inline policies are capped at 2,048 chars; managed policies at 6,144.",
   "Version": "2012-10-17",
   "Statement": [
@@ -49,13 +49,12 @@
       }
     },
     {
-      "Sid": "AcmCertificateReadDelete",
+      "Sid": "AcmCertificateRead",
       "Effect": "Allow",
       "Action": [
         "acm:DescribeCertificate",
         "acm:ListCertificates",
-        "acm:GetCertificate",
-        "acm:DeleteCertificate"
+        "acm:GetCertificate"
       ],
       "Resource": "*"
     },

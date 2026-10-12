@@ -3,6 +3,8 @@
 ## 2026-10-12 — post-deploy verification and key rotation (branch: feat/https-front-door)
 - Redeployed `MindmapGeoV2Stack` without `data_removal=destroy`: tables, log groups and assets bucket now RETAIN (`cdk diff` showed policy flips only). PR review decisions recorded in ARCHITECTURE.md.
 - `v2_geo_events` switched from hard-coded DESTROY to `data_removal` (RETAIN); the retention test now asserts every table is Retain.
+- Infra tests +4 (S3 role GetObject-only, IP allowlist, WAF `/api/` scope, Lambda 443-only egress); each verified to fail when the boundary is broken.
+- Deployer IAM policy v3: `acm:DeleteCertificate` removed; template comment now states the deployer is admin-equivalent via the CDK bootstrap role (P-13).
 - Signed-in app verified under the CSP by Gene (globe, Countries tab, Periodic Table → Fe): no red console errors, no 4xx. CSP and throttle KNOWN_ISSUES entries promoted to FIXED.
 - Login inputs now carry `autocomplete="username"` / `"current-password"` (`"new-password"` in register mode).
 - Deployer IAM policy v2 (adds `ecr:DescribeImages`) applied and verified.

@@ -43,6 +43,7 @@ The key is in the v1 repo's git history and in the live v1 Lambda environment.
       groups and the assets bucket are RETAIN. `v2_geo_events` was still DESTROY: switched to RETAIN in code (needs one more redeploy).
 
 ## Backlog (not blocking, in rough priority)
+- [ ] Deployer is admin-equivalent via the CDK bootstrap role (KNOWN_ISSUES, P-13): scope the execution policy or move to short-lived creds.
 - [ ] CI: pin GitHub Actions by commit SHA instead of tag; consider adding gitleaks and `cdk synth` once a deployer-free path exists.
 - [ ] Add WAF logging + API access logs (`--context api_access_logs=true`) + alarms — POA&M P-2.
 - [ ] Reserved Lambda concurrency (P-5); define SC-5 DoS event types in the SSP (P-6).

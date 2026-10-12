@@ -123,3 +123,68 @@ def test_static_header_mappings_have_no_escaped_quotes(t):
             for name, value in (ir.get("ResponseParameters") or {}).items():
                 assert "\\" not in str(value), f"{name} contains a backslash: {value}"
                 assert "Content-Security-Policy" not in name, "CSP must ship via <meta>, not a mapping"
+
+
+# ── Boundary assertions (SC-7): the S3 role, IP allowlist, WAF scope and Lambda egress ──────────
+
+ALLOWED = ["203.0.113.10/32"]   # matches the allowed_ips context set in _template()
+
+
+def _statements(doc) -> list:
+    stmts = doc["Statement"]
+    return stmts if isinstance(stmts, list) else [stmts]
+
+
+def test_apigw_s3_role_can_only_get_objects_from_the_frontend_bucket(t):
+    roles = t.find_resources("AWS::IAM::Role", {"Properties": {"RoleName": "pai-mindmap-geo-v2-apigw-s3-read"}})
+    assert len(roles) == 1
+    role_id = next(iter(roles))
+    attached = [
+        p["Properties"]["PolicyDocument"]
+        for p in t.find_resources("AWS::IAM::Policy").values()
+        if {"Ref": role_id} in p["Properties"].get("Roles", [])
+    ]
+    assert attached, "the S3 read role has no policy"
+    stmts = [s for doc in attached for s in _statements(doc)]
+    assert len(stmts) == 1
+    assert stmts[0]["Effect"] == "Allow"
+    assert stmts[0]["Action"] == "s3:GetObject"      # a bare string: exactly one action
+    resource = str(stmts[0]["Resource"])
+    assert "MindmapGeoFrontendBucket" in resource and "MindmapGeoAssetsBucket" not in resource
+
+
+def test_ip_allowlist_allows_only_and_denies_everything_else(t):
+    (api,) = t.find_resources("AWS::ApiGateway::RestApi").values()
+    stmts = _statements(api["Properties"]["Policy"])
+    allow = [s for s in stmts if s["Effect"] == "Allow"]
+    deny = [s for s in stmts if s["Effect"] == "Deny"]
+    assert len(allow) == 1 and len(deny) == 1
+    assert allow[0]["Condition"] == {"IpAddress": {"aws:SourceIp": ALLOWED}}
+    assert deny[0]["Condition"] == {"NotIpAddress": {"aws:SourceIp": ALLOWED}}
+    for s in (allow[0], deny[0]):
+        assert s["Action"] == "execute-api:Invoke"
+
+
+def test_waf_rate_rule_counts_only_api_paths(t):
+    (acl,) = t.find_resources("AWS::WAFv2::WebACL").values()
+    (rule,) = [r for r in acl["Properties"]["Rules"] if r["Name"] == "RateLimitPerIp"]
+    assert rule["Action"] == {"Block": {}}
+    stmt = rule["Statement"]["RateBasedStatement"]
+    assert stmt["AggregateKeyType"] == "IP" and stmt["Limit"] == 1000
+    match = stmt["ScopeDownStatement"]["ByteMatchStatement"]
+    assert match["SearchString"] == "/api/"
+    assert match["PositionalConstraint"] == "STARTS_WITH"
+    assert match["FieldToMatch"] == {"UriPath": {}}
+
+
+def test_api_lambda_security_group_egress_is_https_only(t):
+    groups = t.find_resources(
+        "AWS::EC2::SecurityGroup",
+        {"Properties": {"GroupDescription": Match.string_like_regexp("API Lambda: HTTPS egress only")}},
+    )
+    assert len(groups) == 1
+    egress = next(iter(groups.values()))["Properties"]["SecurityGroupEgress"]
+    assert egress, "no egress rules"
+    for rule in egress:
+        assert rule["IpProtocol"] == "tcp"
+        assert rule["FromPort"] == 443 and rule["ToPort"] == 443

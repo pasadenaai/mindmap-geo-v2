@@ -329,3 +329,18 @@ Gene chose RETAIN. `GeoEventsTable` now uses `data_removal` like every other tab
 this table (TTL-expired data). **Not deployed until the stack is updated**; promote to FIXED after the redeploy
 check shows 22/22 Retain.
 
+## [OPEN] Deployer user is account-admin-equivalent through the CDK bootstrap role
+**Reported:** 2026-10-12 (PR review walkthrough)
+**Symptom:** `mindmap-geo-v2-cdk-deployer` has no direct create rights, but it assumes
+`cdk-hnb659fds-deploy-role-*`, which passes `cdk-hnb659fds-cfn-exec-role-*`. That role has `AdministratorAccess`
+(verified 2026-10-12), so the user can deploy any CloudFormation stack, including IAM, in the account.
+**Impact:** compromise of the deployer's long-lived access keys is account takeover, not "v2 only".
+**Mitigation now:** `_principle` in the IAM template states this plainly; keep the keys out of spreadsheets/chat.
+**Next:** re-bootstrap with a scoped `--cloudformation-execution-policies` (or a permissions boundary), or move
+deploys to short-lived credentials (SSO / OIDC from CI). Tracked as P-13 in FEDRAMP_GAP_ANALYSIS.md.
+
+## [FIXED] Deployer could delete any ACM certificate in the account
+**Reported:** 2026-10-12
+`acm:DeleteCertificate` on `Resource: "*"` removed from the deployer policy (live policy v3, template and local
+copy updated; Sid renamed `AcmCertificateRead`). Certificate deletion is an admin action.
+
