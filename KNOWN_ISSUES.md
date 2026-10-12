@@ -305,7 +305,7 @@ would have been deleted with the stack.
 `DeletionPolicy`/`UpdateReplacePolicy` Delete → Retain on 21 tables and 2 log groups, no replacement. Verified after:
 21 tables Retain, app secret Retain, assets bucket Retain; seeded row counts unchanged; site and `/health` 200.
 
-## [ATTEMPTED] v2_geo_events kept DeletionPolicy DELETE (hard-coded DESTROY)
+## [FIXED] v2_geo_events kept DeletionPolicy DELETE (hard-coded DESTROY)
 **Reported:** 2026-10-12
 `GeoEventsTable` (`v2_geo_events`) is hard-coded `RemovalPolicy.DESTROY` in `infra/mindmap_geo_lambda_stack.py`:
 raw normalized hazard events, high churn, expired by TTL, no PITR, empty today (ingest cannot run in AWS). The
@@ -328,6 +328,11 @@ Gene chose RETAIN. `GeoEventsTable` now uses `data_removal` like every other tab
 (was `>=`, which let a hard-coded DESTROY pass) and was verified to fail on the old code. PITR not enabled on
 this table (TTL-expired data). **Not deployed until the stack is updated**; promote to FIXED after the redeploy
 check shows 22/22 Retain.
+
+### Update 2026-10-12 — FIXED (deployed)
+Deployed from `main` (59a0104) with the deployer profile; `cdk diff` showed only `GeoEventsTable` DeletionPolicy and
+UpdateReplacePolicy Delete -> Retain (no replacement). `get-template`: 22/22 tables Retain. `/health` 200, `/` 200,
+250 countries and 118 elements unchanged. No DELETE_FAILED this time (no custom resource touched).
 
 ## [OPEN] Deployer user is account-admin-equivalent through the CDK bootstrap role
 **Reported:** 2026-10-12 (PR review walkthrough)

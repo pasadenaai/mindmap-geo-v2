@@ -2,7 +2,7 @@
 
 Written 2026-10-12 at the end of the PR-review / credential-hygiene session. State: **live** at
 https://exploror.labs.pasadena.ai/ (aws01 us-east-1, stack `MindmapGeoV2Stack`), IP-restricted.
-PR [#1](https://github.com/pasadenaai/mindmap-geo-v2/pull/1): CI green (4 jobs), mergeable, **no human review, not merged**.
+PR #1 was **merged** 2026-10-12 (Gene deferred his own full review; blocks 1-5 were walked by Claude).
 Work top to bottom. Tick items off and move finished ones to CHANGELOG.md; never delete a KNOWN_ISSUES entry.
 Never write full account IDs, IPs or key material into this repo (`scripts/scan_secrets.sh` fails CI on them).
 
@@ -24,7 +24,7 @@ Anything that still used the old key now fails with `InvalidClientTokenId`. Conf
       (they were verified at deactivation time). `pasadenaai-aws01` is expected to fail: it was already broken.
 - [ ] **Ask Gene what has failed since:** ECS tasks / task definitions, GitHub Actions secrets, CI, the Mac mini,
       the PC, any `.env` or script that carries the old key. Look for `InvalidClientTokenId` / `UnrecognizedClient`.
-- [ ] **CloudTrail:** `aws --profile pasadenaai-aws1 --region us-east-1 cloudtrail lookup-events --lookup-attributes
+- [~] **CloudTrail** (first pass 2026-10-12 ~14:30: nothing after deactivation, but only ~15 min elapsed; re-run before the delete): `aws --profile pasadenaai-aws1 --region us-east-1 cloudtrail lookup-events --lookup-attributes
       AttributeKey=AccessKeyId,AttributeValue=<OLD KEY ID>` and look for events dated after deactivation (those are
       attempts by a consumer that still holds the old key). Page through ALL results (the first check only saw the
       newest 50 events, all from this machine). The old key ID is in `~/.aws/credentials.bak-20261012`
@@ -38,27 +38,12 @@ Anything that still used the old key now fails with `InvalidClientTokenId`. Conf
       the live `v2_geo_events` policy is still Delete (section 1); the clean spreadsheet has not been swapped in
       (section 3); the EIA key was never compared to the leaked one (section 4).
 
-## 1. Deploy the pending retain change  *(needs Gene's explicit "deploy")*
-`v2_geo_events` is still DeletionPolicy Delete in AWS; the code (commit `3255b01`) is already RETAIN. `cdk diff` showed
-exactly one resource changing (Delete -> Retain, no replacement).
-- [ ] Deployer profile, pinned lib: `pip install aws-cdk-lib==2.240.0` in `infra/.venv`; CDK CLI is 2.1120.0.
-- [ ] `allowed_ips` = the stack output `AllowedIps`; `cert_arn` = the `aws acm list-certificates` entry for the site
-      domain (the deployer can read both). **Do not pass `data_removal`.**
-- [ ] `cdk diff` -> only `GeoEventsTable` Delete -> Retain; then
-      `cdk deploy MindmapGeoV2Stack --app "python app.py" --context allowed_ips=... --context cert_arn=...`
-- [ ] Verify: `get-template` shows 22/22 tables Retain; `/health` and `/` return 200; counts unchanged
-      (250 countries, 118 elements).
-- [ ] Promote the KNOWN_ISSUES entry "v2_geo_events kept DeletionPolicy DELETE" to FIXED.
-- The previous retain redeploy logged 3x DELETE_FAILED on the assets bucket's auto-delete custom resource
-  (cosmetic, in KNOWN_ISSUES). Cleanup may be noisy again.
+## 1. Deploy the pending retain change  *(DONE 2026-10-12: 22/22 Retain, KNOWN_ISSUES entry FIXED)*
 
-## 2. Finish the PR #1 review and merge  *(gate: Gene's review + explicit go)*
-- [ ] Walk blocks 3-5 (above), or Gene reviews in the GitHub UI. `gh pr checks 1` must be green.
-- [ ] Merge `pasadenaai/mindmap-geo-v2#1`, then `pasadenaai/pasadena-ai-playbook#1` (pattern doc + zone correction;
-      not looked at this session; it has no CI).
-- Branch protection is **unavailable** on this plan (private repo, free tier), so CI is advisory.
-- The loop to repeat: local checks (backend pytest, infra pytest, `npm run build`, `scripts/scan_secrets.sh`) ->
-  commit -> push -> `gh pr checks` -> review -> merge -> redeploy -> verify live.
+## 2. PR #1 review and merge  *(DONE 2026-10-12; both PRs merged)*
+- [ ] **Gene:** review the merged diff when time allows (post-merge); open follow-ups as new PRs.
+- Optional follow-ups from block 3: generic message in the 500 handler (do not echo exception text); CI step asserting
+  the CSP meta tag in `dist/index.html`; `table_exists` should report AccessDenied distinctly.
 
 ## 3. Credential rotation  *(security; in progress)*
 Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in plaintext (19 rows share them).
@@ -72,9 +57,21 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
             First CloudTrail page (newest 50 events, us-east-1): all from this machine. **Verify per section 0.**
       - [ ] After the watch period (section 0), delete it (admin) and delete `~/.aws/credentials.bak-20261012` (it holds the OLD secret).
       - [ ] Update the masked IDs in the tracker (rows 3-11) to `...PXEM`.
-- [ ] **Six keys in other accounts** (account suffixes 9731, 2804, 0173, 0435, 6432, 1473; profiles `pasadenaai-aws02`,
-      `-aws03`, `-aws04`, `-aws05`, `-aws06A`, `-aws07A`): check `get-access-key-last-used` with each account's own
-      profile; deactivate stale ones, rotate active ones. The aws01 admin profile cannot see them.
+- [x] **Six keys in other accounts** rotated 2026-10-12 (profiles `pasadenaai-aws02`, `-aws03`, `-aws04`, `-aws05`,
+      `-aws06A`, `-aws07A`; each user rotated its own key, one Active key each before). New keys verified via STS and
+      written to `~/.aws/credentials`; old keys set **Inactive** (reversible), not deleted. Old secrets sit in
+      `~/.aws/credentials.bak-20261012-others`: shred it when the watch period ends.
+      - [ ] Watch period (~2026-10-19): then `iam delete-access-key` for the six inactive keys (each account's own profile).
+      - [x] **Config gotcha FIXED 2026-10-12:** removed `role_arn`/`source_profile` from the `pasadenaai-aws01`..`aws07A`
+            blocks in `~/.aws/config` (backup `~/.aws/config.bak-20261012`); each profile now uses its own static key.
+            `pasadenaai-aws01` is now a duplicate of `default` (delete it if unwanted).
+      - [ ] **ACTION ITEM (future): provision aws13 and aws25.** Deferred by Gene 2026-10-12. Blocked on credentials
+            for the Organizations management account (ID in Claude's memory file / the Organizations console, not in
+            this repo): `OrganizationAccountAccessRole` trusts only that account and the aws01 admin cannot assume it.
+            When available: create `pasadenaai_aws13_ecsuser` / `pasadenaai_aws25_ecsuser` with the three standard
+            policies (`pai-deployer-platform`, `-data`, `-compute`, templated from aws01; no AdministratorAccess),
+            write keys to the `pasadenaai-aws13` / `-aws25` profiles, record in the tracker.
+            Also consider bringing `pasadenaai-aws26` (static-key user `pasadenaai_claude26`) to the ecsuser pattern.
 - [ ] Put every new key in 1Password (not a file). Longer term: SSO / short-lived credentials (POA&M P-13).
 - [ ] **Gene:** delete the Claude Code transcript that contains all 7 old secrets, AFTER rotation:
       `~/Desktop/Anthropic/Claude_Code/.claude/projects/-Users-mlnotes-Projects/ae0cdf68-e6cb-4b83-9c51-531779ed5f4d.jsonl`
@@ -93,6 +90,9 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
 - [ ] Stop using a `default` AWS profile bound to a long-lived key.
 
 ## Backlog (not blocking, in rough priority)
+- [ ] Branch protection is unavailable on the free plan and Gene chose not to upgrade (2026-10-12): implement the
+      compensating controls in `docs/BRANCH_PROTECTION_WITHOUT_PRO.md` (pre-push hook, Claude permission rules, `main-came-from-pr`
+      CI tripwire, mirror + deploy tags, fine-grained PAT).
 - [ ] Add WAF logging + API access logs (`--context api_access_logs=true`) + alarms — POA&M P-2.
 - [ ] Reserved Lambda concurrency (P-5); define SC-5 DoS event types in the SSP (P-6).
 - [ ] Split an ingest worker from the API Lambda; ingest feeds cannot reach the internet from the VPC Lambda
