@@ -259,3 +259,12 @@ All `v2_*` tables are empty after the first deploy; `/api/geo/countries` returns
 `python scripts/sync_to_aws.py --aws-prefix v2_` (needs the LocalStack data dir from the old repo) and create a
 login with `python scripts/create_user.py <username> --table v2_geo_users`.
 
+### Update 2026-10-12 — [ATTEMPTED] tables seeded (re: "Site has no data until the v2 tables are seeded")
+Seeded the `v2_*` tables from the v1 LocalStack data (copy, v1 state untouched) with
+`sync_to_aws.py --aws-prefix v2_`: 250 countries, 227 cloud regions, 70 country-element and 119
+country-resource rows, 6 ingest sources, 5 ingest-log rows; `geo_elements` (empty locally) seeded from
+`backend/data/elements.json` (118). Counts verified with Scan COUNT and via the live API.
+Still empty by design: `v2_geo_users` (create a login), points/arcs/configs, hazard tables.
+Known thin data: `geo_airlines` and `geo_availability_zones` have 1 row each in the v1 source data.
+`sync_to_aws.py` no longer needs `dynamodb:ListTables` (credential check uses STS).
+
