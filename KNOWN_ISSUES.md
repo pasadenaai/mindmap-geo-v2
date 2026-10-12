@@ -358,3 +358,10 @@ new keys in 1Password. See TODO.md section 3.
 **Reported:** 2026-10-12
 `sts get-caller-identity` as `pasadenaai-aws01` returns AccessDenied on `AssumeRole` (the ecsuser lacks the
 permission); identical before and after the key rotation. Use `pasadenaai-aws1` for admin work.
+
+### Update 2026-10-12 14:14 (re: "Plaintext AWS keys in the CLAUDE.md status tracker and a session transcript")
+aws01 `ecsuser` old key (`...AD4B`) set **Inactive** (reversible); the new key (`...PXEM`) is Active and verified
+for `default` and `bedrock-dev`. The old key is rejected (`InvalidClientTokenId`). First CloudTrail page (newest 50
+events, us-east-1) showed only this machine (aws-cli, CDK, boto3, aws-sdk-js). **Not yet verified:** full CloudTrail
+history, ECS / GitHub / CI / other machines. Delete the old key only after the watch period (see TODO.md section 0).
+

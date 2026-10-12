@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2026-10-12 — post-deploy verification and key rotation (branch: feat/https-front-door)
-- Credential hygiene: 7 plaintext AWS key pairs found in the tracker spreadsheet; clean copy built; aws01 ecsuser key rotated locally (old key pending deactivation). See TODO.md / KNOWN_ISSUES.md.
+- Credential hygiene: 7 plaintext AWS key pairs found in the tracker spreadsheet; clean copy built; aws01 ecsuser key rotated locally and the old key deactivated (reversible; verify-first checklist in TODO.md section 0). See TODO.md / KNOWN_ISSUES.md.
 - Redeployed `MindmapGeoV2Stack` without `data_removal=destroy`: tables, log groups and assets bucket now RETAIN (`cdk diff` showed policy flips only). PR review decisions recorded in ARCHITECTURE.md.
 - `v2_geo_events` switched from hard-coded DESTROY to `data_removal` (RETAIN); the retention test now asserts every table is Retain.
 - Infra tests +4 (S3 role GetObject-only, IP allowlist, WAF `/api/` scope, Lambda 443-only egress); each verified to fail when the boundary is broken.

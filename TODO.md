@@ -7,6 +7,7 @@ Work top to bottom. Tick items off and move finished ones to CHANGELOG.md; never
 Never write full account IDs, IPs or key material into this repo (`scripts/scan_secrets.sh` fails CI on them).
 
 ## Where we left off (read this first)
+- **Do section 0 (verify) before anything else.** The old ecsuser key is Inactive; consumers I could not see may fail.
 - **Verified live:** signed-in app clean under the CSP, no 403/429; frontend with the autocomplete fix deployed;
   tables, log groups and the assets bucket are RETAIN in AWS (redeployed without `data_removal=destroy`).
 - **IAM:** deployer policy is v3 (adds `ecr:DescribeImages`, drops `acm:DeleteCertificate`); the repo template and
@@ -15,6 +16,27 @@ Never write full account IDs, IPs or key material into this repo (`scripts/scan_
   3 runtime code (`backend/app/main.py`, `frontend/vite.config.js`, `Login.jsx`, `scripts/*`), 4 CI/housekeeping
   (`.github/workflows/ci.yml`, `.gitignore`, `.claude/commands/*`), 5 docs accuracy.
   Decisions already made (ARCHITECTURE.md): keep the S3 403/404 -> 404 masking; no SPA fallback; data persistence first.
+
+## 0. VERIFY FIRST in the next session  *(do before anything else; the old ecsuser key was deactivated 2026-10-12 14:14)*
+The aws01 ecsuser key ending `...AD4B` was set **Inactive** on 2026-10-12 (reversible); the new key `...PXEM` is Active.
+Anything that still used the old key now fails with `InvalidClientTokenId`. Confirm nothing broke:
+- [ ] **This machine:** `aws --profile default sts get-caller-identity` and `--profile bedrock-dev` both succeed
+      (they were verified at deactivation time). `pasadenaai-aws01` is expected to fail: it was already broken.
+- [ ] **Ask Gene what has failed since:** ECS tasks / task definitions, GitHub Actions secrets, CI, the Mac mini,
+      the PC, any `.env` or script that carries the old key. Look for `InvalidClientTokenId` / `UnrecognizedClient`.
+- [ ] **CloudTrail:** `aws --profile pasadenaai-aws1 --region us-east-1 cloudtrail lookup-events --lookup-attributes
+      AttributeKey=AccessKeyId,AttributeValue=<OLD KEY ID>` and look for events dated after deactivation (those are
+      attempts by a consumer that still holds the old key). Page through ALL results (the first check only saw the
+      newest 50 events, all from this machine). The old key ID is in `~/.aws/credentials.bak-20261012`
+      (`AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials.bak-20261012 aws configure get aws_access_key_id --profile default`).
+- [ ] **If something broke, roll back immediately** (admin profile):
+      `aws --profile pasadenaai-aws1 iam update-access-key --user-name pasadenaai_aws01_ecsuser --access-key-id <OLD KEY ID> --status Active`
+      then move that consumer to the new key and deactivate again.
+- [ ] **Watch period:** if nothing has failed by ~2026-10-19, delete the old key
+      (`iam delete-access-key`, admin) and shred `~/.aws/credentials.bak-20261012`. Record the date in KNOWN_ISSUES.
+- [ ] **Other verifications still pending from this session (nothing else has been verified for these):**
+      the live `v2_geo_events` policy is still Delete (section 1); the clean spreadsheet has not been swapped in
+      (section 3); the EIA key was never compared to the leaked one (section 4).
 
 ## 1. Deploy the pending retain change  *(needs Gene's explicit "deploy")*
 `v2_geo_events` is still DeletionPolicy Delete in AWS; the code (commit `3255b01`) is already RETAIN. `cdk diff` showed
@@ -46,9 +68,9 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
 - [ ] **aws01 `pasadenaai_aws01_ecsuser`** (old key `...AD4B`, used by profiles `default`, `bedrock-dev`,
       `pasadenaai-aws01`): new key `...PXEM` created 2026-10-12 and written to those 3 profiles; verified via STS for
       `default` and `bedrock-dev`.
-      - [ ] Deactivate the OLD key `...AD4B` (`iam update-access-key --status Inactive`; reversible). Unseen consumers
-            are possible: ECS task definitions, GitHub secrets, CI, the Mac mini / PC. Watch for failures for a few days.
-      - [ ] Then delete it (admin) and delete `~/.aws/credentials.bak-20261012` (it holds the OLD secret).
+      - [x] Old key `...AD4B` deactivated 2026-10-12 14:14 (verified rejected with `InvalidClientTokenId`; new key works).
+            First CloudTrail page (newest 50 events, us-east-1): all from this machine. **Verify per section 0.**
+      - [ ] After the watch period (section 0), delete it (admin) and delete `~/.aws/credentials.bak-20261012` (it holds the OLD secret).
       - [ ] Update the masked IDs in the tracker (rows 3-11) to `...PXEM`.
 - [ ] **Six keys in other accounts** (account suffixes 9731, 2804, 0173, 0435, 6432, 1473; profiles `pasadenaai-aws02`,
       `-aws03`, `-aws04`, `-aws05`, `-aws06A`, `-aws07A`): check `get-access-key-last-used` with each account's own
