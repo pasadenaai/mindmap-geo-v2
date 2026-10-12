@@ -222,3 +222,13 @@ violations and adjust `CSP` in `infra/mindmap_geo_lambda_stack.py`.
 the supported condition keys for the API Gateway service principal were not verified and a wrong key
 would break static serving. Low impact (bucket holds only public build output).
 
+## [ATTEMPTED] First deploy rolled back: Lambda role lacked VPC ENI permissions
+**Reported:** 2026-10-12
+**Symptom:** `cdk deploy` -> `AWS::Lambda::Function` CREATE_FAILED "The provided execution role does not
+have permissions to call CreateNetworkInterface"; stack ended ROLLBACK_COMPLETE.
+**Root cause:** CDK attaches `AWSLambdaVPCAccessExecutionRole` only to a role it creates; the stack passes its own.
+**Fix attempted:** managed policy added to the role plus a regression test (fails without the fix).
+**Side effect:** resources with `RemovalPolicy.RETAIN` (21 `v2_*` tables, secret `pai-mindmap-geo-v2/app`,
+assets bucket, log groups) survive a failed create and block the next deploy with "already exists". They
+must be deleted by an admin identity before redeploying (the deployer user has no delete rights).
+
