@@ -57,9 +57,14 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
             First CloudTrail page (newest 50 events, us-east-1): all from this machine. **Verify per section 0.**
       - [ ] After the watch period (section 0), delete it (admin) and delete `~/.aws/credentials.bak-20261012` (it holds the OLD secret).
       - [ ] Update the masked IDs in the tracker (rows 3-11) to `...PXEM`.
-- [ ] **Six keys in other accounts** (account suffixes 9731, 2804, 0173, 0435, 6432, 1473; profiles `pasadenaai-aws02`,
-      `-aws03`, `-aws04`, `-aws05`, `-aws06A`, `-aws07A`): check `get-access-key-last-used` with each account's own
-      profile; deactivate stale ones, rotate active ones. The aws01 admin profile cannot see them.
+- [x] **Six keys in other accounts** rotated 2026-10-12 (profiles `pasadenaai-aws02`, `-aws03`, `-aws04`, `-aws05`,
+      `-aws06A`, `-aws07A`; each user rotated its own key, one Active key each before). New keys verified via STS and
+      written to `~/.aws/credentials`; old keys set **Inactive** (reversible), not deleted. Old secrets sit in
+      `~/.aws/credentials.bak-20261012-others`: shred it when the watch period ends.
+      - [ ] Watch period (~2026-10-19): then `iam delete-access-key` for the six inactive keys (each account's own profile).
+      - [ ] **Config gotcha:** `~/.aws/config` `[profile pasadenaai-aws0X]` blocks use `role_arn` + `source_profile=default`
+            (aws01 ecsuser cannot assume it), which SHADOWS these static keys. Plain `--profile pasadenaai-aws02` fails;
+            fix the config blocks (remove `role_arn`/`source_profile`) so the profiles use their own keys.
 - [ ] Put every new key in 1Password (not a file). Longer term: SSO / short-lived credentials (POA&M P-13).
 - [ ] **Gene:** delete the Claude Code transcript that contains all 7 old secrets, AFTER rotation:
       `~/Desktop/Anthropic/Claude_Code/.claude/projects/-Users-mlnotes-Projects/ae0cdf68-e6cb-4b83-9c51-531779ed5f4d.jsonl`
