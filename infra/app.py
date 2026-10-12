@@ -31,7 +31,7 @@ MindmapGeoLambdaStack(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],  # resolved by the CDK CLI from the active profile
         region="us-east-1",
     ),
-    description="mindmap-geo beta: Lambda + API Gateway + S3 (~$2/month, IP-restricted)",
+    description="mindmap-geo v2: HTTPS site + API on API Gateway (private S3, Lambda, WAF)",
 )
 
 app.synth()

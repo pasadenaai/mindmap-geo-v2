@@ -25,19 +25,19 @@ Legend: ✅ addressed in code · 🟡 partial · ❌ gap · 📄 organizational/
 | CP-9 / CP-10 Backup and recovery | 🟡 | DynamoDB PITR enabled. No tested restore, no cross-region copy. |
 | RA-5 Vulnerability scanning | 🟡 | Secret scanning (gitleaks + pattern scan). No SCA/SAST/container scanning. `python-jose` upgraded to 3.5.0 to clear known 3.3.0 CVEs. |
 | SA-11 Developer testing | 🟡 | Auth/access-control test suite (10 tests). No coverage of the geo routes or infrastructure. |
-| SC-5 DoS protection | 🟡 | API Gateway throttling (50 rps, burst 20). No WAF. |
-| SC-7 Boundary protection | ❌ | IP allowlist only. Commercial region, Lambda not in a VPC, no WAF. |
-| SC-8 Transmission confidentiality | ❌ | Frontend served over HTTP from the S3 website endpoint. API Gateway is HTTPS. Fix: CloudFront + OAC + TLS 1.2+. |
+| SC-5 DoS protection | 🟡 | API Gateway throttling (50 rps, burst 20) plus a WAF rate-based rule (1000 req / 5 min / IP). In code, not yet deployed. |
+| SC-7 Boundary protection | 🟡 | IP allowlist (resource policy) + regional WAF (AWS managed Common and KnownBadInputs rule sets) in code; S3 buckets private (Block Public Access, TLS-only). Still a commercial region and Lambda is not in a VPC. Not yet deployed. |
+| SC-8 Transmission confidentiality | 🟡 | Site and API are served only over HTTPS from one API Gateway origin (Regional custom domain, ACM cert, TLS 1.2 policy, HSTS); S3 website endpoint removed and buckets private. In code, not yet deployed. Not FIPS endpoints (SC-13). |
 | SC-12 / SC-28 Keys, protection at rest | 🟡 | DynamoDB and S3 use AWS-owned-key encryption by default; Secrets Manager uses the AWS-managed key. No customer-managed KMS keys. |
 | SC-13 FIPS cryptography | ❌ | Not using FIPS endpoints or GovCloud; JWT uses HS256 with a shared secret. |
 | SI-2 Flaw remediation | 🟡 | Pinned dependencies; no automated update process. |
 | SI-4 System monitoring | ❌ | No alarms or anomaly detection. |
-| SI-10 Input validation | 🟡 | Pydantic validation on request bodies. CORS allows all methods/headers with credentials; no security headers. |
+| SI-10 Input validation | 🟡 | Pydantic validation on request bodies. Security headers (HSTS, CSP, nosniff, frame-deny, no-referrer) on site and API responses. CORS still allows all methods/headers with credentials, but is limited to the site's own origin. |
 | SR (supply chain) | ❌ | No SBOM, no provenance, no dependency review. |
 | PL-2, CA-2, IR-*, CP-2, AT-*, PS-*, PM-* | 📄 | No SSP, IR plan, contingency plan, training or personnel controls. Organizational, tracked in `pasadenaai/fedramp-compliance`. |
 
 ## Prioritised remediation
 1. **Done in this repo:** write protection on all data routes, closed registration, 12-char passwords, lockout, server-side logout revocation, audit events for auth, `python-jose` 3.5.0, no credential literals, fail-closed IP allowlist.
 2. **Next (small):** restrict CORS methods/headers; add security headers; role claim and an admin/editor split; request-ID and source-IP in audit records; customer-managed KMS key for the secret and tables; CloudTrail data events; dependency and image scanning in CI.
-3. **Architecture (large):** CloudFront + OAC + TLS (SC-8), WAF (SC-7/SC-5), GovCloud parameterization and FIPS endpoints (SC-13), OIDC/PIV via the planned auth service (IA-2(12)), Security Hub + Config (CA-7).
+3. **Architecture (large):** ~~HTTPS front door + WAF~~ done in code (API Gateway + S3 service integration + ACM + WAF; no CloudFront because it is not offered inside GovCloud) — pending deploy. Remaining: GovCloud account/partition and FIPS endpoints (SC-13), OIDC/PIV via the planned auth service (IA-2(12)), Security Hub + Config (CA-7), self-hosted fonts to remove the Google Fonts third-party origin.
 4. **Organizational:** SSP, IR/CP plans, training, and an agency sponsor — see the ATO roadmap in `fedramp-compliance`.

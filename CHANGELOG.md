@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-10-12 — HTTPS front door via API Gateway S3 proxy (branch: feat/https-front-door)
+- Frontend moved off the HTTP-only S3 website endpoint: private bucket, served through the same API Gateway as the API (S3 service integration), so the site is HTTPS on one origin. CloudFront deliberately not used (not offered inside the GovCloud partition).
+- Regional custom domain `exploror.labs.pasadena.ai` (TLS 1.2 policy) via `cert_arn` context; ACM cert issued in aws01 and DNS-validated in the DNS account; the execute-api default endpoint is disabled when a custom domain is set.
+- WAF web ACL on the stage (AWS managed Common + KnownBadInputs, per-IP rate limit); IP allowlist resource policy kept.
+- Lambda routes narrowed to `/api/{proxy+}` and `/health`; everything else is served from S3.
+- Both buckets private (Block Public Access, TLS-only, S3-managed encryption). Assets bucket was publicly readable behind an IP deny.
+- Security headers on site (API Gateway response mapping) and API (FastAPI middleware); CORS origin derived from the site domain instead of the S3 website URL; ARNs partition-aware.
+- Removed unused `__API_BASE__` define from `vite.config.js`; AWS builds leave `VITE_API_URL` unset.
+- New policy `_IAM_INLINE_POLICIES/mindmap-geo-v2-cdk-deployer-policy.json` (outside repo). Not deployed.
+- Verified: 20 backend tests pass; `cdk synth` and `cdk diff` (via the deployer profile) succeed against the real cert ARN.
+
 ## 2026-10-11 — hazard alerts Phase 0 (branch: main)
 - New `backend/app/hazards/`: normalized `HazardEvent`, `HazardAdapter` interface, USGS earthquake and GDACS parsers (pure functions; malformed records skipped, text length-bounded).
 - Fixture tests (`backend/tests/test_hazards.py`, 10 new tests); fixtures are hand-written approximations to be replaced with recorded payloads.

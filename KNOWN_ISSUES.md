@@ -157,3 +157,33 @@ script update is merged to main.
 **Fix attempts:**
 **Resolution:**
 -->
+
+## [ATTEMPTED] Frontend served over HTTP-only S3 website endpoint (SC-8)
+**Reported:** 2026-10-08 (FEDRAMP_GAP_ANALYSIS.md)
+**Symptom:** Login credentials and JWTs would travel in cleartext to the S3 website endpoint.
+**Fix attempted (2026-10-12):** private S3 bucket + API Gateway S3 service integration on a Regional
+custom domain with ACM cert and TLS 1.2 policy; WAF on the stage. CloudFront rejected (not in GovCloud).
+**Status:** in code, `cdk synth`/`diff` clean, **not deployed**; promote to FIXED only after a
+user-confirmed deploy and the post-deploy checks (HTTPS 200, PNG checksum match, TLS 1.0/1.1 rejected).
+
+## [OPEN] Google Fonts is a third-party origin
+**Reported:** 2026-10-12
+**Symptom:** `frontend/index.html` loads Inter from fonts.googleapis.com / fonts.gstatic.com, so the CSP
+must allow them and the page makes a third-party request from inside the intended boundary.
+**Next:** self-host Inter (woff2 in `frontend/public/`), drop the origins from `CSP` in
+`infra/mindmap_geo_lambda_stack.py`.
+
+## [OPEN] CDK CLI vs aws-cdk-lib version drift
+**Reported:** 2026-10-12
+**Symptom:** `infra/requirements.txt` allows `aws-cdk-lib>=2.130,<3`; a fresh install resolves to a
+library newer than the installed CLI (2.1120.0 supports cloud-assembly schema 53; lib 2.273 emits 54)
+and `cdk synth/diff/deploy` aborts with "CLI is not compatible with the CDK library".
+**Workaround:** `pip install aws-cdk-lib==2.240.0` (verified), or upgrade the CLI (`npm i -g aws-cdk`).
+**Next:** pin an upper bound or document a minimum CLI version.
+
+## [OPEN] Unverified behaviours of the API Gateway S3 proxy
+**Reported:** 2026-10-12
+Cannot be proven by synth; check after first deploy: greedy `{proxy+}` keys containing `/` map
+correctly to S3 keys; `Content-Type` and `Cache-Control` pass through; binary assets (PNG)
+are byte-identical; missing keys return 404 (S3 returns 403 without ListBucket).
+

@@ -70,23 +70,25 @@ FedRAMP posture: see `FEDRAMP_GAP_ANALYSIS.md`.
 
 ## AWS Lambda Deployment (beta — us-east-1)
 
-Same low-cost pattern as mindmap-app-v3: Lambda + API Gateway + S3, ~$2/month, IP-restricted.
-CDK stack is in `infra/`. No NAT, no ALB, no Fargate.
+Lambda + API Gateway + private S3 behind one HTTPS custom domain (`exploror.labs.pasadena.ai`), ~$10/month
+(~$8 of that is WAF), IP-restricted. CDK stack is in `infra/`. No NAT, no ALB, no Fargate, **no CloudFront**
+(CloudFront is not offered inside the GovCloud partition; every construct here exists there too).
 
 ### Architecture
 ```
-Browser (IP-restricted)
-  ├─ GET /         →  S3 static site  (React/Vite build, IP-locked via bucket policy)
-  └─ /api/*        →  API Gateway → Lambda (FastAPI + Mangum, IP-locked via resource policy)
+Browser ──HTTPS (TLS 1.2+)──> API Gateway, Regional custom domain + ACM cert, WAF, IP allowlist
+  ├─ GET /, /{proxy+}   →  S3 service integration (PRIVATE bucket, GetObject-only role)
+  ├─ ANY /api/{proxy+}  →  Lambda (FastAPI + Mangum)
+  └─ GET /health        →  Lambda
                               ↓
-                         DynamoDB (real AWS, us-east-1) — 17 tables, all geo_* + cloud regions
+                         DynamoDB (real AWS, us-east-1) — v2_* tables
 ```
 
 ### URLs (placeholders — read the real values from the CDK stack outputs)
 | Resource | URL |
 |---|---|
-| Frontend (S3 static site) | http://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>.s3-website-us-east-1.amazonaws.com |
-| API (API Gateway → Lambda) | https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta/ |
+| Site + API (same origin) | https://exploror.labs.pasadena.ai/ (`/api/*` is the API) |
+| Default execute-api URL | disabled when a custom domain is configured (`cert_arn` context) |
 
 ### Deploying (first time)
 ```bash
@@ -101,18 +103,26 @@ docker buildx build --platform linux/arm64 --provenance=false \
 # 2. Deploy CDK stack (find your IP first: curl https://checkip.amazonaws.com)
 cd infra
 python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+#    cert_arn = ACM cert for the hostname (same account + us-east-1). Issued once; the DNS zone
+#    lives in a different AWS account, so the validation CNAME and the final site CNAME are
+#    created there by hand (CDK does not touch DNS).
 cdk deploy MindmapGeoV2Stack \
   --app "python app.py" \
-  --context allowed_ips=YOUR.IP.HERE/32
+  --context allowed_ips=YOUR.IP.HERE/32 \
+  --context cert_arn=arn:aws:acm:us-east-1:<ACCOUNT_ID>:certificate/<ID>
+# Then: CNAME exploror.labs.pasadena.ai -> the RegionalDomainName stack output (DNS account).
 
-# 3. Build and upload frontend
+# 3. Build and upload frontend (same-origin: leave VITE_API_URL UNSET so the app calls /api)
 cd ../frontend
-VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
-aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete
+npm ci && npm run build
+aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete --exclude "*.py" \
+  --cache-control "public,max-age=31536000,immutable"
+aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.html \
+  --cache-control "no-cache" --content-type "text/html; charset=utf-8"
 # Note: flags/airlines assets are in frontend/public/assets/ and bundled by Vite —
 # no separate assets sync needed.
 
-# 4. CORS_ORIGINS is derived from the account in the CDK stack (no manual Lambda env edit needed)
+# 4. CORS_ORIGINS is derived from the site domain in the CDK stack (no manual Lambda env edit needed)
 
 # 5. Set EIA_API_KEY (optional — needed for EIA energy data ingest). Keys live only in
 #    Secrets Manager (secret `pai-mindmap-geo-v2/app`), never in Lambda env vars or git.
@@ -149,8 +159,11 @@ aws lambda wait function-updated --function-name pai-mindmap-geo-v2-backend --re
 
 # Frontend
 cd frontend
-VITE_API_URL=https://<API_ID>.execute-api.us-east-1.amazonaws.com/beta npm run build
-aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete
+npm run build            # VITE_API_URL unset -> same-origin /api
+aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete --exclude "*.py" \
+  --cache-control "public,max-age=31536000,immutable"
+aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.html \
+  --cache-control "no-cache" --content-type "text/html; charset=utf-8"
 # Note: flags/airlines assets are in frontend/public/assets/ — bundled by Vite, no separate sync.
 ```
 

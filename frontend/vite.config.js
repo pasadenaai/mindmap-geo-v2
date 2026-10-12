@@ -17,8 +17,5 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    define: {
-      __API_BASE__: JSON.stringify(env.VITE_API_BASE_URL || '/api'),
-    },
   }
 })

@@ -200,7 +200,7 @@ LLM_MODEL_ID = <model id>               (provider-specific; verify)
 - **API-first:** alerts/events/archive are plain JSON endpoints with a versioned, documented contract. The globe is one client. React Native and tvOS apps will not reuse the Three.js component directly, so no alert logic may live in frontend code.
 - **Reads never call an LLM.** Alerts are generated on a schedule and stored; public requests only read stored rows. This keeps public traffic from driving model cost.
 - **Disclaimers and attribution:** every alert shows source, time, "informational only, follow official authorities", and a link to the originating event.
-- **Abuse and availability:** a public site needs HTTPS (CloudFront + WAF, see the subdomain work), rate limiting and caching of the alert list. The current IP-allowlist deployment does not satisfy this.
+- **Abuse and availability:** a public site needs HTTPS (API Gateway custom domain + WAF, no CloudFront; see `ARCHITECTURE.md`), rate limiting and caching of the alert list. The current IP-allowlist deployment does not satisfy this.
 - **tvOS/mobile UI notes:** large-text, focus-based navigation (no hover), and a list-first view; the globe is optional there.
 - Known rendering limit: land and borders are 1:110M data; event markers are exact, base map is coarse (as documented for new cities).
 
