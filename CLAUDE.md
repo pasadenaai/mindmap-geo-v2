@@ -66,6 +66,7 @@ GET    /health
 (`require_auth` in `backend/app/core/security.py`). Reads are public unless `REQUIRE_AUTH_FOR_READS=true`.
 Registration is closed unless `ALLOW_REGISTRATION=true` (set in the local example env); create AWS users with
 `python scripts/create_user.py <username>`. Run tests: `cd backend && pip install -r requirements-dev.txt && pytest tests`.
+Infra assertions (private buckets, no IGW/NAT, WAF, TLS 1.2): `cd infra && pip install -r requirements.txt pytest && pytest tests`.
 FedRAMP posture: see `FEDRAMP_GAP_ANALYSIS.md`.
 
 ## AWS Lambda Deployment (beta — us-east-1)
@@ -118,7 +119,10 @@ cdk deploy MindmapGeoV2Stack \
 cd ../frontend
 npm ci && npm run build
 aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete --exclude "*.py" \
-  --cache-control "public,max-age=31536000,immutable"
+  --cache-control "public,max-age=300"
+aws s3 cp dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --recursive --exclude "*" \
+  --include "assets/*.js" --include "assets/*.css" \
+  --cache-control "public,max-age=31536000,immutable"   # hashed Vite bundles only
 aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.html \
   --cache-control "no-cache" --content-type "text/html; charset=utf-8"
 # Note: flags/airlines assets are in frontend/public/assets/ and bundled by Vite —
@@ -163,7 +167,10 @@ aws lambda wait function-updated --function-name pai-mindmap-geo-v2-backend --re
 cd frontend
 npm run build            # VITE_API_URL unset -> same-origin /api
 aws s3 sync dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --delete --exclude "*.py" \
-  --cache-control "public,max-age=31536000,immutable"
+  --cache-control "public,max-age=300"
+aws s3 cp dist s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID> --recursive --exclude "*" \
+  --include "assets/*.js" --include "assets/*.css" \
+  --cache-control "public,max-age=31536000,immutable"   # hashed Vite bundles only
 aws s3 cp dist/index.html s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/index.html \
   --cache-control "no-cache" --content-type "text/html; charset=utf-8"
 # Note: flags/airlines assets are in frontend/public/assets/ — bundled by Vite, no separate sync.

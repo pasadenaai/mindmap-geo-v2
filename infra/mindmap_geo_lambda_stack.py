@@ -59,9 +59,13 @@ Post-deploy:
      or trigger POST /api/geo/ingest/run/usgs_mcs to populate geo_ingest_sources.
   7. Build React frontend (same-origin: leave VITE_API_URL UNSET so the app calls /api):
        cd frontend && npm ci && npm run build
-  8. Upload to S3 (the API Gateway role reads this private bucket; index.html must not be
-     cached, hashed assets can be):
+  8. Upload to S3 (the API Gateway role reads this private bucket). Only Vite's hashed
+     assets/*.js|css are immutable; data files and flags keep stable paths, so they get a
+     short TTL, and index.html is never cached:
        aws s3 sync frontend/dist s3://<FrontendBucketName> --delete --exclude "*.py" \\
+         --cache-control "public,max-age=300"
+       aws s3 cp frontend/dist s3://<FrontendBucketName> --recursive --exclude "*" \\
+         --include "assets/*.js" --include "assets/*.css" \\
          --cache-control "public,max-age=31536000,immutable"
        aws s3 cp frontend/dist/index.html s3://<FrontendBucketName>/index.html \\
          --cache-control "no-cache" --content-type "text/html; charset=utf-8"
@@ -82,7 +86,7 @@ Updating after code changes:
   Frontend:
     cd frontend
     npm run build            # VITE_API_URL unset -> same-origin /api
-    (then the two upload commands from step 8 above)
+    (then the three upload commands from step 8 above)
 
   Infrastructure:
     cd infra
@@ -596,13 +600,18 @@ class MindmapGeoLambdaStack(cdk.Stack):
             binary_media_types=["*/*"],
             # With a custom domain, only that hostname serves traffic.
             disable_execute_api_endpoint=bool(cert_arn),
+            # gzip text/binary responses (the three.js bundle is >1 MB uncompressed)
+            min_compression_size=cdk.Size.bytes(1024),
             deploy_options=apigw.StageOptions(
                 stage_name="beta",
                 logging_level=apigw.MethodLoggingLevel.OFF,
                 data_trace_enabled=False,
                 metrics_enabled=True,
-                throttling_rate_limit=50,
-                throttling_burst_limit=20,
+                # Sized for the SPA as well as the API: every asset (JS, JSON data, 500+ SVG
+                # flags) passes through this stage. Backend protection is the WAF rate rule
+                # scoped to /api/ plus Lambda concurrency (FEDRAMP_GAP_ANALYSIS.md P-5).
+                throttling_rate_limit=200,
+                throttling_burst_limit=400,
                 access_log_destination=(
                     apigw.LogGroupLogDestination(access_log_group) if access_log_group else None
                 ),
@@ -770,6 +779,22 @@ class MindmapGeoLambdaStack(cdk.Stack):
                         rate_based_statement=wafv2.CfnWebACL.RateBasedStatementProperty(
                             limit=1000,              # requests per 5 minutes per source IP
                             aggregate_key_type="IP",
+                            # Count only API calls: the SPA fetches hundreds of static files
+                            # (one SVG flag per country) which must not trip the limit.
+                            scope_down_statement=wafv2.CfnWebACL.StatementProperty(
+                                byte_match_statement=wafv2.CfnWebACL.ByteMatchStatementProperty(
+                                    search_string="/api/",
+                                    field_to_match=wafv2.CfnWebACL.FieldToMatchProperty(
+                                        uri_path={},
+                                    ),
+                                    positional_constraint="STARTS_WITH",
+                                    text_transformations=[
+                                        wafv2.CfnWebACL.TextTransformationProperty(
+                                            priority=0, type="NONE",
+                                        ),
+                                    ],
+                                ),
+                            ),
                         ),
                     ),
                     visibility_config=_vis("RateLimitPerIp"),

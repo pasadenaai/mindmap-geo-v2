@@ -236,10 +236,8 @@ Seed order matters:
 5. `geo_country_elements` — run `scripts/seed_country_elements.py` (LocalStack only)
 6. Ingest sources — seeded automatically on first `POST /api/geo/ingest/run/usgs_mcs`
 
-Flag SVGs must also be uploaded to the frontend S3 bucket:
-```bash
-aws s3 sync assets/countries/flags s3://pai-mindmap-geo-v2-frontend-<ACCOUNT_ID>/assets/countries/flags --exclude "generate_index.py"
-```
+Flag SVGs and airline logos live in `frontend/public/assets/` and ship with the Vite build
+(`npm run build` → `dist/` → S3 sync); there is no separate asset upload.
 
 Key Lambda differences vs local dev:
 - `APP_ENV=aws` → lifespan skips `ensure_tables()` and `_seed_ingest_sources()`; CDK creates tables.
