@@ -232,3 +232,11 @@ have permissions to call CreateNetworkInterface"; stack ended ROLLBACK_COMPLETE.
 assets bucket, log groups) survive a failed create and block the next deploy with "already exists". They
 must be deleted by an admin identity before redeploying (the deployer user has no delete rights).
 
+## [ATTEMPTED] Failed first create leaves RETAINed orphans that block the next deploy
+**Reported:** 2026-10-12
+**Fix attempted:** `--context data_removal=destroy` (tables, log groups, assets bucket DESTROY; secret always
+RETAIN). Default stays RETAIN. Covered by `infra/tests/test_stack.py`.
+**Residual:** a failed create still leaves the secret `pai-mindmap-geo-v2/app`; delete it with
+`aws secretsmanager delete-secret --secret-id pai-mindmap-geo-v2/app --force-delete-without-recovery`
+(admin identity) before retrying.
+
