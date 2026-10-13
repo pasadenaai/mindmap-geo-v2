@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-12 — assistant cold-start fix (branch: fix/assistant-memory-1769)
+- Assistant Lambda memory 512 -> 1769 MB (one vCPU): init hit Lambda's 10 s limit on both observed cold starts
+  (first search after idle took ~12 s). Regression test asserts >= 1769 MB; verified to fail at 512.
+- End-to-end assistant call verified live (Anthropic -> table validation -> UI); spend limit $10/month set on the
+  `mindmap-geo-v2` Anthropic workspace.
+
 ## 2026-10-12 — assistant bar published; backend assistant (branch: feat/agent-backend-api)
 - Published the Phase 1 bar to the live site (S3 upload from `main` 4648421; live bundle verified, `/` and `/health` 200).
 - New `POST /api/assistant`: a single-call search assistant (not an agent; see ARCHITECTURE.md terminology). Anthropic Messages API, forced tool call, answer validated against the DynamoDB countries

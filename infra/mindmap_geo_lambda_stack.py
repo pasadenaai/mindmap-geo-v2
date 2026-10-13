@@ -617,7 +617,10 @@ class MindmapGeoLambdaStack(cdk.Stack):
             architecture=lambda_.Architecture.ARM_64,
             role=assistant_role,
             timeout=cdk.Duration.seconds(20),
-            memory_size=512,
+            # 1769 MB = one full vCPU. At 512 MB (a fraction of a core) the import-heavy init
+            # (aioboto3, FastAPI, jose, bcrypt + the secret read) exceeded Lambda's 10 s init limit on
+            # every cold start (observed 2026-10-12: ~12 s for the first search). CPU scales with memory.
+            memory_size=1769,
             environment={
                 "APP_ENV": "aws",
                 "SECRETS_BACKEND": "aws",
