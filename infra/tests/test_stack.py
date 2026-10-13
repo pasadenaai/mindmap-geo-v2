@@ -67,6 +67,11 @@ def test_only_two_image_functions_and_only_the_assistant_is_outside_the_vpc(t):
     assert _image_fn(t, "pai-mindmap-geo-v2-assistant")["ImageConfig"]["Command"] == ["app.assistant_main.handler"]
 
 
+def test_assistant_function_has_a_full_vcpu(t):
+    """Cold-start regression: at 512 MB init exceeded Lambda's 10 s limit on every cold start."""
+    assert _image_fn(t, "pai-mindmap-geo-v2-assistant")["MemorySize"] >= 1769
+
+
 def _assistant_policy_statements(t):
     out = []
     for res in t.find_resources("AWS::IAM::Policy").values():
