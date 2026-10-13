@@ -370,7 +370,7 @@ for `default` and `bedrock-dev`. The old key is rejected (`InvalidClientTokenId`
 events, us-east-1) showed only this machine (aws-cli, CDK, boto3, aws-sdk-js). **Not yet verified:** full CloudTrail
 history, ECS / GitHub / CI / other machines. Delete the old key only after the watch period (see TODO.md section 0).
 
-## [ATTEMPTED] Assistant Lambda first cold start hit the 10s init limit
+## [FIXED] Assistant Lambda first cold start hit the 10s init limit
 **Reported:** 2026-10-12
 **Symptom:** CloudWatch for `pai-mindmap-geo-v2-assistant` shows `INIT_REPORT ... Status: timeout` (10,000 ms) on the first
 invocation after deploy; Lambda retried init inside the invoke and responded (that request took ~4 s total). Later warm
@@ -381,3 +381,8 @@ Not confirmed: a second cold start has not been measured.
 **If it recurs:** raise memory (CPU scales with it) to 1024 MB, import the Anthropic SDK lazily (already lazy), or use
 provisioned concurrency (cost). Re-measure with `aws logs` INIT_REPORT lines.
 
+### Update 2026-10-12 — FIXED
+Cause was CPU, not the image pull: at 512 MB init timed out on both observed cold starts (second one confirmed it was not a
+one-off). Memory raised to 1769 MB (one vCPU) via PR #7 and deployed. Measured on a forced cold start afterwards:
+init 1,125 ms (no timeout), request ~1.1 s billed; warm round trip ~0.3 s. The Anthropic call is not included in those
+numbers (the probe was unauthenticated). Regression test `test_assistant_function_has_a_full_vcpu` guards it.
