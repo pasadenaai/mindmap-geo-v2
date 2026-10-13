@@ -442,3 +442,39 @@ commits add content layers or new functionality on top of this stable base.
   This includes `v2_geo_events` (TTL-expired raw events): Gene chose RETAIN for it too; a test asserts that all
   tables are Retain by default.
 
+## Type-to-search assistant bar (2026-10-12)
+**Terminology (decided 2026-10-12):** this feature is a *search assistant*: ONE schema-forced model call whose answer
+is validated and then executed by the UI. It is deliberately **not an agent** (no tool loop, no multi-step planning, no
+autonomy). The word "agent" is reserved for future functionality that will actually loop over tools. Code, route and
+function were renamed from `agent` to `assistant` before the first deploy (`/api/assistant`,
+`pai-mindmap-geo-v2-assistant`, `app/assistant/`, `frontend/src/assistant/`), so real agents get their own namespace.
+**Decision:** phased. Phase 1 is a client-side, deterministic resolver; Phase 2 may swap in an LLM-backed endpoint.
+- **UI:** `AssistantBar.jsx` listens on `document` for a single unmodified letter/digit while no text field is focused
+  (`INPUT`/`TEXTAREA`/`SELECT`/contenteditable are ignored), opens with that character, and runs Enter / click on the
+  highlighted result. Esc or click-outside closes. Mounted in `App.jsx` after login only.
+- **Contract:** the bar only ever executes `{ type: 'select_country', cca2 }`-shaped actions through
+  `assistant/actions.js`, which rejects unknown types, malformed codes, unknown countries and countries without globe
+  geometry. The resolver today and a model tomorrow must both pass that gate, so a model cannot make the UI do
+  anything outside the allow-list. Adding an action type means editing `ACTION_TYPES` (resolve.js) and `validateAction`.
+- **Phase 2 (built 2026-10-12): backend assistant (single call, not an agent).** `POST /api/assistant` {query} -> {action, message}. When the local
+  resolver finds nothing, the bar calls it. It runs as its **own Lambda outside the VPC** (`pai-mindmap-geo-v2-assistant`,
+  same image, handler `app.assistant_main.handler`) because the API Lambda has no internet egress and the Anthropic API is
+  public. Route precedence: the static `/api/assistant` resource wins over `/api/{proxy+}`. Flow: JWT verified (same
+  `SECRET_KEY`) -> globe countries read from the DynamoDB countries table (cached 5 min per container) -> one Messages
+  call to the model (Haiku 4.5, temperature 0, forced tool call `select_country{cca2}` | `no_match`, country list in a
+  prompt-cached system block) -> the returned CCA2 is **validated against the table** before it is returned ->
+  the frontend validates again through `assistant/actions.js`. Failures return a generic 503 (no upstream detail).
+- **Assistant Lambda blast radius:** its role can only read the app secret, read the countries table and write its own
+  logs (asserted by `infra/tests`). Method-level throttle 2 rps / burst 5 on `POST /api/assistant` plus the WAF `/api/` rate
+  rule; the endpoint always requires an access token. Boundary exception recorded as FEDRAMP P-14.
+- **Not deployed by merging:** needs the image rebuilt and pushed to ECR, `cdk deploy`, and `ANTHROPIC_API_KEY` added to
+  the secret out-of-band.
+- **Why not an LLM in Phase 1:** the API Lambda has no internet egress, so Bedrock needs a `bedrock-runtime` VPC interface
+  endpoint (~$7/month + endpoint policy + IAM) and a new authenticated, throttled `/api/assistant` route (cost control,
+  prompt-injection handling). Deferred until the action set justifies it (see TODO backlog).
+- **Effect on the CSP:** none (no new origins, no inline script).
+- **Known limits:** countries only (data comes from the already-loaded `globeCountries`); the bar renders above the
+  Periodic Table overlay, so typing there still selects a country behind it; only ASCII letters/digits open it, so
+  non-Latin keyboard layouts do not trigger it (country data and the resolver are Latin-only in Phase 1).
+- **Re-select:** choosing the already-selected country clears then re-sets it on the next tick so the camera re-flies
+  (GlobeScene only reacts to a change of `selectedCountry`).

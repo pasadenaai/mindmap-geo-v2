@@ -7,6 +7,37 @@
 - `docs/BRANCH_PROTECTION_WITHOUT_PRO.md` replaced by `docs/BRANCH_PROTECTION.md` (rule, bypass procedure, remaining controls).
 - Management-account ID scrubbed from the PR #2 branch history before merge (identifier only, no credential).
 
+## 2026-10-12 — assistant cold-start fix (branch: fix/assistant-memory-1769)
+- Assistant Lambda memory 512 -> 1769 MB (one vCPU): init hit Lambda's 10 s limit on both observed cold starts
+  (first search after idle took ~12 s). Regression test asserts >= 1769 MB; verified to fail at 512.
+- Measured after deploy: init 1,125 ms (was 10,000 ms timeout), cold request ~1.1 s, warm ~0.3 s round trip (401 probe;
+  does not include the Anthropic round trip).
+- End-to-end assistant call verified live (Anthropic -> table validation -> UI); spend limit $10/month set on the
+  `mindmap-geo-v2` Anthropic workspace.
+
+## 2026-10-12 — assistant deployed (branch: docs/assistant-deployed)
+- Renamed agent -> assistant, merged PR #5, pushed the arm64 image, `cdk deploy` (new Lambda `pai-mindmap-geo-v2-assistant`
+  outside the VPC, read-only role, `POST /api/assistant`, 2 rps / burst 5). Frontend with the fallback published.
+- Smoke tests: unauthenticated -> 401 (+ security headers), `/health` 200, 250 countries. Signed-in end-to-end call
+  verified by Gene afterwards (see the cold-start entry above).
+
+## 2026-10-12 — assistant bar published; backend assistant (branch: feat/agent-backend-api)
+- Published the Phase 1 bar to the live site (S3 upload from `main` 4648421; live bundle verified, `/` and `/health` 200).
+- New `POST /api/assistant`: a single-call search assistant (not an agent; see ARCHITECTURE.md terminology). Anthropic Messages API, forced tool call, answer validated against the DynamoDB countries
+  table) served by a new non-VPC Lambda `pai-mindmap-geo-v2-assistant` (read-only role, own throttle, FEDRAMP P-14).
+- Frontend: when the local resolver finds nothing, Enter asks the assistant; failures degrade to a message.
+- Tests: backend +9 (31 total), infra +4 (18 total; boundary tests verified to fail when broken).
+- Deployed later the same day (entries above); needed image push, `cdk deploy` and `ANTHROPIC_API_KEY` in Secrets Manager.
+
+## 2026-10-12 — type-to-search assistant bar, Phase 1 (branch: feat/agent-search-bar)
+- New `AssistantBar`: typing any letter/digit outside a text field opens a search bar; Enter flies the globe to the country
+  (same store path as the Countries menu). Resolver handles names, official names, cca2/cca3 codes, common aliases
+  (usa, uk, uae, ivory coast...), intent phrases ("show me the uk") and a one-character typo.
+- New `assistant/actions.js`: allow-listed, validated action execution (the contract a future LLM endpoint must meet).
+- 6 unit tests (`npm test`, `node --test`, no new dependencies) run in the CI `frontend-build` job.
+- Verified in a browser against a mock API: bar opens on a single key, Enter selects + flies, keys inside existing
+  fields are not hijacked, no-match message, Esc closes. Not verified: against the real AWS data (174 globe countries).
+
 ## 2026-10-12 — PR #1 merged, retain change deployed (branch: docs/post-merge-deploy-state)
 - Merged `pasadenaai/mindmap-geo-v2#1` (CI green, 4 jobs) and `pasadenaai/pasadena-ai-playbook#1`.
 - Redeployed `MindmapGeoV2Stack` from `main`: `v2_geo_events` Delete -> Retain; 22/22 tables Retain; site, `/health`, 250 countries and 118 elements verified live.

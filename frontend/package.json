@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext js,jsx"
+    "lint": "eslint src --ext js,jsx",
+    "test": "node --test \"src/assistant/*.test.js\""
   },
   "dependencies": {
     "@react-three/drei": "^9.109.2",
