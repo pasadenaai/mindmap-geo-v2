@@ -370,3 +370,14 @@ for `default` and `bedrock-dev`. The old key is rejected (`InvalidClientTokenId`
 events, us-east-1) showed only this machine (aws-cli, CDK, boto3, aws-sdk-js). **Not yet verified:** full CloudTrail
 history, ECS / GitHub / CI / other machines. Delete the old key only after the watch period (see TODO.md section 0).
 
+## [ATTEMPTED] Assistant Lambda first cold start hit the 10s init limit
+**Reported:** 2026-10-12
+**Symptom:** CloudWatch for `pai-mindmap-geo-v2-assistant` shows `INIT_REPORT ... Status: timeout` (10,000 ms) on the first
+invocation after deploy; Lambda retried init inside the invoke and responded (that request took ~4 s total). Later warm
+requests took ~3 ms; max memory used 142 MB of 512 MB.
+**Likely cause:** first-ever pull of the new container image plus imports and the Secrets Manager read at cold start.
+Not confirmed: a second cold start has not been measured.
+**Impact:** the first search after idle may take several seconds; the bar already shows "Asking the assistant...".
+**If it recurs:** raise memory (CPU scales with it) to 1024 MB, import the Anthropic SDK lazily (already lazy), or use
+provisioned concurrency (cost). Re-measure with `aws logs` INIT_REPORT lines.
+

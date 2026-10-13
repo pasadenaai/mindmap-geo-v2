@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-12 — assistant deployed (branch: docs/assistant-deployed)
+- Renamed agent -> assistant, merged PR #5, pushed the arm64 image, `cdk deploy` (new Lambda `pai-mindmap-geo-v2-assistant`
+  outside the VPC, read-only role, `POST /api/assistant`, 2 rps / burst 5). Frontend with the fallback published.
+- Smoke tests: unauthenticated -> 401 (+ security headers), `/health` 200, 250 countries. Not yet exercised with a signed-in
+  call (needs a real login); first live Anthropic call still unverified.
+
 ## 2026-10-12 — assistant bar published; backend assistant (branch: feat/agent-backend-api)
 - Published the Phase 1 bar to the live site (S3 upload from `main` 4648421; live bundle verified, `/` and `/health` 200).
 - New `POST /api/assistant`: a single-call search assistant (not an agent; see ARCHITECTURE.md terminology). Anthropic Messages API, forced tool call, answer validated against the DynamoDB countries

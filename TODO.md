@@ -89,15 +89,18 @@ Source: `CLAUDE_md_status_20260502.xlsx` held 7 distinct live AWS key pairs in p
       KNOWN_ISSUES + P-13: scope the execution policy (re-bootstrap) or use short-lived deploy credentials.
 - [ ] Stop using a `default` AWS profile bound to a long-lived key.
 
-## Assistant backend rollout  *(needs Gene: key + explicit "deploy")*
-- [ ] Add `ANTHROPIC_API_KEY` to the `pai-mindmap-geo-v2/app` secret (Gene; Claude never handles the key).
-- [ ] Build + push the arm64 image (adds the `anthropic` SDK), `cdk diff` (expect: new function, role, log group,
-      `/api/assistant` resource+method, stage method throttle; nothing else), `cdk deploy`.
-- [ ] Update code of both Lambdas, then verify: signed-in `POST /api/assistant` for "largest country in south america"
-      returns BR; unauthenticated call -> 401; CloudWatch shows no key in logs.
-- [ ] Publish the frontend that calls `/api/assistant` (S3 sync from `main`).
+## Assistant backend rollout  *(deployed 2026-10-12; one verification left)*
+- [x] `ANTHROPIC_API_KEY` added to the `pai-mindmap-geo-v2/app` secret (Gene; verified present, no whitespace).
+- [x] Image built (arm64) and pushed; `cdk diff` showed only the expected additions; `cdk deploy` UPDATE_COMPLETE.
+- [x] Unauthenticated `POST /api/assistant` -> 401 with security headers; `/health` 200; 250 countries unchanged.
+- [x] Frontend with the assistant fallback published (live bundle verified).
+- [ ] **Gene: signed-in end-to-end test** in the browser: type "largest country in south america" (no local match) and
+      press Enter; expect Brazil. This is the first real call to Anthropic; check CloudWatch
+      `/aws/lambda/pai-mindmap-geo-v2-assistant` for errors if it says "Assistant unavailable".
 - [ ] Set a monthly Anthropic spend cap; consider Bedrock (P-14).
-
+- Rollback: previous API image digest is `sha256:f932d1acb14b537fc5d675ec1...` (see ECR history); to disable the feature
+  without a deploy, remove `ANTHROPIC_API_KEY` from the secret (route returns 503, bar falls back to local matching).
+- The API Lambda was NOT updated to the new image (it does not serve `/api/assistant`); update it on the next backend change.
 ## Backlog (not blocking, in rough priority)
 - [x] Naming: renamed agent -> assistant (route, module, Lambda, frontend) before the first deploy, so "agent" is free for real
       agent functionality (Gene, 2026-10-12).
