@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — branch protection active (branch: docs/branch-protection-active)
+- Account upgraded to GitHub Pro; `main` is protected: PR required (0 approvals, solo owner), checks `backend-tests`,
+  `infra-tests`, `frontend-build`, `secret-scan` required and up to date, no force-push or deletion, enforced for admins.
+  Supersedes the earlier "branch protection unavailable, checks advisory" note below.
+- `docs/BRANCH_PROTECTION_WITHOUT_PRO.md` replaced by `docs/BRANCH_PROTECTION.md` (rule, bypass procedure, remaining controls).
+- Management-account ID scrubbed from the PR #2 branch history before merge (identifier only, no credential).
+
 ## 2026-10-12 — assistant cold-start fix (branch: fix/assistant-memory-1769)
 - Assistant Lambda memory 512 -> 1769 MB (one vCPU): init hit Lambda's 10 s limit on both observed cold starts
   (first search after idle took ~12 s). Regression test asserts >= 1769 MB; verified to fail at 512.
