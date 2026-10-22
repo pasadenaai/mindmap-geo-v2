@@ -2,7 +2,7 @@
 
 Co-Authors: [Gene Rhim](https://www.linkedin.com/in/generhim) (a.k.a. [pasadena.ai](https://www.github.com/pasadenaai)), & Claude Code. 
 
-"""Description:""" Clean, history-free successor to `mindmap-geo` (see `CHANGELOG.md`). Deployed shape: S3 static frontend + API Gateway → Lambda (FastAPI) → DynamoDB. No ECS/Fargate.
+Description: Clean, history-free successor to `mindmap-geo` (see `CHANGELOG.md`). Deployed shape: S3 static frontend + API Gateway → Lambda (FastAPI) → DynamoDB. No ECS/Fargate.
 
 Interactive Three.js dot-globe geographic visualisation service.
 React/Vite frontend + FastAPI backend + DynamoDB. Intended to integrate into mindmap-app-v3.
