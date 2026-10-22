@@ -2,10 +2,7 @@
 
 Co-Authors: [Gene Rhim](https://www.linkedin.com/in/generhim) (a.k.a. [pasadena.ai](https://www.github.com/pasadenaai)), & Claude Code. 
 
-Description: Clean, history-free successor to `mindmap-geo` (see `CHANGELOG.md`). Deployed shape: S3 static frontend + API Gateway → Lambda (FastAPI) → DynamoDB. No ECS/Fargate.
-
-Interactive Three.js dot-globe geographic visualisation service.
-React/Vite frontend + FastAPI backend + DynamoDB. Intended to integrate into mindmap-app-v3.
+Description: An interactive 3D globe for exploring countries, natural resources and cloud regions. Type to search, and the globe turns to the country you asked for. Built with React, Vite and Three.js on the front end and FastAPI and DynamoDB on the back end, and deployed serverless on AWS (S3 static frontend + API Gateway → Lambda (FastAPI) → DynamoDB; no ECS/Fargate). Intended to integrate into mindmap-app-v3. This repo is the clean successor to `mindmap-geo` (see `CHANGELOG.md`).
 
 <img src="./images/mindmap-geo-v2-globe.png" alt="Interactive Mindmap-Geo Globe" width="500">
 
@@ -13,7 +10,7 @@ React/Vite frontend + FastAPI backend + DynamoDB. Intended to integrate into min
 To create a visual "delimiter" by constraining information into an interactive 3D Globe. 
 
 ### Search
-Search requires an API call to the FastAPI lambda tucked behind an API Gateway endpoint. The administration of the search runs using an Anthropic API call. <br/>
+Start typing anywhere and a search bar opens. Country names, codes and common aliases resolve locally. Anything the local matcher can't resolve goes to an Anthropic-powered assistant (FastAPI on Lambda behind API Gateway), and its answer is validated against the country table before the globe moves. <br/>
 <img src="./images/mindmap-geo-v2-searchbox.png" alt="Search Box triggered by keystrokes" width="500">
 
 Any search that can be achieved will turn the globe. <br/>
